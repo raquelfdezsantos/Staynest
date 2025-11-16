@@ -399,6 +399,29 @@ html[data-theme="light"] .sn-auth .auth-meta {
     color: var(--color-text-muted);
 }
 
+/* Modales en modo oscuro con colores específicos */
+html[data-theme="dark"] [x-data*="show"] > div:last-child {
+    background-color: #181818 !important;
+}
+
+html[data-theme="dark"] [x-data*="show"] input.bg-neutral-800,
+html[data-theme="dark"] [x-data*="show"] textarea.bg-neutral-800,
+html[data-theme="dark"] [x-data*="show"] select.bg-neutral-800 {
+    background-color: #222222 !important;
+}
+
+/* Modal centrado - solo cuando esté visible */
+.modal-overlay[style*="display: none"] {
+    display: none !important;
+}
+
+.modal-overlay:not([style*="display: none"]) {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: auto !important;
+}
+
 /* En modo oscuro, reducir el grosor aparente del foco usando solo borde (sin ring) */
 html[data-theme="dark"] .sn-input:focus {
     outline: none !important;
