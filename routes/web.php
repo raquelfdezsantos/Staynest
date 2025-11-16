@@ -56,7 +56,6 @@ Route::get('/contact', fn() => redirect()->route('contact.create'));
 
 // Entorno y Reservar (páginas públicas independientes - placeholders iniciales)
 Route::view('/entorno', 'entorno.index')->name('entorno');
-Route::get('/reservar', [PropertyController::class, 'reservar'])->name('reservar');
 // Páginas legales
 Route::get('/aviso-legal', fn() => view('legal.aviso-legal'))->name('legal.aviso');
 Route::get('/politica-privacidad', fn() => view('legal.politica-privacidad'))->name('legal.privacidad');
@@ -70,7 +69,7 @@ Route::get('/cookies', fn() => view('legal.cookies'))->name('legal.cookies');
 | Rutas protegidas comunes (Breeze)
 |--------------------------------------------------------------------------
 */
-Route::get('/dashboard', function() {
+Route::get('/dashboard', function () {
     return redirect()->route('reservas.index');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -136,6 +135,9 @@ Route::middleware(['auth', 'role:admin'])
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:customer'])->group(function () {
+    // Nueva pantalla de reserva
+    Route::get('/reservar', [PropertyController::class, 'reservar'])->name('reservar');
+    
     // Listado de reservas del cliente
     Route::get('/mis-reservas', [ReservationController::class, 'index'])->name('reservas.index');
 
@@ -146,9 +148,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/mis-facturas', [InvoiceController::class, 'index'])->name('invoices.index');
 
     // Editar, actualizar y cancelar reserva
-    Route::get('/reservas/{reservation}/editar', [ReservationController::class, 'edit'])->name('reservas.edit');
-    Route::put('/reservas/{reservation}', [ReservationController::class, 'update'])->name('reservas.update');
-    Route::post('/reservas/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservas.cancel');
+    Route::get('/reservar/{reservation}/editar', [ReservationController::class, 'edit'])->name('reservas.edit');
+    Route::put('/reservar/{reservation}', [ReservationController::class, 'update'])->name('reservas.update');
+    Route::post('/reservar/{reservation}/cancel', [ReservationController::class, 'cancel'])->name('reservas.cancel');
 
     // Pagar diferencia de una reserva ya existente
     Route::post('/reservations/{id}/pay-difference', [PaymentController::class, 'payDifference'])
@@ -156,7 +158,6 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
 
     // Cancelación por parte del cliente
     Route::post('/reservations/{id}/cancel', [ReservationController::class, 'cancelSelf'])
-        ->middleware('role:customer')
         ->name('reservas.cancel.self');
 });
 
@@ -188,7 +189,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     // Crear sesión de Stripe Checkout (POST)
     Route::post('/checkout/{reservation}', [StripeController::class, 'checkout'])
         ->name('stripe.checkout');
-    
+
     // Pagar diferencia tras modificar reserva
     Route::post('/checkout/{reservation}/difference', [StripeController::class, 'checkoutDifference'])
         ->name('stripe.checkout.difference');

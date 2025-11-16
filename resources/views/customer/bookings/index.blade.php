@@ -32,100 +32,115 @@
                 </a>
             </div>
         @else
-            {{-- Tabla minimalista --}}
-            <div style="overflow-x: auto; margin-top: 2rem;">
-                <table class="table-admin">
-                    <thead>
-                        <tr>
-                            <th>Alojamiento</th>
-                            <th>Check-in</th>
-                            <th>Check-out</th>
-                            <th>Huéspedes</th>
-                            <th>Total</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($reservations as $r)
-                            <tr>
-                                <td>{{ $r->property->name ?? '—' }}</td>
-                                <td>{{ $r->check_in->format('d/m/Y') }}</td>
-                                <td>{{ $r->check_out->format('d/m/Y') }}</td>
-                                <td>{{ $r->guests }}</td>
-                                <td>{{ number_format($r->total_price, 2, ',', '.') }} €</td>
-                                <td>
-                                    @if($r->status === 'pending')
-                                        <span class="badge badge-warning">Pendiente</span>
-                                    @elseif($r->status === 'paid')
-                                        <span class="badge badge-success">Pagada</span>
-                                    @elseif($r->status === 'cancelled')
-                                        <span class="badge badge-error">Cancelada</span>
-                                    @else
-                                        <span class="badge badge-info">{{ ucfirst($r->status) }}</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                        @if($r->status === 'pending')
-                                            <form method="POST" action="{{ route('stripe.checkout', $r->id) }}" style="display: inline;">
-                                                @csrf
-                                                <button type="submit" class="btn-action btn-action-primary" style="font-size: 0.75rem; padding: 0.5rem 0.875rem;">
-                                                    Pagar
-                                                </button>
-                                            </form>
-                                        @endif
+            {{-- Lista de reservas con cards --}}
+            <div class="space-y-4">
+                @foreach($reservations as $r)
+                    <div class="reservation-card">
+                        <div class="reservation-card-header">
+                            <div class="reservation-property">
+                                <svg class="reservation-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                                <h3 class="reservation-property-name">{{ $r->property->name ?? '—' }}</h3>
+                            </div>
+                            <div>
+                                @if($r->status === 'pending')
+                                    <span class="badge badge-warning">Pendiente de pago</span>
+                                @elseif($r->status === 'paid')
+                                    <span class="badge badge-success">Pagada</span>
+                                @elseif($r->status === 'cancelled')
+                                    <span class="badge badge-error">Cancelada</span>
+                                @else
+                                    <span class="badge badge-info">{{ ucfirst($r->status) }}</span>
+                                @endif
+                            </div>
+                        </div>
 
-                                        @if($r->status !== 'cancelled')
-                                            {{-- Editar --}}
-                                            <a href="{{ route('reservas.edit', $r) }}" class="btn-action btn-action-secondary" style="font-size: 0.75rem; padding: 0.5rem 0.875rem;">
-                                                Editar
-                                            </a>
-
-                                            {{-- Cancelar --}}
-                                            <form method="POST" action="{{ route('reservas.cancel', $r) }}" style="display: inline;">
-                                                @csrf
-                                                <button class="btn-action btn-action-danger" style="font-size: 0.75rem; padding: 0.5rem 0.875rem;"
-                                                    onclick="return confirm('¿Cancelar esta reserva?')">
-                                                    Cancelar
-                                                </button>
-                                            </form>
-
-                                            {{-- Ver/Descargar factura si existe --}}
-                                            @if($r->invoice)
-                                                <a href="{{ route('invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary" style="font-size: 0.75rem; padding: 0.5rem 0.875rem;">
-                                                    Ver factura
-                                                </a>
-
-                                                <a href="{{ route('invoices.show', $r->invoice->number) }}?download=1" class="btn-action btn-action-secondary" style="font-size: 0.75rem; padding: 0.5rem 0.875rem;">
-                                                    Descargar PDF
-                                                </a>
-                                            @endif
-
-                                            {{-- Pagar diferencia si procede --}}
-                                            @if($r->status === 'paid' && method_exists($r, 'balanceDue') && $r->balanceDue() > 0)
-                                                <form method="POST" action="{{ route('stripe.checkout.difference', $r->id) }}" style="display: inline;">
-                                                    @csrf
-                                                    <button class="btn-action btn-action-primary" style="font-size: 0.75rem; padding: 0.5rem 0.875rem; background-color: var(--color-warning);">
-                                                        Pagar diferencia ({{ number_format($r->balanceDue(), 2, ',', '.') }} €)
-                                                    </button>
-                                                </form>
-                                            @endif
-                                        @endif
+                        <div class="reservation-card-body">
+                            <div class="reservation-details">
+                                <div class="reservation-detail-item">
+                                    <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <div>
+                                        <p class="detail-label">Fechas</p>
+                                        <p class="detail-value">{{ $r->check_in->format('d/m/Y') }} → {{ $r->check_out->format('d/m/Y') }}</p>
                                     </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                </div>
 
-                {{-- Paginación --}}
-                @if($reservations->hasPages())
-                    <div style="margin-top: 2rem;">
-                        {{ $reservations->links() }}
+                                <div class="reservation-detail-item">
+                                    <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    <div>
+                                        <p class="detail-label">Huéspedes</p>
+                                        <p class="detail-value">{{ $r->guests }} {{ $r->guests === 1 ? 'persona' : 'personas' }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="reservation-detail-item">
+                                    <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <div>
+                                        <p class="detail-label">Total</p>
+                                        <p class="detail-value detail-value-price">{{ number_format($r->total_price, 2, ',', '.') }} €</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="reservation-actions">
+                                @if($r->status === 'pending')
+                                    <form method="POST" action="{{ route('stripe.checkout', $r->id) }}" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="btn-action btn-action-primary">
+                                            Pagar ahora
+                                        </button>
+                                    </form>
+                                @endif
+
+                                @if($r->status !== 'cancelled')
+                                    <a href="{{ route('reservas.edit', $r) }}" class="btn-action btn-action-secondary">
+                                        Editar
+                                    </a>
+
+                                    @if($r->invoice)
+                                        <a href="{{ route('invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary">
+                                            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            Ver factura
+                                        </a>
+                                    @endif
+
+                                    @if($r->status === 'paid' && method_exists($r, 'balanceDue') && $r->balanceDue() > 0)
+                                        <form method="POST" action="{{ route('stripe.checkout.difference', $r->id) }}" style="display: inline;">
+                                            @csrf
+                                            <button type="submit" class="btn-action btn-action-warning">
+                                                Pagar diferencia ({{ number_format($r->balanceDue(), 2, ',', '.') }} €)
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    <form method="POST" action="{{ route('reservas.cancel', $r) }}" style="display: inline;">
+                                        @csrf
+                                        <button type="submit" class="btn-action btn-action-danger" onclick="return confirm('¿Estás seguro de que quieres cancelar esta reserva?')">
+                                            Cancelar
+                                        </button>
+                                    </form>
+                                @endif
+                            </div>
+                        </div>
                     </div>
-                @endif
+                @endforeach
             </div>
+
+            {{-- Paginación --}}
+            @if($reservations->hasPages())
+                <div style="margin-top: 2rem;">
+                    {{ $reservations->links() }}
+                </div>
+            @endif
         @endif
     </div>
 </x-app-layout>

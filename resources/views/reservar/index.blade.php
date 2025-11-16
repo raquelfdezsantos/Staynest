@@ -163,8 +163,10 @@
     <div class="sn-reservar max-w-5xl mx-auto px-4 py-10">
         <header class="mb-8 text-center">
             <h1 class="text-4xl font-serif mb-3">Reservar</h1>
-            <p class="text-neutral-300">Esta es una vista inicial para visualizar la estructura. Integraremos disponibilidad
-                real y pasarela de pago más adelante.</p>
+            <p class="text-neutral-300">
+                Esta es una vista inicial para visualizar la estructura. Integraremos disponibilidad
+                real y pasarela de pago más adelante.
+            </p>
         </header>
 
         <!-- Mensaje de error -->
@@ -176,31 +178,50 @@
         </div>
 
         <div class="grid md:grid-cols-3 gap-8" style="align-items: start;">
-            <!-- Formulario (placeholder) -->
-            <form class="md:col-span-2 space-y-6" method="GET" action="{{ route('login') }}" id="reservationForm">
-                <input type="hidden" name="redirect" value="reservas.store">
-                <input type="hidden" name="reservation_data" id="reservation_data">
+            <!-- Formulario -->
+            <form 
+                class="md:col-span-2 space-y-6" 
+                method="POST" 
+                action="{{ route('reservas.store') }}" 
+                id="reservationForm"
+            >
+                @csrf
+
+                {{-- este alojamiento (si solo tienes uno) --}}
+                <input type="hidden" name="property_id" value="{{ $property->id ?? 1 }}">
+                {{-- guests se rellena en JS (adultos + niños) --}}
+                <input type="hidden" name="guests" id="guests">
 
                 <div class="grid sm:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-sm text-neutral-300 mb-1">Fecha de entrada</label>
-                        <input type="text" id="check_in"
+                        <input 
+                            type="text" 
+                            id="check_in"
+                            name="check_in"
                             class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)] placeholder:text-neutral-400"
-                            placeholder="YYYY-MM-DD">
+                            placeholder="YYYY-MM-DD"
+                        >
                     </div>
                     <div>
                         <label class="block text-sm text-neutral-300 mb-1">Fecha de salida</label>
-                        <input type="text" id="check_out"
+                        <input 
+                            type="text" 
+                            id="check_out"
+                            name="check_out"
                             class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)] placeholder:text-neutral-400"
-                            placeholder="YYYY-MM-DD">
+                            placeholder="YYYY-MM-DD"
+                        >
                     </div>
                 </div>
 
                 <div class="grid sm:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-sm text-neutral-300 mb-1">Adultos</label>
-                        <select id="adults"
-                            class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]">
+                        <select 
+                            id="adults"
+                            class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]"
+                        >
                             <option value="1">1</option>
                             <option value="2" selected>2</option>
                             <option value="3">3</option>
@@ -209,8 +230,10 @@
                     </div>
                     <div>
                         <label class="block text-sm text-neutral-300 mb-1">Niños</label>
-                        <select id="children"
-                            class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]">
+                        <select 
+                            id="children"
+                            class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]"
+                        >
                             <option value="0" selected>0</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -218,8 +241,10 @@
                     </div>
                     <div>
                         <label class="block text-sm text-neutral-300 mb-1">Mascotas</label>
-                        <select id="pets"
-                            class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]">
+                        <select 
+                            id="pets"
+                            class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]"
+                        >
                             <option value="0" selected>No</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -229,15 +254,19 @@
 
                 <div>
                     <label class="block text-sm text-neutral-300 mb-1">Notas</label>
-                    <textarea id="notes"
+                    <textarea 
+                        id="notes"
                         class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 h-28 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)] placeholder:text-neutral-400"
-                        placeholder="Cuéntanos cualquier necesidad especial"></textarea>
+                        placeholder="Cuéntanos cualquier necesidad especial"
+                    ></textarea>
                 </div>
 
                 <div class="pt-2">
-                    <button type="submit"
+                    <button 
+                        type="submit"
                         class="bg-[color:var(--color-accent)] hover:bg-[color:var(--color-accent-hover)] text-white text-sm font-semibold px-5 py-2"
-                        style="border-radius: 2px;">
+                        style="border-radius: 2px;"
+                    >
                         Realizar reserva
                     </button>
                 </div>
@@ -353,7 +382,6 @@
                 });
 
                 // Configurar Flatpickr para check-out
-                // Calculamos mañana manualmente (sin usar fp_incr)
                 const tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -363,7 +391,6 @@
                     dateFormat: 'Y-m-d',
                     disable: [
                         function (date) {
-                            // Usamos el objeto Date de checkIn directamente
                             const checkInDate = checkInPicker.selectedDates[0];
                             if (!checkInDate) return false;
 
@@ -378,7 +405,6 @@
                                 const nightStr = `${y}-${m}-${d}`;
 
                                 if (blockedDates.includes(nightStr)) {
-                                    // Si alguna noche intermedia está bloqueada → no dejar seleccionar este checkout
                                     return true;
                                 }
                                 current.setDate(current.getDate() + 1);
@@ -419,7 +445,6 @@
                             document.getElementById('summary-dates').textContent = `${formatDate(checkIn)} → ${formatDate(checkOut)}`;
                             document.getElementById('summary-nights').textContent = nights + ' noche' + (nights !== 1 ? 's' : '');
 
-                            // Calcular suma de precios de cada noche
                             let totalNightsPrice = 0;
                             const current = new Date(checkIn);
                             const end = new Date(checkOut);
@@ -431,7 +456,6 @@
                                 current.setDate(current.getDate() + 1);
                             }
 
-                            // Multiplicar por número de huéspedes
                             const adultsVal = document.getElementById('adults').value;
                             const childrenVal = document.getElementById('children').value;
                             const adults = parseInt(adultsVal) || 0;
@@ -440,7 +464,6 @@
                             
                             const total = totalNightsPrice * guests;
                             
-                            // Validar que el total sea un número válido
                             if (isNaN(total) || !isFinite(total)) {
                                 document.getElementById('summary-total').textContent = '0.00€';
                                 console.error('Error calculando total:', { totalNightsPrice, guests, rates });
@@ -451,7 +474,7 @@
                     }
                 }
 
-                // Guardar datos antes de enviar al login
+                // Guardar datos antes de enviar (y mandar guests al back)
                 document.getElementById('reservationForm').addEventListener('submit', function (e) {
                     const checkIn = checkInPicker.selectedDates[0];
                     const checkOut = checkOutPicker.selectedDates[0];
@@ -471,22 +494,10 @@
                         return;
                     }
 
-                    // Ocultar error si todo está bien
                     hideError();
 
-                    const data = {
-                        property_id: {{ $property->id ?? 1 }},
-                        check_in: checkInPicker.formatDate(checkIn, 'Y-m-d'),
-                        check_out: checkOutPicker.formatDate(checkOut, 'Y-m-d'),
-                        adults: document.getElementById('adults').value,
-                        children: document.getElementById('children').value,
-                        pets: document.getElementById('pets').value,
-                        notes: document.getElementById('notes').value,
-                        guests: parseInt(document.getElementById('adults').value) + parseInt(document.getElementById('children').value)
-                    };
-
-                    document.getElementById('reservation_data').value = JSON.stringify(data);
-                    sessionStorage.setItem('pendingReservation', JSON.stringify(data));
+                    // rellenamos el hidden "guests" para el controlador
+                    document.getElementById('guests').value = totalGuests;
                 });
 
                 // Funciones para mostrar/ocultar errores
