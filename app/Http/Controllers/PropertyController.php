@@ -144,17 +144,26 @@ class PropertyController extends Controller
         $checkinDates = $reservations->pluck('check_in')->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))->unique()->values()->toArray();
         $checkoutDates = $reservations->pluck('check_out')->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))->unique()->values()->toArray();
 
-        // Precio “desde” (si lo usas)
+        // Precio "desde" (si lo usas)
         $fromPrice = RateCalendar::where('property_id', $property->id)
             ->where('is_available', true)
             ->min('price');
+
+        // Pasar todas las tarifas como objeto fecha => precio
+        $rates = RateCalendar::where('property_id', $property->id)
+            ->where('is_available', true)
+            ->get()
+            ->pluck('price', 'date')
+            ->mapWithKeys(fn($price, $date) => [Carbon::parse($date)->format('Y-m-d') => $price])
+            ->toArray();
 
         return view('reservar.index', compact(
             'property',
             'fromPrice',
             'blockedDates',
             'checkinDates',
-            'checkoutDates'
+            'checkoutDates',
+            'rates'
         ));
     }
 }

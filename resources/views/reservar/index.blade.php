@@ -271,18 +271,29 @@
             document.addEventListener('DOMContentLoaded', function () {
                 const blockedDates = @json($blockedDates ?? []);
                 const checkinDates = @json($checkinDates ?? []);
-                const fromPrice = {{ $fromPrice ?? 50 }};
+                const rates = @json($rates ?? []);
+                const maxCapacity = {{ $property->capacity ?? 4 }};
 
                 // Actualizar resumen de huéspedes
                 function updateGuests() {
                     const adults = parseInt(document.getElementById('adults').value);
                     const children = parseInt(document.getElementById('children').value);
+                    const totalGuests = adults + children;
 
+                    // Actualizar texto del resumen
                     let text = adults + ' adulto' + (adults !== 1 ? 's' : '');
                     if (children > 0) {
                         text += ', ' + children + ' niño' + (children !== 1 ? 's' : '');
                     }
                     document.getElementById('summary-guests').textContent = text;
+
+                    // Validar capacidad máxima
+                    if (totalGuests > maxCapacity) {
+                        showError(`La capacidad máxima es de ${maxCapacity} personas.`);
+                    } else {
+                        hideError();
+                    }
+
                     updateTotal();
                 }
 
@@ -408,8 +419,34 @@
                             document.getElementById('summary-dates').textContent = `${formatDate(checkIn)} → ${formatDate(checkOut)}`;
                             document.getElementById('summary-nights').textContent = nights + ' noche' + (nights !== 1 ? 's' : '');
 
-                            const total = nights * fromPrice;
-                            document.getElementById('summary-total').textContent = total.toFixed(2) + '€';
+                            // Calcular suma de precios de cada noche
+                            let totalNightsPrice = 0;
+                            const current = new Date(checkIn);
+                            const end = new Date(checkOut);
+                            
+                            while (current < end) {
+                                const dateStr = current.toISOString().split('T')[0];
+                                const nightPrice = parseFloat(rates[dateStr]) || 0;
+                                totalNightsPrice += nightPrice;
+                                current.setDate(current.getDate() + 1);
+                            }
+
+                            // Multiplicar por número de huéspedes
+                            const adultsVal = document.getElementById('adults').value;
+                            const childrenVal = document.getElementById('children').value;
+                            const adults = parseInt(adultsVal) || 0;
+                            const children = parseInt(childrenVal) || 0;
+                            const guests = adults + children;
+                            
+                            const total = totalNightsPrice * guests;
+                            
+                            // Validar que el total sea un número válido
+                            if (isNaN(total) || !isFinite(total)) {
+                                document.getElementById('summary-total').textContent = '0.00€';
+                                console.error('Error calculando total:', { totalNightsPrice, guests, rates });
+                            } else {
+                                document.getElementById('summary-total').textContent = total.toFixed(2) + '€';
+                            }
                         }
                     }
                 }
@@ -418,10 +455,19 @@
                 document.getElementById('reservationForm').addEventListener('submit', function (e) {
                     const checkIn = checkInPicker.selectedDates[0];
                     const checkOut = checkOutPicker.selectedDates[0];
+                    const adults = parseInt(document.getElementById('adults').value);
+                    const children = parseInt(document.getElementById('children').value);
+                    const totalGuests = adults + children;
 
                     if (!checkIn || !checkOut) {
                         e.preventDefault();
                         showError('Por favor, selecciona las fechas de entrada y salida');
+                        return;
+                    }
+
+                    if (totalGuests > maxCapacity) {
+                        e.preventDefault();
+                        showError(`La capacidad máxima es de ${maxCapacity} personas.`);
                         return;
                     }
 
