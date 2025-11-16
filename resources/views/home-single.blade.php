@@ -47,39 +47,46 @@
         <div class="sn-hero__blend"></div>
     </section>
 
-    {{-- DESCRIPCIÓN (mismo ancho que Entorno) --}}
-    <section class="sn-reading" style="margin-top: var(--spacing-xl);">
-        <article style="color: var(--color-text-secondary); line-height:1.7;">
-            {!! nl2br(e($property->description ?? 'Alojamiento acogedor y minimalista.')) !!}
-        </article>
-    </section>
+    {{-- Contenedor igual que Entorno, Contacto y Reservar --}}
+    <div class="container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl);">
+        <div class="max-w-5xl mx-auto px-4">
+            
+            {{-- DESCRIPCIÓN --}}
+            <section style="margin-bottom: var(--spacing-xl);">
+                <article style="color: var(--color-text-secondary); line-height:1.7;">
+                    {!! nl2br(e($property->description ?? 'Alojamiento acogedor y minimalista.')) !!}
+                </article>
+            </section>
 
-    {{-- GALERÍA compacta (sin B/N) --}}
-    @if(($morePhotos ?? collect())->count() > 0)
-        <section class="sn-reading" style="margin-top: var(--spacing-xl);">
-            <div class="sn-gallery-compact"
-                 style="display:grid; gap:10px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));">
-                @foreach(($morePhotos ?? collect()) as $p)
-                    @php
-                        $src = (!empty($p->url) && str_starts_with($p->url, 'http'))
-                                ? $p->url
-                                : asset('storage/' . ltrim($p->url ?? '', '/'));
-                        $w = $p->width ?? 1600;
-                        $h = $p->height ?? 1067;
-                    @endphp
-                    <a href="{{ $src }}" data-pswp-width="{{ $w }}" data-pswp-height="{{ $h }}">
-                        <img src="{{ $src }}" alt="Foto {{ $loop->iteration }}" loading="lazy"
-                             style="width:100%; height:160px; object-fit:cover; border-radius: var(--radius-base);">
-                    </a>
-                @endforeach
-            </div>
-            <div style="text-align:center; margin-top:1rem;">
-                <button type="button" class="inline-flex items-center px-5 py-2 bg-[color:var(--color-accent)] text-white font-semibold text-sm hover:bg-[color:var(--color-accent-hover)] transition ease-in-out duration-150 focus:outline-none focus:ring-1 focus:ring-[color:var(--color-accent)] focus:ring-offset-1" style="border-radius: 2px;"
-                        onclick="document.querySelector('.sn-gallery-compact a')?.click()">
-                    Ver galería
-                </button>
-            </div>
-        </section>
-    @endif
+            {{-- GALERÍA compacta (sin B/N) --}}
+            @if(($morePhotos ?? collect())->count() > 0)
+                <section>
+                    <div class="sn-gallery-compact"
+                         style="display:grid; gap:10px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));">
+                        @foreach(($morePhotos ?? collect()) as $p)
+                            @php
+                                $src = (!empty($p->url) && str_starts_with($p->url, 'http'))
+                                        ? $p->url
+                                        : asset('storage/' . ltrim($p->url ?? '', '/'));
+                                $w = $p->width ?? 1600;
+                                $h = $p->height ?? 1067;
+                            @endphp
+                            <a href="{{ $src }}" data-pswp-width="{{ $w }}" data-pswp-height="{{ $h }}">
+                                <img src="{{ $src }}" alt="Foto {{ $loop->iteration }}" loading="lazy"
+                                     style="width:100%; height:160px; object-fit:cover; border-radius: var(--radius-base);">
+                            </a>
+                        @endforeach
+                    </div>
+                    <div style="text-align:center; margin-top:1rem;">
+                        <button type="button" class="inline-flex items-center px-5 py-2 bg-[color:var(--color-accent)] text-white font-semibold text-sm hover:bg-[color:var(--color-accent-hover)] transition ease-in-out duration-150 focus:outline-none focus:ring-1 focus:ring-[color:var(--color-accent)] focus:ring-offset-1" style="border-radius: 2px;"
+                                onclick="document.querySelector('.sn-gallery-compact a')?.click()">
+                            Ver galería
+                        </button>
+                    </div>
+                </section>
+            @endif
+            
+        </div>
+    </div>
 @endsection
 

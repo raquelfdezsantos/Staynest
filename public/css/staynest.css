@@ -491,16 +491,12 @@ html[data-theme="dark"] .sn-auth input[type="checkbox"]:focus {
     position: fixed;
     top: 0;
     left: 0;
-    /*en vez de width:100%, recortamos usando el ancho de la scrollbar */
-    right: calc(var(--sn-scrollbar-w, var(--sn-scrollbar-fallback)));
+    right: var(--sn-scrollbar-w, var(--sn-scrollbar-fallback));
     z-index: 1000;
-
     background-color: var(--color-bg-primary);
     border-bottom: 1px solid var(--color-border-light);
     transition: background-color var(--transition-base), border-color var(--transition-base);
 }
-
-
 
 
 /* El body se desplaza hacia abajo según la altura real del header */
@@ -701,7 +697,7 @@ html[data-theme="light"] .nav-header--transparent {
 .container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 0 var(--spacing-xl);
+    padding: 0 2rem;
 }
 
 .text-center {
@@ -965,11 +961,10 @@ html[data-theme="light"] .nav-header--transparent {
 
 /* mantiene el texto al ancho “Entorno” (~máx. 960 px) */
 .sn-reading {
-  max-width: 960px;       
+  max-width: 1024px;
   margin-inline: auto;
-}
-
-/* ===== Header transparente/solido (Home transparente, sólido al hacer scroll) ===== */
+  padding-inline: 2rem;
+}/* ===== Header transparente/solido (Home transparente, sólido al hacer scroll) ===== */
 .sn-header {
   position: sticky; top: 0; z-index: 50;
   transition: background-color .25s, border-color .25s, backdrop-filter .25s;
@@ -1042,7 +1037,7 @@ html[data-theme="light"] .nav-header--transparent {
 }
 
 /* Contenido de lectura (mismo ancho que Entorno) */
-.sn-reading{ max-width:960px; margin-inline:auto; }
+.sn-reading{ max-width:1024px; margin-inline:auto; padding-inline:2rem; }
 
 /* Header: transición suave y soporte clases is-transparent/is-solid (ya definidas arriba en otro bloque) */
 .nav-header { transition: background-color .35s, border-color .35s; overflow: visible; }

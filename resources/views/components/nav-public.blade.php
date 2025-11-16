@@ -2,7 +2,8 @@
 
 @php($totalProperties = \App\Models\Property::whereNull('deleted_at')->count())
 
-<header class="nav-header {{ $transparent ?? false ? 'nav-header--transparent' : '' }}">
+<header class="nav-header {{ $transparent ? 'nav-header--transparent' : 'nav-header--solid' }}"
+    data-sn-transparent="{{ $transparent ? '1' : '0' }}">
 
     <nav class="nav-container">
         <x-logo />
