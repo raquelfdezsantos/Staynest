@@ -898,13 +898,11 @@ html[data-theme="light"] .nav-header--transparent {
 
 .btn-action-secondary {
     background-color: transparent;
-    color: var(--color-text-primary);
-    border: 1px solid var(--color-border-light);
+    color: var(--color-accent);
+    border: 1px solid var(--color-accent);
 }
 
 .btn-action-secondary:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
     background-color: rgba(77, 141, 148, 0.08);
 }
 
@@ -915,8 +913,7 @@ html[data-theme="light"] .nav-header--transparent {
 }
 
 .btn-action-danger:hover {
-    background-color: var(--color-error);
-    color: #FFFFFF;
+    background-color: rgba(204, 89, 86, 0.08);
 }
 
 .btn-action-success {
