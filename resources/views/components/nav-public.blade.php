@@ -24,12 +24,18 @@
             
             {{-- Menú de usuario logueado --}}
             @auth
-                <li class="nav-user-dropdown">
-                    <button class="nav-link nav-user-trigger" aria-label="Menú de usuario">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="8" r="5"/>
-                            <path d="M3 21c0-5 4-7 9-7s9 2 9 7"/>
-                        </svg>
+                <div class="nav-user-dropdown">
+                    <button class="nav-user-trigger" type="button">
+                        @if(auth()->user()->avatar_path)
+                            <img src="{{ Storage::disk('public')->url(auth()->user()->avatar_path) }}" 
+                                 alt="{{ auth()->user()->name }}"
+                                 style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--color-border-light);">
+                        @else
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="8" r="5"/>
+                                <path d="M3 21c0-5 4-7 9-7s9 2 9 7"/>
+                            </svg>
+                        @endif
                         <span>{{ auth()->user()->name }}</span>
                         <svg class="nav-dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
                             <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>

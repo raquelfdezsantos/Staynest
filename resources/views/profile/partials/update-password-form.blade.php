@@ -12,6 +12,9 @@
         @csrf
         @method('put')
 
+        {{-- Campo oculto de username para accesibilidad --}}
+        <input type="text" name="username" autocomplete="username" value="{{ auth()->user()->email }}" style="display: none;" aria-hidden="true">
+
         <div>
             <x-input-label for="update_password_current_password" value="Contraseña actual" />
             <x-text-input id="update_password_current_password" 

@@ -64,12 +64,28 @@
         {{-- Avatar --}}
         <div>
             <x-input-label for="avatar" value="Foto de perfil" />
+            
+            {{-- Input file oculto --}}
             <input id="avatar" 
                    name="avatar" 
                    type="file" 
                    accept="image/jpeg,image/png,image/webp"
-                   class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)] mt-1"
+                   style="display: none;"
                    onchange="previewAvatar(event)">
+            
+            {{-- Botón custom para activar el input --}}
+            <button type="button" 
+                    onclick="document.getElementById('avatar').click()"
+                    class="btn btn-primary"
+                    style="margin-top: 0.5rem;">
+                Seleccionar archivo
+            </button>
+            
+            {{-- Nombre del archivo seleccionado --}}
+            <p id="file-name" style="margin-top: 0.5rem; font-size: var(--text-sm); color: var(--color-text-secondary);">
+                Ningún archivo seleccionado
+            </p>
+            
             <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
             <p style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 0.5rem;">
                 Formatos: JPG, PNG, WEBP. Máx. 2MB.
@@ -90,12 +106,22 @@
         function previewAvatar(event) {
             const input = event.target;
             const preview = document.getElementById('avatar-preview');
+            const fileName = document.getElementById('file-name');
+            
             if (input.files && input.files[0]) {
+                // Mostrar nombre del archivo
+                fileName.textContent = input.files[0].name;
+                fileName.style.color = 'var(--color-text-primary)';
+                
+                // Preview de la imagen
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     preview.src = e.target.result;
                 };
                 reader.readAsDataURL(input.files[0]);
+            } else {
+                fileName.textContent = 'Ningún archivo seleccionado';
+                fileName.style.color = 'var(--color-text-secondary)';
             }
         }
         </script>

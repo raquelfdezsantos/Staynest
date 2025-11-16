@@ -23,6 +23,9 @@
             @csrf
             @method('delete')
 
+            {{-- Campo oculto de username para accesibilidad --}}
+            <input type="text" name="username" autocomplete="username" value="{{ auth()->user()->email }}" style="display: none;" aria-hidden="true">
+
             <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary);">
                 ¿Estás seguro de que deseas eliminar tu cuenta?
             </h2>
@@ -37,6 +40,7 @@
                               name="password"
                               type="password"
                               class="mt-1 block w-3/4"
+                              autocomplete="current-password"
                               placeholder="Contraseña" />
                 <x-input-error :messages="$errors->userDeletion->get('password')" class="mt-2" />
             </div>
