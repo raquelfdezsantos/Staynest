@@ -70,9 +70,9 @@ Route::get('/cookies', fn() => view('legal.cookies'))->name('legal.cookies');
 | Rutas protegidas comunes (Breeze)
 |--------------------------------------------------------------------------
 */
-Route::get('/dashboard', fn() => view('dashboard'))
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+Route::get('/dashboard', function() {
+    return redirect()->route('reservas.index');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/perfil',  [ProfileController::class, 'edit'])->name('profile.edit');
