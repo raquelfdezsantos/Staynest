@@ -988,7 +988,7 @@ html[data-theme="light"] .nav-header--transparent {
   background-size: cover;
   background-position: center;
   display: grid;
-  align-items: end;
+  align-items: center;
 }
 
 /* Variante para anclar el hero al top real bajo header fijo (compensa padding de body) */
@@ -1015,18 +1015,46 @@ html[data-theme="light"] .nav-header--transparent {
   margin-top: .35rem;
 }
 
-.sn-hero__panel-wrap{ display:flex; align-items:flex-end }
+.sn-hero__panel-wrap{ 
+  position: absolute;
+  top: 75%; /* Centrado en la mitad inferior (75% de la altura total) */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  width: auto;
+  max-width: 95%;
+}
 .sn-hero__panel{
   backdrop-filter: blur(6px);
   background: rgba(255,255,255,0.14);
   border: 1px solid rgba(255,255,255,0.22);
   color: #fff;
   border-radius: var(--radius-base);
-  padding: .75rem 1rem;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  padding: 1rem 1.5rem;
+  display: grid; 
+  grid-template-columns: auto auto; 
+  gap: clamp(2rem, 15vw, 25rem);
+  white-space: nowrap;
+  font-size: 1rem;
 }
-.sn-hero__panel small{ display:block; opacity:.9 }
-.sn-hero__panel strong{ display:block; font-weight:600; color:#fff }
+@media (max-width: 1200px) and (min-width: 769px) {
+  .sn-hero__panel {
+    gap: 4rem;
+    font-size: 1.1rem;
+  }
+}
+@media (max-width: 768px) {
+  .sn-hero__panel {
+    grid-template-columns: 1fr;
+    white-space: normal;
+    width: auto;
+    gap: 1rem;
+    padding: .75rem 1rem;
+    font-size: 1rem;
+  }
+}
+.sn-hero__panel small{ display:block; opacity:.9; font-size: 0.9em; }
+.sn-hero__panel strong{ display:block; font-weight:600; color:#fff; font-size: 1.1em; }
 
 /* transiciones del header al salir del hero */
 .sn-hero__blend{

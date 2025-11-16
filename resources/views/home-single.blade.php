@@ -27,22 +27,22 @@
                     {{ $property->short_tagline ?? 'Tu escapada perfecta, todo el año.' }}
                 </div>
             </div>
+        </div>
 
-            @if($property && ($property->tourism_license || $property->rental_registration))
-                <div class="sn-hero__panel-wrap">
-                    <div class="sn-hero__panel">
-                        <div>
-                            <small>Asturias — Registro autonómico</small>
-                            <strong>{{ $property->tourism_license ?? '—' }}</strong>
-                        </div>
-                        <div>
-                            <small>España — Registro nacional</small>
-                            <strong>{{ $property->rental_registration ?? '—' }}</strong>
-                        </div>
+        @if($property && ($property->tourism_license || $property->rental_registration))
+            <div class="sn-hero__panel-wrap">
+                <div class="sn-hero__panel">
+                    <div>
+                        <small>Asturias — Registro autonómico</small>
+                        <strong>{{ $property->tourism_license ?? '—' }}</strong>
+                    </div>
+                    <div>
+                        <small>España — Registro nacional</small>
+                        <strong>{{ $property->rental_registration ?? '—' }}</strong>
                     </div>
                 </div>
-            @endif
-        </div>
+            </div>
+        @endif
 
         <div class="sn-hero__blend"></div>
     </section>
