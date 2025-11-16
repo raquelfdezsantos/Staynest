@@ -373,6 +373,28 @@ html[data-theme="light"] .sn-auth label {
     color: var(--color-text-secondary) !important;
 }
 
+/* Inputs globales con .sn-input en modo claro (formularios de contacto, perfil, etc.) */
+html[data-theme="light"] .sn-input,
+html[data-theme="light"] input.bg-neutral-800,
+html[data-theme="light"] textarea.bg-neutral-800,
+html[data-theme="light"] select.bg-neutral-800 {
+    background-color: var(--color-bg-secondary) !important;
+    border-color: var(--color-border-light) !important;
+    color: var(--color-text-primary) !important;
+}
+
+html[data-theme="light"] .border-neutral-700 {
+    border-color: var(--color-border-light) !important;
+}
+
+html[data-theme="light"] .text-neutral-100 {
+    color: var(--color-text-primary) !important;
+}
+
+html[data-theme="light"] .placeholder\:text-neutral-400::placeholder {
+    color: var(--color-text-muted) !important;
+}
+
 html[data-theme="light"] .sn-auth .auth-meta {
     color: var(--color-text-muted);
 }

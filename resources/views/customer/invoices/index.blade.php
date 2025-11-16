@@ -6,7 +6,7 @@
             <h1 style="font-family: var(--font-serif); font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
                 Mis facturas
             </h1>
-            <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
+            <p style="color: var(--color-text-secondary); font-size: var(--text-base);">
                 Consulta y descarga todas tus facturas emitidas.
             </p>
         </header>
