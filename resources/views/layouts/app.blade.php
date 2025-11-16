@@ -38,26 +38,23 @@
 </head>
 
 <body>
-    {{-- Navegación pública / privada --}}
-    @if(!auth()->check() || request()->routeIs('home', 'properties.*', 'contact.*', 'property.show', 'entorno', 'reservar'))
-        {{-- PASO CLAVE: habilita modo transparente si la vista lo pide --}}
-        <x-nav-public :transparent="request()->routeIs('home')" />
+    {{-- Navegación unificada: siempre nav-public con dropdown de usuario si está logueado --}}
+    <x-nav-public :transparent="request()->routeIs('home')" />
 
-    @else
-        @include('layouts.navigation')
-        @if (isset($headerSlot) && !($noHeader ?? false))
-            <header class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-2 px-4 sm:px-6 lg:px-8">
-                    {{ $headerSlot }}
-                </div>
-            </header>
-        @endif
+    <!-- Page Heading (solo para vistas privadas que lo necesiten) -->
+    @if (isset($header) && !request()->routeIs('home', 'properties.*', 'contact.*', 'property.show', 'entorno', 'reservar'))
+        <header class="bg-white shadow">
+            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                {{ $header }}
+            </div>
+        </header>
     @endif
 
     <!-- Page Content -->
-    {{-- Si $compactMain=true no aplicamos container para permitir full-bleed (hero a ancho completo) --}}
+    {{-- Home sin container (hero full), resto con container --}}
     <main class="{{ request()->routeIs('home') ? '' : 'container mt-xl' }}">
         @yield('content')
+        {{ $slot ?? '' }}
     </main>
 
 

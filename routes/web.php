@@ -89,10 +89,8 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-        // Dashboard principal (redirige al listado de propiedades)
-        Route::get('/', function() {
-            return redirect()->route('admin.properties.index');
-        })->name('dashboard');
+        // Dashboard principal con estadísticas
+        Route::get('/', [AdminController::class, 'index'])->name('dashboard');
 
         // Gestión de PROPIEDADES (nuevo sistema)
         Route::get('/properties', [AdminController::class, 'propertiesIndex'])->name('properties.index');
