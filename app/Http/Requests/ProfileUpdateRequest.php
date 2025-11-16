@@ -33,4 +33,37 @@ class ProfileUpdateRequest extends FormRequest
             ],
         ];
     }
+
+    /**
+     * Get the custom validation messages.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.max' => 'El nombre no puede tener más de :max caracteres.',
+            'email.required' => 'El email es obligatorio.',
+            'email.email' => 'Por favor, introduce un email válido.',
+            'email.unique' => 'Este email ya está registrado.',
+            'avatar.image' => 'El archivo debe ser una imagen.',
+            'avatar.mimes' => 'La imagen debe ser JPG, PNG o WEBP.',
+            'avatar.max' => 'La imagen no puede pesar más de 2MB.',
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nombre',
+            'email' => 'email',
+            'avatar' => 'foto de perfil',
+        ];
+    }
 }

@@ -8,6 +8,18 @@
         </p>
     </header>
 
+    {{-- Mostrar errores todos juntos arriba --}}
+    @if ($errors->any())
+        <div class="alert alert-error" style="margin-bottom: 1.5rem;">
+            <strong>Revisa los siguientes campos:</strong>
+            <ul style="margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc;">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">
         @csrf
     </form>
@@ -24,10 +36,8 @@
                           type="text" 
                           class="block mt-1 w-full"
                           :value="old('name', $user->name)"
-                          required 
                           autofocus 
                           autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         {{-- Email --}}
@@ -35,12 +45,10 @@
             <x-input-label for="email" value="Email" />
             <x-text-input id="email" 
                           name="email" 
-                          type="email" 
+                          type="text" 
                           class="block mt-1 w-full"
                           :value="old('email', $user->email)" 
-                          required 
                           autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && !$user->hasVerifiedEmail())
                 <div style="margin-top: 0.75rem;">
@@ -86,7 +94,6 @@
                 Ningún archivo seleccionado
             </p>
             
-            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
             <p style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 0.5rem;">
                 Formatos: JPG, PNG, WEBP. Máx. 2MB.
             </p>

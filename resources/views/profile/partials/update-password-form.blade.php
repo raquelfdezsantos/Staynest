@@ -8,6 +8,18 @@
         </p>
     </header>
 
+    {{-- Mostrar errores todos juntos arriba --}}
+    @if ($errors->updatePassword->any())
+        <div class="alert alert-error" style="margin-bottom: 1.5rem;">
+            <strong>Revisa los siguientes campos:</strong>
+            <ul style="margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc;">
+                @foreach ($errors->updatePassword->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <form method="post" action="{{ route('password.update') }}" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;">
         @csrf
         @method('put')
@@ -22,7 +34,6 @@
                           type="password" 
                           class="block mt-1 w-full"
                           autocomplete="current-password" />
-            <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
         </div>
 
         <div>
@@ -32,7 +43,6 @@
                           type="password" 
                           class="block mt-1 w-full"
                           autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
         </div>
 
         <div>
@@ -42,7 +52,6 @@
                           type="password" 
                           class="block mt-1 w-full"
                           autocomplete="new-password" />
-            <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
         </div>
 
         <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
