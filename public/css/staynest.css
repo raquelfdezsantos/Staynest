@@ -655,7 +655,7 @@ html[data-theme="light"] .nav-header--transparent {
     font-weight: 500;
     color: var(--color-text-primary);
     padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: 6px;
+    border-radius: 2px;
     transition: all var(--transition-fast);
     position: relative;
 }
@@ -691,12 +691,13 @@ html[data-theme="light"] .nav-header--transparent {
     border: none;
     cursor: pointer;
     padding: var(--spacing-sm) var(--spacing-md);
-    border-radius: 6px;
+    border-radius: 2px;
     transition: all var(--transition-fast);
 }
 
 .nav-user-trigger:hover {
     background-color: rgba(77, 141, 148, 0.10);
+    color: var(--color-accent);
 }
 
 .nav-dropdown-arrow {
@@ -714,7 +715,7 @@ html[data-theme="light"] .nav-header--transparent {
     min-width: 200px;
     background-color: var(--color-bg-card);
     border: 1px solid var(--color-border-light);
-    border-radius: 8px;
+    border-radius: 2px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     list-style: none;
     padding: 0.5rem;
@@ -742,7 +743,7 @@ html[data-theme="light"] .nav-header--transparent {
     color: var(--color-text-primary);
     background: none;
     border: none;
-    border-radius: 6px;
+    border-radius: 2px;
     text-align: left;
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -1601,7 +1602,7 @@ html[data-theme="light"] .badge-warning {
     color:inherit; 
     cursor:pointer;
     padding: 8px;
-    border-radius: 6px;
+    border-radius: 2px;
     transition: all var(--transition-fast);
     position: relative;
 }
@@ -1645,7 +1646,7 @@ html[data-theme="light"] .badge-warning {
     .nav-menu .nav-link { 
         display: block; 
         padding: var(--spacing-sm) var(--spacing-md);
-        border-radius: 4px;
+        border-radius: 2px;
         width: 100%;
     }
     .nav-menu .nav-link.active::after {
