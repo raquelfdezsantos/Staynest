@@ -50,6 +50,25 @@
     </tbody>
   </table>
 
+  @php
+    $res = $invoice->reservation;
+    $parts = [];
+    $ad = (int) ($res->adults ?? 0);
+    $ch = (int) ($res->children ?? 0);
+    $pt = (int) ($res->pets ?? 0);
+    if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
+    if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
+    if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
+  @endphp
+  <p style="margin-top:8px;">
+    <strong>Huéspedes:</strong>
+    @if(count($parts))
+      {{ implode(', ', $parts) }} (total: {{ $res->guests }})
+    @else
+      {{ $res->guests }}
+    @endif
+  </p>
+
   <p class="total">TOTAL: {{ number_format($invoice->amount, 2, ',', '.') }} €</p>
 </body>
 </html>
