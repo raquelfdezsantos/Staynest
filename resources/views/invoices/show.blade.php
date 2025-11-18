@@ -71,7 +71,22 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-2">{{ $nights ?? '—' }}</td>
-                                <td class="px-4 py-2">{{ $res?->guests ?? '—' }}</td>
+                                <td class="px-4 py-2">
+                                    @php
+                                        $parts = [];
+                                        $ad = (int) ($res->adults ?? 0);
+                                        $ch = (int) ($res->children ?? 0);
+                                        $pt = (int) ($res->pets ?? 0);
+                                        if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
+                                        if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
+                                        if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
+                                    @endphp
+                                    @if(count($parts))
+                                        {{ implode(', ', $parts) }} (total: {{ $res?->guests ?? '—' }})
+                                    @else
+                                        {{ $res?->guests ?? '—' }}
+                                    @endif
+                                </td>
                                 <td class="px-4 py-2 text-right font-semibold">
                                     {{ number_format($invoice->amount ?? 0, 2, ',', '.') }} €
                                 </td>

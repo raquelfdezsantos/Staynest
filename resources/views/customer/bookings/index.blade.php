@@ -84,7 +84,22 @@
                                     </svg>
                                     <div>
                                         <p class="detail-label">Huéspedes</p>
-                                        <p class="detail-value">{{ $r->guests }} {{ $r->guests === 1 ? 'persona' : 'personas' }}</p>
+                                        <p class="detail-value">
+                                            @php
+                                                $parts = [];
+                                                $ad = (int) ($r->adults ?? 0);
+                                                $ch = (int) ($r->children ?? 0);
+                                                $pt = (int) ($r->pets ?? 0);
+                                                if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
+                                                if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
+                                                if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
+                                            @endphp
+                                            @if(count($parts))
+                                                {{ implode(', ', $parts) }}
+                                            @else
+                                                {{ $r->guests }} {{ $r->guests === 1 ? 'persona' : 'personas' }}
+                                            @endif
+                                        </p>
                                     </div>
                                 </div>
 

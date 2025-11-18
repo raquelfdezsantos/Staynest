@@ -77,7 +77,13 @@ class ReservationController extends Controller
 
         $property = Property::findOrFail($data['property_id']);
 
-        if ((int)$data['guests'] > (int)$property->capacity) {
+        // Calcular huéspedes según desglose si viene informado
+        $adults   = (int) ($data['adults']   ?? 0);
+        $children = (int) ($data['children'] ?? 0);
+        $pets     = (int) ($data['pets']     ?? 0);
+        $guests   = ($adults + $children) > 0 ? ($adults + $children) : (int) $data['guests'];
+
+        if ($guests > (int)$property->capacity) {
             return back()->withErrors(['guests' => "Máximo {$property->capacity} huéspedes."])->withInput();
         }
 
@@ -163,16 +169,19 @@ class ReservationController extends Controller
             return back()->withErrors(['check_in' => "La estancia mínima para esas fechas es de {$minStayFromRates} noches."])->withInput();
         }
 
-        $total = $rates->sum('price') * (int)$data['guests'];
+        $total = $rates->sum('price') * (int)$guests;
 
         // Transacción: crear reserva + marcar noches como NO disponibles
-        $reservation = DB::transaction(function () use ($data, $property, $total) {
+        $reservation = DB::transaction(function () use ($data, $property, $total, $guests, $adults, $children, $pets) {
             $reservation = Reservation::create([
                 'user_id'     => Auth::id(),
                 'property_id' => $property->id,
                 'check_in'    => $data['check_in'],
                 'check_out'   => $data['check_out'],
-                'guests'      => $data['guests'],
+                'guests'      => $guests,
+                'adults'      => $adults,
+                'children'    => $children,
+                'pets'        => $pets,
                 'status'      => 'pending',
                 'total_price' => $total,
             ]);

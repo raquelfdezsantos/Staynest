@@ -36,6 +36,10 @@ class StoreReservationRequest extends FormRequest
             'check_in'    => ['required', 'date', 'after_or_equal:today'],
             'check_out'   => ['required', 'date', 'after:check_in'],
             'guests'      => ['required', 'integer', 'min:1', 'max:4'], 
+            // Desglose opcional: adultos, niños y mascotas (gratis)
+            'adults'      => ['nullable', 'integer', 'min:0'],
+            'children'    => ['nullable', 'integer', 'min:0'],
+            'pets'        => ['nullable', 'integer', 'min:0'],
         ];
     }
 

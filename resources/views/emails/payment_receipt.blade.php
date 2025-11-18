@@ -23,6 +23,25 @@
       <td>{{ $reservation->check_in->format('d/m/Y') }} → {{ $reservation->check_out->format('d/m/Y') }}</td>
     </tr>
     <tr>
+      <td><strong>Huéspedes:</strong></td>
+      <td>
+        @php
+          $parts = [];
+          $ad = (int) ($reservation->adults ?? 0);
+          $ch = (int) ($reservation->children ?? 0);
+          $pt = (int) ($reservation->pets ?? 0);
+          if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
+          if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
+          if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
+        @endphp
+        @if(count($parts))
+          {{ implode(', ', $parts) }} (total: {{ $reservation->guests }})
+        @else
+          {{ $reservation->guests }}
+        @endif
+      </td>
+    </tr>
+    <tr>
       <td><strong>Importe:</strong></td>
       <td>{{ number_format($invoice->amount, 2, ',', '.') }} €</td>
     </tr>
