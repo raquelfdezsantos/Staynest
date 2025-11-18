@@ -39,6 +39,7 @@ class Reservation extends Model
         'adults',
         'children',
         'pets',
+        'notes',
         'status',
         'total_price'
     ];

@@ -112,6 +112,18 @@
                                         <p class="detail-value detail-value-price">{{ number_format($r->total_price, 2, ',', '.') }} €</p>
                                     </div>
                                 </div>
+
+                                @if(!empty($r->notes))
+                                <div class="reservation-detail-item" style="grid-column: 1 / -1;">
+                                    <svg class="detail-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 6h13M8 12h13M8 18h7M3 6h.01M3 12h.01M3 18h.01" />
+                                    </svg>
+                                    <div>
+                                        <p class="detail-label">Notas del huésped</p>
+                                        <p class="detail-value" style="white-space: pre-wrap;">{{ $r->notes }}</p>
+                                    </div>
+                                </div>
+                                @endif
                             </div>
 
                             <div class="reservation-actions">

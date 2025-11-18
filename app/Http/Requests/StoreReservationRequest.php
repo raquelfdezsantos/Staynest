@@ -40,6 +40,8 @@ class StoreReservationRequest extends FormRequest
             'adults'      => ['nullable', 'integer', 'min:0'],
             'children'    => ['nullable', 'integer', 'min:0'],
             'pets'        => ['nullable', 'integer', 'min:0'],
+            // Notas del huésped
+            'notes'       => ['nullable', 'string', 'max:1000'],
         ];
     }
 

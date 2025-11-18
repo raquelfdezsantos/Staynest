@@ -183,6 +183,7 @@ class ReservationController extends Controller
                 'adults'      => $adults,
                 'children'    => $children,
                 'pets'        => $pets,
+                'notes'       => $data['notes'] ?? null,
                 'status'      => 'pending',
                 'total_price' => $total,
             ]);

@@ -7,7 +7,7 @@
   <p>Hemos recibido tu solicitud de reserva. Detalles:</p>
 
   <table cellpadding="6" cellspacing="0" style="border-collapse:collapse;">
-    <tr><td><strong>Reserva:</strong></td><td>#{{ $reservation->id }}</td></tr>
+    <tr><td><strong>Reserva:</strong></td><td>{{ $reservation->code ?? ('#'.$reservation->id) }}</td></tr>
     <tr><td><strong>Alojamiento:</strong></td><td>{{ $reservation->property->name ?? 'Alojamiento' }}</td></tr>
     <tr><td><strong>Entrada:</strong></td><td>{{ $reservation->check_in->format('d/m/Y') }}</td></tr>
     <tr><td><strong>Salida:</strong></td><td>{{ $reservation->check_out->format('d/m/Y') }}</td></tr>
@@ -31,6 +31,12 @@
       </td>
     </tr>
     <tr><td><strong>Total:</strong></td><td>{{ number_format($reservation->total_price, 2, ',', '.') }} €</td></tr>
+    @if(!empty($reservation->notes))
+      <tr>
+        <td valign="top"><strong>Notas del huésped:</strong></td>
+        <td style="white-space: pre-wrap;">{{ $reservation->notes }}</td>
+      </tr>
+    @endif
     <tr><td><strong>Estado:</strong></td><td>{{ ucfirst($reservation->status) }}</td></tr>
   </table>
 

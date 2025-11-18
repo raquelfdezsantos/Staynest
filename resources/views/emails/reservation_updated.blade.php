@@ -24,6 +24,9 @@
 		</li>
 		<li><strong>Fechas:</strong> {{ $reservation->check_in->format('d/m/Y') }} → {{ $reservation->check_out->format('d/m/Y') }}</li>
 		<li><strong>Nuevo total:</strong> {{ number_format($reservation->total_price, 2, ',', '.') }} €</li>
+		@if(!empty($reservation->notes))
+			<li><strong>Notas del huésped:</strong> <span style="white-space: pre-wrap;">{{ $reservation->notes }}</span></li>
+		@endif
 	</ul>
 	<p>Si tienes dudas, contacta con soporte.</p>
 </body>
