@@ -827,7 +827,7 @@ html[data-theme="light"] .nav-header--transparent {
 /* Alertas y mensajes */
 .alert {
     padding: 0.875rem 1rem;
-    border-radius: 8px;
+    border-radius: 2px;
     font-size: var(--text-sm);
     font-weight: 500;
     margin-bottom: 1rem;

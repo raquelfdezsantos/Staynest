@@ -8,6 +8,10 @@
         </p>
     </header>
 
+    @if (session('status') === 'password-updated')
+        <x-alert type="success" class="mb-4">Contraseña actualizada.</x-alert>
+    @endif
+
     {{-- Mostrar errores todos juntos arriba --}}
     @if ($errors->updatePassword->any())
         <div class="alert alert-error" style="margin-bottom: 1.5rem;">
@@ -56,16 +60,6 @@
 
         <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
             <x-primary-button>Guardar</x-primary-button>
-
-            @if (session('status') === 'password-updated')
-                <p x-data="{ show: true }"
-                   x-show="show"
-                   x-transition
-                   x-init="setTimeout(() => show = false, 2000)"
-                   style="font-size: var(--text-base); color: var(--color-success);">
-                    Guardado.
-                </p>
-            @endif
         </div>
     </form>
 </section>

@@ -488,6 +488,14 @@
                         return;
                     }
 
+                    // Validación: mínimo 2 noches
+                    const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+                    if (nights < 2) {
+                        e.preventDefault();
+                        showError('La estancia mínima es de 2 noches.');
+                        return;
+                    }
+
                     if (totalGuests > maxCapacity) {
                         e.preventDefault();
                         showError(`La capacidad máxima es de ${maxCapacity} personas.`);

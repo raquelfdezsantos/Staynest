@@ -8,6 +8,10 @@
         </p>
     </header>
 
+    @if (session('status') === 'profile-updated')
+        <x-alert type="success" class="mb-4">Perfil actualizado.</x-alert>
+    @endif
+
     {{-- Mostrar errores todos juntos arriba --}}
     @if ($errors->any())
         <div class="alert alert-error" style="margin-bottom: 1.5rem;">
@@ -61,9 +65,7 @@
                     </p>
 
                     @if (session('status') === 'verification-link-sent')
-                        <p style="margin-top: 0.5rem; font-size: var(--text-base); font-weight: 500; color: var(--color-success);">
-                            Se ha enviado un nuevo enlace de verificación a tu email.
-                        </p>
+                        <x-alert type="success" class="mt-2">Se ha enviado un nuevo enlace de verificación a tu email.</x-alert>
                     @endif
                 </div>
             @endif
@@ -135,16 +137,6 @@
 
         <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
             <x-primary-button>Guardar cambios</x-primary-button>
-
-            @if (session('status') === 'profile-updated')
-                <p x-data="{ show: true }"
-                   x-show="show"
-                   x-transition
-                   x-init="setTimeout(() => show = false, 2000)"
-                   style="font-size: var(--text-base); color: var(--color-success);">
-                    Guardado.
-                </p>
-            @endif
         </div>
     </form>
 </section>

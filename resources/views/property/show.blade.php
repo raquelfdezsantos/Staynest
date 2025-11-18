@@ -136,6 +136,7 @@
                 <form method="POST" action="{{ route('reservas.store') }}" class="space-y-4">
 
                     @csrf
+                    <x-validation-errors class="mb-4" />
                     <input type="hidden" name="property_id" value="{{ $property->id }}">
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -143,21 +144,18 @@
                             <label class="block text-sm font-medium text-gray-700">Entrada</label>
                             <input type="date" name="check_in" id="check_in" value="{{ old('check_in') }}"
                                 min="{{ now()->toDateString() }}" class="mt-1 w-full border rounded p-2">
-                            @error('check_in') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Salida</label>
                             <input type="date" name="check_out" id="check_out" value="{{ old('check_out') }}"
                                 min="{{ now()->addDay()->toDateString() }}" class="mt-1 w-full border rounded p-2">
-                            @error('check_out') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Huéspedes</label>
                             <input type="number" name="guests" min="1" max="{{ $property->capacity }}"
                                 value="{{ old('guests', 2) }}" class="mt-1 w-full border rounded p-2">
-                            @error('guests') <p class="text-red-600 text-sm mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
 

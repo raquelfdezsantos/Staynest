@@ -25,14 +25,15 @@
 
   <div class="max-w-3xl mx-auto p-6 bg-white rounded shadow mt-6 space-y-6">
     @if (session('success'))
-      <div class="p-3 bg-green-100 text-green-700 rounded">{{ session('success') }}</div>
+      <div class="alert alert-success">{{ session('success') }}</div>
     @endif
     @if (session('error'))
-      <div class="p-3 bg-red-100 text-red-700 rounded">{{ session('error') }}</div>
+      <div class="alert alert-error">{{ session('error') }}</div>
     @endif
 
     <form method="POST" action="{{ route('admin.calendar.block') }}" class="space-y-3">
       @csrf
+      <x-validation-errors class="mb-3" />
       <h3 class="font-semibold">Bloquear noches</h3>
       <div class="bg-blue-50 border border-blue-200 rounded p-3 text-sm text-blue-800">
         <strong>Ejemplo:</strong> Para bloquear las noches del 14, 15 y 16 de noviembre:<br>
@@ -48,18 +49,15 @@
             </option>
           @endforeach
         </select>
-        @error('property_id') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
       </div>
       <div class="flex gap-3">
         <div class="flex-1">
           <label class="block text-sm">Desde (primera noche bloqueada)</label>
           <input type="date" name="start" class="border rounded px-2 py-1 w-full" required>
-          @error('start') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
         <div class="flex-1">
           <label class="block text-sm">Hasta (última noche bloqueada, INCLUSIVO)</label>
           <input type="date" name="end" class="border rounded px-2 py-1 w-full" required>
-          @error('end') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
         </div>
       </div>
       <button class="bg-gray-200 text-gray-900 px-4 py-2 rounded">Bloquear</button>
