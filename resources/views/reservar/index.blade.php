@@ -176,7 +176,7 @@
             <form 
                 class="md:col-span-2 space-y-6" 
                 method="POST" 
-                action="{{ route('reservas.store') }}" 
+                action="@guest {{ route('reservas.prepare') }} @else {{ route('reservas.store') }} @endguest" 
                 id="reservationForm"
             >
                 @csrf
@@ -195,6 +195,7 @@
                             name="check_in"
                             class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)] placeholder:text-neutral-400"
                             placeholder="YYYY-MM-DD"
+                            value="{{ old('check_in', $prefill['check_in'] ?? '') }}"
                         >
                     </div>
                     <div>
@@ -205,6 +206,7 @@
                             name="check_out"
                             class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)] placeholder:text-neutral-400"
                             placeholder="YYYY-MM-DD"
+                            value="{{ old('check_out', $prefill['check_out'] ?? '') }}"
                         >
                     </div>
                 </div>
@@ -217,10 +219,11 @@
                             name="adults"
                             class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]"
                         >
-                            <option value="1">1</option>
-                            <option value="2" selected>2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
+                            @php($ad = old('adults', $prefill['adults'] ?? 2))
+                            <option value="1" @selected($ad==1)>1</option>
+                            <option value="2" @selected($ad==2)>2</option>
+                            <option value="3" @selected($ad==3)>3</option>
+                            <option value="4" @selected($ad==4)>4</option>
                         </select>
                     </div>
                     <div>
@@ -230,9 +233,10 @@
                             name="children"
                             class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]"
                         >
-                            <option value="0" selected>0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
+                            @php($ch = old('children', $prefill['children'] ?? 0))
+                            <option value="0" @selected($ch==0)>0</option>
+                            <option value="1" @selected($ch==1)>1</option>
+                            <option value="2" @selected($ch==2)>2</option>
                         </select>
                     </div>
                     <div>
@@ -242,9 +246,10 @@
                             name="pets"
                             class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]"
                         >
-                            <option value="0" selected>No</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
+                            @php($pt = old('pets', $prefill['pets'] ?? 0))
+                            <option value="0" @selected($pt==0)>No</option>
+                            <option value="1" @selected($pt==1)>1</option>
+                            <option value="2" @selected($pt==2)>2</option>
                         </select>
                         <p id="pets-free-message" class="hidden" style="font-size: var(--text-xs); color: var(--color-success); margin-top: 0.25rem;">¡Las mascotas se alojan gratis!</p>
                     </div>
@@ -257,7 +262,7 @@
                         name="notes"
                         class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 h-28 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)] placeholder:text-neutral-400"
                         placeholder="Cuéntanos cualquier necesidad especial"
-                    ></textarea>
+                    >{{ old('notes', $prefill['notes'] ?? '') }}</textarea>
                 </div>
 
                 <div class="pt-2">
@@ -266,7 +271,7 @@
                         class="bg-[color:var(--color-accent)] hover:bg-[color:var(--color-accent-hover)] text-white text-sm font-semibold px-5 py-2"
                         style="border-radius: 2px;"
                     >
-                        Realizar reserva
+                        Reservar ahora
                     </button>
                 </div>
             </form>
@@ -348,6 +353,7 @@
                     locale: 'es',
                     minDate: 'today',
                     dateFormat: 'Y-m-d',
+                    defaultDate: '{{ old('check_in', $prefill['check_in'] ?? '') }}',
                     disable: [
                         function (date) {
                             const year = date.getFullYear();
@@ -403,6 +409,7 @@
                     locale: 'es',
                     minDate: tomorrow,
                     dateFormat: 'Y-m-d',
+                    defaultDate: '{{ old('check_out', $prefill['check_out'] ?? '') }}',
                     disable: [
                         function (date) {
                             const checkInDate = checkInPicker.selectedDates[0];
@@ -531,6 +538,12 @@
 
                     // rellenamos el hidden "guests" para el controlador
                     document.getElementById('guests').value = totalGuests;
+
+                    // Si es invitado siempre enviamos al endpoint prepare (aunque la acción blade ya lo hace, reforzamos aquí)
+                    @guest
+                        // Asegurar acción correcta por si el HTML fue cacheado
+                        this.setAttribute('action', '{{ route('reservas.prepare') }}');
+                    @endguest
                 });
 
                 // Funciones para mostrar/ocultar errores
@@ -546,6 +559,29 @@
                     const errorDiv = document.getElementById('error-message');
                     errorDiv.classList.add('hidden');
                 }
+
+                // Auto-submit si vuelve autenticado con datos prefill y bandera $auto
+                @auth
+                @if(!empty($prefill) && $auto)
+                (function autoSubmitAfterLogin(){
+                    // Rellenar pickers si no se cargaron aún
+                    const ci = '{{ $prefill['check_in'] ?? '' }}';
+                    const co = '{{ $prefill['check_out'] ?? '' }}';
+                    if(ci){ checkInPicker.setDate(ci, true); }
+                    if(co){ checkOutPicker.setDate(co, true); }
+                    updateGuests();
+                    updateTotal();
+                    // Validar mínima
+                    const checkIn = checkInPicker.selectedDates[0];
+                    const checkOut = checkOutPicker.selectedDates[0];
+                    if(!checkIn || !checkOut) return; // faltan datos
+                    const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+                    if(nights < 2) return; // regla de negocio
+                    // Preparar envío automático (usamos mismo form, store si auth)
+                    document.getElementById('reservationForm').requestSubmit();
+                })();
+                @endif
+                @endauth
             });
         </script>
     </div>

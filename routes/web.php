@@ -54,8 +54,10 @@ Route::post('/contacto', [ContactController::class, 'store'])
     ->name('contact.store');
 Route::get('/contact', fn() => redirect()->route('contact.create'));
 
-// Entorno y Reservar (páginas públicas independientes - placeholders iniciales)
+// Entorno y Reservar (páginas públicas)
 Route::view('/entorno', 'entorno.index')->name('entorno');
+// Formulario de reserva debe ser público
+Route::get('/reservar', [PropertyController::class, 'reservar'])->name('reservar');
 // Páginas legales
 Route::get('/aviso-legal', fn() => view('legal.aviso-legal'))->name('legal.aviso');
 Route::get('/politica-privacidad', fn() => view('legal.politica-privacidad'))->name('legal.privacidad');
@@ -135,9 +137,6 @@ Route::middleware(['auth', 'role:admin'])
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:customer'])->group(function () {
-    // Nueva pantalla de reserva
-    Route::get('/reservar', [PropertyController::class, 'reservar'])->name('reservar');
-    
     // Listado de reservas del cliente
     Route::get('/mis-reservas', [ReservationController::class, 'index'])->name('reservas.index');
 
@@ -160,6 +159,9 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::post('/reservations/{id}/cancel', [ReservationController::class, 'cancelSelf'])
         ->name('reservas.cancel.self');
 });
+
+// Flujo público para preparar reserva: guarda datos y fuerza login con retorno a /reservar
+Route::post('/reservar/prepare', [ReservationController::class, 'prepare'])->name('reservas.prepare');
 
 /*
 |--------------------------------------------------------------------------

@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reservations', function (Blueprint $table) {
-            $table->unsignedSmallInteger('adults')->default(0)->after('guests');
-            $table->unsignedSmallInteger('children')->default(0)->after('adults');
-            $table->unsignedSmallInteger('pets')->default(0)->after('children');
+            if (!Schema::hasColumn('reservations', 'adults')) {
+                $table->unsignedSmallInteger('adults')->default(0)->after('guests');
+            }
+            if (!Schema::hasColumn('reservations', 'children')) {
+                $table->unsignedSmallInteger('children')->default(0)->after('adults');
+            }
+            if (!Schema::hasColumn('reservations', 'pets')) {
+                $table->unsignedSmallInteger('pets')->default(0)->after('children');
+            }
         });
     }
 
@@ -24,7 +30,15 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('reservations', function (Blueprint $table) {
-            $table->dropColumn(['adults', 'children', 'pets']);
+            $drops = [];
+            foreach (['adults','children','pets'] as $col) {
+                if (Schema::hasColumn('reservations', $col)) {
+                    $drops[] = $col;
+                }
+            }
+            if (!empty($drops)) {
+                $table->dropColumn($drops);
+            }
         });
     }
 };

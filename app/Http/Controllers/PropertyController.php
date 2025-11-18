@@ -157,13 +157,21 @@ class PropertyController extends Controller
             ->mapWithKeys(fn($price, $date) => [Carbon::parse($date)->format('Y-m-d') => $price])
             ->toArray();
 
+        // Datos preseleccionados guardados en sesión al forzar login
+        $prefill = session('pending_reservation', []);
+        $auto = session('pending_reservation_auto', false);
+        // Consumir flag para que no se repita
+        session()->forget('pending_reservation_auto');
+
         return view('reservar.index', compact(
             'property',
             'fromPrice',
             'blockedDates',
             'checkinDates',
             'checkoutDates',
-            'rates'
+            'rates',
+            'prefill',
+            'auto'
         ));
     }
 }

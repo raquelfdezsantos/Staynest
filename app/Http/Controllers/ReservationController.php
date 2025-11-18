@@ -34,6 +34,32 @@ use Illuminate\Support\Facades\Log;
 class ReservationController extends Controller
 {
     /**
+     * Guarda en sesión los datos de una reserva iniciada por invitado y redirige a login.
+     * Tras iniciar sesión/registro, el usuario vuelve a /reservar con los datos preseleccionados.
+     */
+    public function prepare(Request $request)
+    {
+        // Recoger sin forzar reglas de negocio aquí; solo persistimos la selección del formulario
+        $payload = $request->only([
+            'property_id', 'check_in', 'check_out', 'guests', 'adults', 'children', 'pets', 'notes'
+        ]);
+
+        // Guardar en sesión para repoblar el formulario al volver a /reservar
+        $request->session()->put('pending_reservation', array_filter($payload, fn($v) => $v !== null && $v !== ''));
+        // Flag para auto-crear tras login
+        $request->session()->put('pending_reservation_auto', true);
+
+        // Asegurar el retorno a /reservar tras login
+        session(['url.intended' => route('reservar')]);
+
+        // Si ya está logueado, volver a /reservar directamente; si no, a login
+        if (Auth::check()) {
+            return redirect()->route('reservar');
+        }
+
+        return redirect()->guest(route('login'));
+    }
+    /**
      * Muestra la ficha de una propiedad y su formulario de reserva.
      *
      * @param  string  $slug  Slug de la propiedad
@@ -215,6 +241,9 @@ class ReservationController extends Controller
         } catch (Throwable $e) {
             report($e);
         }
+
+        // Limpiar datos temporales de selección tras crear la reserva
+        try { $request->session()->forget('pending_reservation'); } catch (\Throwable $e) { /* no-op */ }
 
         return redirect()->route('reservas.index')
             ->with('status', 'Reserva creada. Total: ' . number_format($total, 2, ',', '.') . ' €');
