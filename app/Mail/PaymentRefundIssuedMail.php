@@ -27,7 +27,7 @@ class PaymentRefundIssuedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Devolución emitida · Reserva #' . $this->reservation->id . ' (' . now()->format('d/m/Y H:i:s') . ')',
+            subject: 'Devolución emitida · Reserva ' . ($this->reservation->code ?? ('#' . $this->reservation->id)) . ' (' . now()->format('d/m/Y H:i:s') . ')',
         );
     }
 

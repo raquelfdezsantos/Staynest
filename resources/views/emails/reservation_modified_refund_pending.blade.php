@@ -15,7 +15,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h2>Reserva #{{ $reservation->id }} modificada</h2>
+            <h2>Reserva {{ $reservation->code ?? ('#'.$reservation->id) }} modificada</h2>
         </div>
         
         <div class="content">

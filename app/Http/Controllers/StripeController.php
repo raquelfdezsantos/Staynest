@@ -76,7 +76,7 @@ class StripeController extends Controller
                     'unit_amount' => (int) round($balance * 100),
                     'product_data' => [
                         'name' => 'Diferencia de pago - ' . $reservation->property->name,
-                        'description' => 'Reserva #' . $reservation->id,
+                        'description' => 'Reserva ' . ($reservation->code ?? ('#' . $reservation->id)),
                     ],
                 ],
             ]],

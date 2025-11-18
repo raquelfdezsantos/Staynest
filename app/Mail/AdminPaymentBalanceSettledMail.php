@@ -27,7 +27,7 @@ class AdminPaymentBalanceSettledMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Pago completado (Admin) · Reserva #' . $this->reservation->id,
+            subject: 'Pago completado (Admin) · Reserva ' . ($this->reservation->code ?? ('#' . $this->reservation->id)),
         );
     }
 

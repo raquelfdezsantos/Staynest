@@ -34,6 +34,7 @@ class Reservation extends Model
         'property_id',
         'check_in',
         'check_out',
+        'code',
         'guests',
         'adults',
         'children',

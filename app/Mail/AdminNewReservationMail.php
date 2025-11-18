@@ -18,7 +18,7 @@ class AdminNewReservationMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Nueva reserva pendiente · #' . $this->reservation->id,
+            subject: 'Nueva reserva pendiente · ' . ($this->reservation->code ?? ('#' . $this->reservation->id)),
         );
     }
 

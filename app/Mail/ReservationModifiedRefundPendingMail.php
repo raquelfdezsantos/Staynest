@@ -21,7 +21,7 @@ class ReservationModifiedRefundPendingMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reserva #' . $this->reservation->id . ' modificada - Devolución pendiente',
+            subject: 'Reserva ' . ($this->reservation->code ?? ('#' . $this->reservation->id)) . ' modificada - Devolución pendiente',
         );
     }
 

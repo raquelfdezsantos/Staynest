@@ -178,6 +178,7 @@ class ReservationController extends Controller
                 'property_id' => $property->id,
                 'check_in'    => $data['check_in'],
                 'check_out'   => $data['check_out'],
+                'code'        => $this->generateReservationCode(),
                 'guests'      => $guests,
                 'adults'      => $adults,
                 'children'    => $children,
@@ -241,6 +242,22 @@ class ReservationController extends Controller
         // [from, to) excluye la salida
         $period = CarbonPeriod::create($from, $to)->excludeEndDate();
         return collect($period)->map(fn($d) => $d->toDateString())->all();
+    }
+
+    /** Genera un código único con formato: SN-YYYY-XXXXXX (máx 20 chars). */
+    private function generateReservationCode(): string
+    {
+        $prefix = 'SN-' . now()->format('Y') . '-'; // Ej: SN-2025-
+        for ($i = 0; $i < 5; $i++) {
+            $segment = Str::upper(Str::random(6));
+            $code = $prefix . $segment; // Longitud típica: 8 + 6 = 14
+            if (!Reservation::where('code', $code)->exists()) {
+                return $code;
+            }
+        }
+        // Fallback muy improbable: aumenta aleatoriedad manteniendo <= 20
+        $segment = Str::upper(Str::random(12)); // 8 + 12 = 20
+        return $prefix . $segment;
     }
 
     private function setAvailability(int $propertyId, array $dates, bool $available): void

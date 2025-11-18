@@ -20,7 +20,7 @@ class AdminPaymentRefundIssuedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Devolución completada (Admin) · Reserva #' . $this->reservation->id,
+            subject: 'Devolución completada (Admin) · Reserva ' . ($this->reservation->code ?? ('#' . $this->reservation->id)),
         );
     }
 

@@ -19,7 +19,7 @@ class ReservationConfirmedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Reserva creada correctamente · #' . $this->reservation->id,
+            subject: 'Reserva creada correctamente · ' . ($this->reservation->code ?? ('#' . $this->reservation->id)),
         );
     }
 

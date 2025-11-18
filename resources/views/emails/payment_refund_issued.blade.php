@@ -16,7 +16,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h2>✅ Devolución completada - Reserva #{{ $reservation->id }}</h2>
+            <h2>✅ Devolución completada - Reserva {{ $reservation->code ?? ('#'.$reservation->id) }}</h2>
         </div>
         
         <div class="content">

@@ -65,7 +65,7 @@
                             @endphp
                             <tr class="border-t">
                                 <td class="px-4 py-2">
-                                    Reserva #{{ $res?->id ?? '—' }}
+                                    Reserva {{ $res?->code ?? (($res?->id ? '#'.$res?->id : '—')) }}
                                     @if($res?->property?->name)
                                         — {{ $res->property->name }}
                                     @endif
