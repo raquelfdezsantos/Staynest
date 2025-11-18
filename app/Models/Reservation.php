@@ -134,4 +134,23 @@ class Reservation extends Model
         // Exceso pagado (para detectar devoluciones); 0 si no.
         return max(0, $this->paidAmount() - (float)$this->total_price);
     }
+
+    /**
+     * Porcentaje de reembolso aplicable al cancelar según días restantes.
+     * Política definida en config/reservations.php.
+     * Sólo aplica si la reserva está pagada.
+     */
+    public function cancellationRefundPercent(): int
+    {
+        if ($this->status !== 'paid') return 0;
+        $days = now()->diffInDays($this->check_in, false);
+        if ($days < 0) return 0; // check-in pasado
+        $policy = config('reservations.cancellation_policy', []);
+        foreach ($policy as $tier) {
+            if ($days >= ($tier['min_days'] ?? 0)) {
+                return (int) ($tier['percent'] ?? 0);
+            }
+        }
+        return 0;
+    }
 }

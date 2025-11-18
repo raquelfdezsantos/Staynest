@@ -1,5 +1,16 @@
 <x-app-layout>
     <div class="max-w-5xl mx-auto px-4" style="padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl);">
+        <style>
+            /* Mejora badge 'Pendiente de pago' en modo oscuro */
+            html[data-theme="dark"] .badge-warning {
+                background: rgba(255, 184, 76, 0.12);
+                color: #ffb84c;
+                border: 1px solid #ffb84c;
+            }
+            html[data-theme="dark"] .badge-warning:hover {
+                background: rgba(255, 184, 76, 0.2);
+            }
+        </style>
         
         {{-- Header simple --}}
         <header style="margin-bottom: 2rem;">
@@ -159,12 +170,66 @@
                                         </form>
                                     @endif
 
-                                    <form method="POST" action="{{ route('reservas.cancel', $r) }}" style="display: inline;">
-                                        @csrf
-                                        <button type="submit" class="btn-action btn-action-danger" onclick="return confirm('¿Estás seguro de que quieres cancelar esta reserva?')">
-                                            Cancelar
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                            x-data
+                                            x-on:click.prevent="$dispatch('open-modal', 'confirm-reservation-cancel-{{ $r->id }}')"
+                                            class="btn-action btn-action-danger">
+                                        Cancelar
+                                    </button>
+                                    <x-modal name="confirm-reservation-cancel-{{ $r->id }}" focusable>
+                                        <form method="POST" action="{{ route('reservas.cancel', $r) }}" style="padding: 2rem;">
+                                            @csrf
+                                            <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary);">Cancelar reserva {{ $r->code ?? ('#'.$r->id) }}</h2>
+                                            @php
+                                                $daysUntil = now()->diffInDays($r->check_in, false);
+                                                $percent = $r->cancellationRefundPercent();
+                                                $paid = $r->paidAmount();
+                                                $baseRefundable = min($paid, $r->total_price); // límite por total
+                                                $estimatedRefund = $percent > 0 ? ($baseRefundable * $percent / 100) : 0;
+                                            @endphp
+                                            <div style="margin-top:0.75rem; font-size: var(--text-sm); color: var(--color-text-secondary); line-height:1.4;">
+                                                <p style="margin-bottom:0.75rem;">
+                                                    Al cancelar ahora, faltan <strong>{{ $daysUntil < 0 ? 0 : $daysUntil }}</strong> días para el check‑in.
+                                                    @if($r->status === 'paid')
+                                                        @if($daysUntil < 0)
+                                                            El periodo de estancia ya ha comenzado, no procede reembolso.
+                                                        @else
+                                                            Según la política de cancelación: <br>
+                                                            @if($percent > 0)
+                                                                Reembolso aplicable: <strong>{{ $percent }}%</strong> sobre lo pagado (máx. el total de la reserva).
+                                                            @else
+                                                                No aplica reembolso ({{ $daysUntil }} días < 7 días antes del check‑in).
+                                                            @endif
+                                                        @endif
+                                                    @else
+                                                        La reserva aún no está pagada; no se genera reembolso.
+                                                    @endif
+                                                </p>
+                                                @if($r->status === 'paid')
+                                                    <p style="margin-bottom:0.5rem;">
+                                                        Has pagado: <strong>{{ number_format($paid, 2, ',', '.') }} €</strong> de un total de {{ number_format($r->total_price, 2, ',', '.') }} €.
+                                                    </p>
+                                                    @if($percent > 0 && $daysUntil >= 0)
+                                                        <p style="margin-bottom:0.5rem;">
+                                                            Estimación de reembolso: <strong>{{ number_format($estimatedRefund, 2, ',', '.') }} €</strong> ({{ $percent }}% de {{ number_format($baseRefundable, 2, ',', '.') }} €).
+                                                        </p>
+                                                    @endif
+                                                    @if($percent === 0 || $daysUntil < 0)
+                                                        <p style="margin-bottom:0.5rem; color: var(--color-text-muted);">No se realizará devolución.</p>
+                                                    @endif
+                                                @endif
+                                                <p style="margin-top:0.75rem;">
+                                                    ¿Confirmas la cancelación? Esta acción es irreversible y liberará las noches.
+                                                </p>
+                                            </div>
+                                            <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:0.75rem;">
+                                                <button type="button"
+                                                        x-on:click="$dispatch('close-modal', 'confirm-reservation-cancel-{{ $r->id }}')"
+                                                        class="btn-action btn-action-secondary">Volver</button>
+                                                <button type="submit" class="btn-action btn-action-danger">Confirmar cancelación</button>
+                                            </div>
+                                        </form>
+                                    </x-modal>
                                 @endif
                             </div>
                         </div>

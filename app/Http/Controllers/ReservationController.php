@@ -282,7 +282,46 @@ class ReservationController extends Controller
             return back()->with('error', 'No puedes modificar reservas canceladas.');
         }
         $reservation->loadMissing('property');
-        return view('customer.bookings.edit', compact('reservation'));
+
+        // Preparar datos de calendario y tarifas
+        $property = $reservation->property;
+
+        // Rango actual de la reserva (para permitir seleccionarlo aunque esté bloqueado)
+        $currentPeriod = CarbonPeriod::create($reservation->check_in, $reservation->check_out)->excludeEndDate();
+        $currentNights = collect($currentPeriod)->map(fn($d) => $d->toDateString())->all();
+
+        // Fechas bloqueadas desde RateCalendar, excluyendo las noches de esta reserva
+        $blockedDates = RateCalendar::query()
+            ->where('property_id', $property->id)
+            ->where('is_available', false)
+            ->orderBy('date')
+            ->pluck('date')
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+            ->reject(fn($d) => in_array($d, $currentNights, true))
+            ->values()
+            ->toArray();
+
+        // Fechas de check-in/checkout de otras reservas activas
+        $otherReservations = Reservation::where('property_id', $property->id)
+            ->where('id', '!=', $reservation->id)
+            ->whereIn('status', ['pending', 'paid'])
+            ->get();
+
+        $checkinDates = $otherReservations->pluck('check_in')->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))->unique()->values()->toArray();
+        $checkoutDates = $otherReservations->pluck('check_out')->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))->unique()->values()->toArray();
+
+        // Todas las tarifas (incluyendo noches bloqueadas) como fecha => precio (Y-m-d)
+        $rates = RateCalendar::where('property_id', $property->id)
+            ->get()
+            ->pluck('price', 'date')
+            ->mapWithKeys(fn($price, $date) => [Carbon::parse($date)->format('Y-m-d') => $price])
+            ->toArray();
+
+        $maxCapacity = $property->capacity ?? 4;
+
+        return view('customer.bookings.edit', compact(
+            'reservation', 'property', 'blockedDates', 'checkinDates', 'checkoutDates', 'rates', 'maxCapacity'
+        ));
     }
 
     /** Update fechas (cliente, permite pending y paid) */
@@ -296,12 +335,22 @@ class ReservationController extends Controller
         $data = $request->validate([
             'check_in'  => ['required', 'date'],
             'check_out' => ['required', 'date', 'after_or_equal:check_in'],
-            'guests'    => ['required', 'integer', 'min:1'],
+            'guests'    => ['nullable', 'integer', 'min:1'],
+            'adults'    => ['nullable', 'integer', 'min:0'],
+            'children'  => ['nullable', 'integer', 'min:0'],
+            'pets'      => ['nullable', 'integer', 'min:0'],
+            'notes'     => ['nullable', 'string', 'max:1000'],
         ]);
 
         $property = $reservation->property()->firstOrFail();
 
-        if ((int)$data['guests'] > (int)$property->capacity) {
+        // Calcular huéspedes desde desglose si viene
+        $adults   = (int) ($data['adults']   ?? 0);
+        $children = (int) ($data['children'] ?? 0);
+        $pets     = (int) ($data['pets']     ?? 0);
+        $guests   = ($adults + $children) > 0 ? ($adults + $children) : (int) ($data['guests'] ?? $reservation->guests);
+
+        if ((int)$guests > (int)$property->capacity) {
             return back()->withErrors(['guests' => "Máximo {$property->capacity} huéspedes."]);
         }
 
@@ -362,7 +411,7 @@ class ReservationController extends Controller
             return back()->withErrors(['check_in' => "La estancia mínima para esas fechas es de {$minStay} noches."]);
         }
 
-        $newTotal = $rates->sum('price') * (int)$data['guests'];
+        $newTotal = $rates->sum('price') * (int)$guests;
         
         Log::info('[UPDATE] Nuevo total calculado', [
             'rates_sum' => $rates->sum('price'),
@@ -371,7 +420,7 @@ class ReservationController extends Controller
             'rates' => $rates->pluck('price', 'date')->toArray(),
         ]);
 
-        DB::transaction(function () use ($reservation, $property, $oldDates, $newDates, $newTotal, $data) {
+        DB::transaction(function () use ($reservation, $property, $oldDates, $newDates, $newTotal, $data, $guests, $adults, $children, $pets) {
             // liberar antiguas y bloquear nuevas (excluye checkout)
             $this->setAvailability($property->id, $oldDates, true);
             $this->setAvailability($property->id, $newDates, false);
@@ -379,7 +428,11 @@ class ReservationController extends Controller
             $reservation->update([
                 'check_in'    => $data['check_in'],
                 'check_out'   => $data['check_out'],
-                'guests'      => $data['guests'],
+                'guests'      => $guests,
+                'adults'      => $adults,
+                'children'    => $children,
+                'pets'        => $pets,
+                'notes'       => $data['notes'] ?? $reservation->notes,
                 'total_price' => $newTotal,
             ]);
         });
@@ -483,31 +536,50 @@ class ReservationController extends Controller
         if ($reservation->status === 'cancelled') {
             return back()->with('error', 'La reserva ya está cancelada.');
         }
+        // Calcular posible reembolso según política (antes de mutar estado)
+        $percent = $reservation->cancellationRefundPercent();
+        $paid    = $reservation->paidAmount();
+        $refundAmount = 0.0;
+        if ($percent > 0 && $paid > 0) {
+            $refundAmount = round(min($paid, $reservation->total_price) * ($percent / 100), 2);
+        }
 
-        DB::transaction(function () use ($reservation) {
+        DB::transaction(function () use ($reservation, $refundAmount) {
             $dates = $this->rangeDates($reservation->check_in->toDateString(), $reservation->check_out->toDateString());
             $this->setAvailability($reservation->property_id, $dates, true);
             $reservation->update(['status' => 'cancelled']);
+            if ($refundAmount > 0) {
+                Payment::create([
+                    'reservation_id' => $reservation->id,
+                    'amount'        => -$refundAmount,
+                    'method'        => 'policy',
+                    'status'        => 'refunded',
+                    'provider_ref'  => 'POL-REF-' . Str::upper(Str::random(6)),
+                ]);
+            }
         });
 
-        // Emails de cancelación (cliente y admin)
-        Log::info('Intentando enviar ReservationCancelledMail al cliente', ['email' => $reservation->user->email]);
+        // Emails de cancelación
         try {
             Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation));
-            Log::info('ReservationCancelledMail enviado al cliente', ['email' => $reservation->user->email]);
-        } catch (Throwable $e) {
-            Log::error('Fallo ReservationCancelledMail cliente', ['msg' => $e->getMessage()]);
-            report($e);
-        }
-        Log::info('Intentando enviar ReservationCancelledMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+        } catch (Throwable $e) { report($e); }
         try {
             Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationCancelledMail($reservation));
-            Log::info('ReservationCancelledMail enviado al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
-        } catch (Throwable $e) {
-            Log::error('Fallo ReservationCancelledMail admin', ['msg' => $e->getMessage()]);
-            report($e);
+        } catch (Throwable $e) { report($e); }
+
+        // Email de reembolso si aplica
+        if ($refundAmount > 0) {
+            try { Mail::to($reservation->user->email)->send(new PaymentRefundIssuedMail($reservation, $refundAmount)); } catch (Throwable $e) { report($e); }
+            try { Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new PaymentRefundIssuedMail($reservation, $refundAmount)); } catch (Throwable $e) { report($e); }
         }
 
-        return back()->with('success', 'Reserva cancelada y noches liberadas.');
+        $msg = 'Reserva cancelada y noches liberadas.';
+        if ($refundAmount > 0) {
+            $msg .= ' Reembolso aplicado: ' . number_format($refundAmount, 2, ',', '.') . '€ (' . $percent . '%).';
+        } elseif ($percent === 0 && $reservation->status === 'paid') {
+            $msg .= ' No procede reembolso (faltan menos de 7 días).';
+        }
+
+        return back()->with('success', $msg);
     }
 }
