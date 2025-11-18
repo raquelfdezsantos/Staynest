@@ -972,7 +972,7 @@ html[data-theme="light"] .nav-header--transparent {
     align-items: center;
     justify-content: space-between;
     padding: 1.25rem 1.5rem;
-    background-color: rgba(77, 141, 148, 0.06);
+    background-color: transparent;
     border-bottom: 1px solid var(--color-border-light);
 }
 
@@ -985,7 +985,7 @@ html[data-theme="light"] .nav-header--transparent {
 .reservation-icon {
     width: 1.5rem;
     height: 1.5rem;
-    color: var(--color-accent);
+    color: var(--color-text-muted);
     flex-shrink: 0;
 }
 
@@ -1042,8 +1042,8 @@ html[data-theme="light"] .nav-header--transparent {
 
 .detail-value-price {
     font-size: 1.125rem;
-    font-weight: 700;
-    color: var(--color-accent);
+    font-weight: 600;
+    color: var(--color-text-primary);
 }
 
 .reservation-actions {
@@ -1100,6 +1100,59 @@ html[data-theme="light"] .nav-header--transparent {
     .reservation-actions .btn-action {
         justify-content: center;
     }
+}
+
+/* Estilo más sobrio dentro de las cards de reservas */
+.reservation-card .badge-success,
+.reservation-card .badge-error,
+.reservation-card .badge-warning,
+.reservation-card .badge-info {
+    background: transparent;
+    border: 1px solid currentColor;
+}
+
+/* Botones en Mis reservas: igualar tamaños/typo con "Reservar ahora" */
+.reservation-card .reservation-actions .btn-action {
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 600;
+    line-height: 1.25rem; /* igual que text-sm de Tailwind */
+    padding: 0.5rem 1.25rem; /* px-5 py-2 */
+    border-radius: 2px;
+}
+
+/* Primario (Pagar ahora): idéntico al de Reservar */
+.reservation-card .reservation-actions .btn-action-primary {
+    background-color: var(--color-accent);
+    color: #fff;
+    box-shadow: none;
+}
+.reservation-card .reservation-actions .btn-action-primary:hover {
+    background-color: var(--color-accent-hover);
+    transform: none;
+    box-shadow: none;
+}
+
+/* Editar: texto blanco, sin borde ni bg; hover como enlaces del header */
+.reservation-card .reservation-actions .btn-action-secondary {
+    background: transparent;
+    border: none;
+    color: var(--color-text-primary);
+}
+.reservation-card .reservation-actions .btn-action-secondary:hover {
+    background-color: rgba(77, 141, 148, 0.10);
+    color: var(--color-accent);
+}
+
+/* Cancelar: texto blanco, sin borde ni bg; hover rojo como "Cerrar sesión" */
+.reservation-card .reservation-actions .btn-action-danger {
+    background: transparent;
+    border: none;
+    color: var(--color-text-primary);
+}
+.reservation-card .reservation-actions .btn-action-danger:hover {
+    background-color: rgba(204, 89, 86, 0.15);
+    color: var(--color-error);
 }
 
 /* Formularios */
