@@ -8,4 +8,11 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        host: '0.0.0.0',   // para que el contenedor escuche desde fuera
+        port: 5173,
+        hmr: {
+            host: 'localhost', // para que el navegador vaya a localhost:5173, NO a 0.0.0.0
+        },
+    },
 });
