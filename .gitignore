@@ -28,3 +28,4 @@ _ide_helper_models.php
 backup_*.sql
 *.sql
 \d\1.1.TUNIVERS\Segundo\Proyecto-Mario\vut\docker\mysql\initdb.d\99-project-init.sh
+levantar_docker.txt
