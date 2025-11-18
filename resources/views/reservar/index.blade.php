@@ -164,8 +164,7 @@
         <header class="mb-8 text-center">
             <h1 class="text-4xl font-serif mb-3">Reservar</h1>
             <p class="text-neutral-300">
-                Esta es una vista inicial para visualizar la estructura. Integraremos disponibilidad
-                real y pasarela de pago más adelante.
+                Completa los datos y comprueba el resumen de tu reserva al instante.
             </p>
         </header>
 
@@ -249,6 +248,7 @@
                             <option value="1">1</option>
                             <option value="2">2</option>
                         </select>
+                        <p id="pets-free-message" class="hidden" style="font-size: var(--text-xs); color: var(--color-success); margin-top: 0.25rem;">¡Las mascotas se alojan gratis!</p>
                     </div>
                 </div>
 
@@ -302,11 +302,13 @@
                 const checkinDates = @json($checkinDates ?? []);
                 const rates = @json($rates ?? []);
                 const maxCapacity = {{ $property->capacity ?? 4 }};
+                let pickersReady = false;
 
                 // Actualizar resumen de huéspedes
                 function updateGuests() {
                     const adults = parseInt(document.getElementById('adults').value);
                     const children = parseInt(document.getElementById('children').value);
+                    const pets = parseInt(document.getElementById('pets').value);
                     const totalGuests = adults + children;
 
                     // Actualizar texto del resumen
@@ -314,7 +316,17 @@
                     if (children > 0) {
                         text += ', ' + children + ' niño' + (children !== 1 ? 's' : '');
                     }
+                    if (pets > 0) {
+                        text += ', ' + pets + ' mascota' + (pets !== 1 ? 's' : '');
+                    }
                     document.getElementById('summary-guests').textContent = text;
+
+                    // Mostrar mensaje de mascotas gratis si hay mascotas
+                    const petsMsg = document.getElementById('pets-free-message');
+                    if (petsMsg) {
+                        if (pets > 0) petsMsg.classList.remove('hidden');
+                        else petsMsg.classList.add('hidden');
+                    }
 
                     // Validar capacidad máxima
                     if (totalGuests > maxCapacity) {
@@ -323,11 +335,14 @@
                         hideError();
                     }
 
-                    updateTotal();
+                    if (pickersReady) { updateTotal(); }
                 }
 
                 document.getElementById('adults').addEventListener('change', updateGuests);
                 document.getElementById('children').addEventListener('change', updateGuests);
+                document.getElementById('pets').addEventListener('change', updateGuests);
+
+                // (Inicialización del resumen se hará tras crear los pickers)
 
                 // Configurar Flatpickr para check-in
                 const checkInPicker = flatpickr('#check_in', {
@@ -431,6 +446,10 @@
                     }
                 });
 
+                // Pickers listos: inicializar resumen ahora
+                pickersReady = true;
+                updateGuests();
+
 
                 // Actualizar total
                 function updateTotal() {
@@ -448,9 +467,16 @@
                             let totalNightsPrice = 0;
                             const current = new Date(checkIn);
                             const end = new Date(checkOut);
-                            
+
+                            const ymd = (d) => {
+                                const y = d.getFullYear();
+                                const m = String(d.getMonth() + 1).padStart(2, '0');
+                                const day = String(d.getDate()).padStart(2, '0');
+                                return `${y}-${m}-${day}`;
+                            };
+
                             while (current < end) {
-                                const dateStr = current.toISOString().split('T')[0];
+                                const dateStr = ymd(current);
                                 const nightPrice = parseFloat(rates[dateStr]) || 0;
                                 totalNightsPrice += nightPrice;
                                 current.setDate(current.getDate() + 1);
