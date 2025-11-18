@@ -128,35 +128,30 @@
             opacity: 0.4 !important;
         }
         
-        /* Colores de disponibilidad - Días disponibles (verde) */
+        /* Días disponibles: solo borde verde, fondo transparente */
         .flatpickr-day.available:not(.flatpickr-disabled):not(.selected) {
-            background: var(--color-success) !important;
-            color: white !important;
-            border-color: var(--color-success) !important;
+            background: transparent !important;
+            color: var(--color-text-primary) !important;
+            border: 1px solid var(--color-success) !important;
         }
-        
-        /* Colores de disponibilidad - Días NO disponibles (rojo) */
+
+        /* Días no disponibles: solo borde rojo, fondo con leve transparencia oscura */
         .flatpickr-day.unavailable,
         .flatpickr-day.flatpickr-disabled,
         .flatpickr-day.unavailable.flatpickr-disabled {
-            background: var(--color-error) !important;
-            color: white !important;
-            opacity: 0.7 !important;
-            border-color: var(--color-error) !important;
+            background: rgba(255,0,0,0.05) !important;
+            color: var(--color-text-secondary) !important;
+            border: 1px solid var(--color-error) !important;
             cursor: not-allowed !important;
         }
-        
-        /* Asegurar que el hover no cambie los colores base */
+
+        .flatpickr-day.available:hover:not(.flatpickr-disabled):not(.selected) {
+            background: rgba(0,128,0,0.06) !important;
+        }
+
         .flatpickr-day.unavailable:hover,
         .flatpickr-day.flatpickr-disabled:hover {
-            background: var(--color-error) !important;
-            color: white !important;
-        }
-        
-        .flatpickr-day.available:hover:not(.flatpickr-disabled):not(.selected) {
-            background: var(--color-success) !important;
-            color: white !important;
-            filter: brightness(1.1);
+            background: rgba(255,0,0,0.08) !important;
         }
     </style>
     
