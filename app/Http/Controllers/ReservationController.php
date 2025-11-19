@@ -464,6 +464,11 @@ class ReservationController extends Controller
                 'notes'       => $data['notes'] ?? $reservation->notes,
                 'total_price' => $newTotal,
             ]);
+
+            // Sincronizar importe de la factura (si existe) con el nuevo total
+            if ($reservation->invoice) {
+                $reservation->invoice->update(['amount' => $newTotal]);
+            }
         });
 
         // Refrescar modelo después de la transacción

@@ -222,6 +222,69 @@
         const originalTotal = {{ (float) $reservation->total_price }};
         let pickersReady = false;
 
+        // Declarar variables para los pickers
+        let checkInPicker;
+        let checkOutPicker;
+
+        // Definir función updateTotal antes de usarla
+        function updateTotal() {
+          // Obtener fechas directamente de los inputs (KISS - Keep It Simple)
+          const checkInValue = document.getElementById('check_in').value;
+          const checkOutValue = document.getElementById('check_out').value;
+          
+          if (!checkInValue || !checkOutValue) return;
+          
+          const checkIn = new Date(checkInValue);
+          const checkOut = new Date(checkOutValue);
+          
+          if (checkIn && checkOut && !isNaN(checkIn) && !isNaN(checkOut)) {
+            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+            if (nights > 0) {
+              const fmt = (d) => d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+              document.getElementById('summary-dates').textContent = `${fmt(checkIn)} → ${fmt(checkOut)}`;
+              document.getElementById('summary-nights').textContent = nights + ' noche' + (nights !== 1 ? 's' : '');
+
+              let totalNightsPrice = 0;
+              const current = new Date(checkIn);
+              const end = new Date(checkOut);
+              const ymd = (d) => {
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${y}-${m}-${day}`;
+              };
+              while (current < end) {
+                const dateStr = ymd(current);
+                const nightPrice = parseFloat(rates[dateStr]) || 0;
+                totalNightsPrice += nightPrice;
+                current.setDate(current.getDate() + 1);
+              }
+
+              const adults = parseInt(document.getElementById('adults').value) || 0;
+              const children = parseInt(document.getElementById('children').value) || 0;
+              const guests = adults + children;
+              const total = totalNightsPrice * guests;
+              
+              const totalEl = document.getElementById('summary-total');
+              totalEl.textContent = total.toFixed(2).replace('.', ',') + ' €';
+              totalEl.style.color = ''; // Mantener el total siempre en blanco
+
+              const diff = total - originalTotal;
+              const diffEl = document.getElementById('summary-diff');
+              if (Math.abs(diff) < 0.01) {
+                diffEl.textContent = 'El total se mantiene igual';
+                diffEl.style.color = 'var(--color-text-secondary)';
+              } else if (diff > 0) {
+                diffEl.textContent = `Incremento: +${diff.toFixed(2).replace('.', ',')}€`;
+                diffEl.style.color = 'var(--color-error)';
+              } else {
+                diffEl.textContent = `Ahorro: ${Math.abs(diff).toFixed(2).replace('.', ',')}€`;
+                diffEl.style.color = 'var(--color-success)';
+              }
+            }
+          }
+        }
+
         function updateGuests() {
           const adults = parseInt(document.getElementById('adults').value) || 0;
           const children = parseInt(document.getElementById('children').value) || 0;
@@ -242,14 +305,15 @@
             hideError();
           }
 
-          if (pickersReady) { updateTotal(); }
+          updateTotal();
         }
 
         document.getElementById('adults').addEventListener('change', updateGuests);
         document.getElementById('children').addEventListener('change', updateGuests);
         document.getElementById('pets').addEventListener('change', updateGuests);
 
-        const checkInPicker = flatpickr('#check_in', {
+        // Inicializar checkInPicker primero
+        checkInPicker = flatpickr('#check_in', {
           locale: 'es',
           minDate: 'today',
           dateFormat: 'Y-m-d',
@@ -266,12 +330,12 @@
             }
           ],
           onChange: function (selectedDates) {
-            if (selectedDates.length) {
+            if (selectedDates.length && checkOutPicker) {
               const nextDay = new Date(selectedDates[0].getTime());
               nextDay.setDate(nextDay.getDate() + 1);
               checkOutPicker.set('minDate', nextDay);
-              updateTotal();
             }
+            updateTotal();
           },
           onDayCreate: function (dObj, dStr, fp, dayElem) {
             const date = dayElem.dateObj;
@@ -292,15 +356,16 @@
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
 
-        const checkOutPicker = flatpickr('#check_out', {
+        // Inicializar checkOutPicker después
+        checkOutPicker = flatpickr('#check_out', {
           locale: 'es',
             minDate: tomorrow,
             dateFormat: 'Y-m-d',
             defaultDate: '{{ $reservation->check_out->format('Y-m-d') }}',
             disable: [
               function (date) {
+                if (!checkInPicker || !checkInPicker.selectedDates || !checkInPicker.selectedDates[0]) return false;
                 const checkInDate = checkInPicker.selectedDates[0];
-                if (!checkInDate) return false;
                 const checkOutDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
                 const current = new Date(checkInDate.getTime());
                 current.setDate(current.getDate() + 1);
@@ -330,71 +395,29 @@
             }
         });
 
+        // Inicializar el resumen con los valores actuales
         pickersReady = true;
         updateGuests();
-
-        function updateTotal() {
-          const checkIn = checkInPicker.selectedDates[0];
-          const checkOut = checkOutPicker.selectedDates[0];
-          if (checkIn && checkOut) {
-            const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
-            if (nights > 0) {
-              const fmt = (d) => d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-              document.getElementById('summary-dates').textContent = `${fmt(checkIn)} → ${fmt(checkOut)}`;
-              document.getElementById('summary-nights').textContent = nights + ' noche' + (nights !== 1 ? 's' : '');
-
-              let totalNightsPrice = 0;
-              const current = new Date(checkIn);
-              const end = new Date(checkOut);
-              const ymd = (d) => {
-                const y = d.getFullYear();
-                const m = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                return `${y}-${m}-${day}`;
-              };
-              while (current < end) {
-                const dateStr = ymd(current);
-                const nightPrice = parseFloat(rates[dateStr]) || 0;
-                totalNightsPrice += nightPrice;
-                current.setDate(current.getDate() + 1);
-              }
-
-              const adults = parseInt(document.getElementById('adults').value) || 0;
-              const children = parseInt(document.getElementById('children').value) || 0;
-              const guests = adults + children;
-              const total = totalNightsPrice * guests;
-              document.getElementById('summary-total').textContent = total.toFixed(2) + '€';
-
-              const diff = total - originalTotal;
-              const diffEl = document.getElementById('summary-diff');
-              if (Math.abs(diff) < 0.01) {
-                diffEl.textContent = 'Sin cambios en el total';
-                diffEl.style.color = 'var(--color-text-secondary)';
-              } else if (diff > 0) {
-                diffEl.textContent = `Aumenta en +${diff.toFixed(2)}€`;
-                diffEl.style.color = 'var(--color-error)';
-              } else {
-                diffEl.textContent = `Disminuye en ${diff.toFixed(2)}€`;
-                diffEl.style.color = 'var(--color-success)';
-              }
-            }
-          }
-        }
+        updateTotal();
 
         document.getElementById('editReservationForm').addEventListener('submit', function (e) {
-          const checkIn = checkInPicker.selectedDates[0];
-          const checkOut = checkOutPicker.selectedDates[0];
+          // Leer fechas directamente de los inputs (KISS)
+          const checkInValue = document.getElementById('check_in').value;
+          const checkOutValue = document.getElementById('check_out').value;
           const adults = parseInt(document.getElementById('adults').value) || 0;
           const children = parseInt(document.getElementById('children').value) || 0;
           const totalGuests = adults + children;
 
-          if (!checkIn || !checkOut) {
+          if (!checkInValue || !checkOutValue) {
             e.preventDefault();
             showError('Por favor, selecciona las fechas de entrada y salida');
             return;
           }
 
+          const checkIn = new Date(checkInValue);
+          const checkOut = new Date(checkOutValue);
           const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+          
           if (nights < 2) {
             e.preventDefault();
             showError('La estancia mínima es de 2 noches.');

@@ -10,6 +10,38 @@
             html[data-theme="dark"] .badge-warning:hover {
                 background: rgba(255, 184, 76, 0.2);
             }
+            /* Badge Pagada con bg verde como alert-success (forzar especificidad) */
+            .badge.badge-success {
+                background: rgba(16,185,129,0.12) !important;
+                color: var(--color-success) !important;
+                border: 1px solid var(--color-success) !important;
+            }
+            html[data-theme="dark"] .badge.badge-success {
+                background: rgba(16,185,129,0.14) !important;
+                color: var(--color-success) !important;
+                border: 1px solid var(--color-success) !important;
+            }
+            /* Badge Cancelada con bg de error (igual que alert-error) */
+            .badge.badge-error {
+                background: rgba(204, 89, 86, 0.10) !important;
+                color: var(--color-error) !important;
+                border: 1px solid var(--color-error) !important;
+            }
+            html[data-theme="dark"] .badge.badge-error {
+                background: rgba(204, 89, 86, 0.14) !important;
+                color: var(--color-error) !important;
+                border: 1px solid var(--color-error) !important;
+            }
+            /* Botones secundarios/peligro con borde sutil por defecto (accesibilidad) */
+            .reservation-actions .btn-action.btn-action-secondary,
+            .reservation-actions .btn-action.btn-action-danger {
+                border: 1px solid var(--color-border-light) !important;
+            }
+            .reservation-actions .btn-action.btn-action-secondary:hover,
+            .reservation-actions .btn-action.btn-action-danger:hover {
+                border-color: transparent !important;
+            }
+            .btn-nowrap { white-space: nowrap; }
         </style>
         
         {{-- Header simple --}}
@@ -147,7 +179,7 @@
                             <div class="reservation-actions">
                                 @if($r->status === 'pending')
                                     @php $u = auth()->user(); @endphp
-                                    @if($u && (empty($u->address) || empty($u->document_id)))
+                                    @if($currentUser && (empty($currentUser->address) || empty($currentUser->document_id)))
                                         <a href="{{ route('profile.edit') }}" class="btn-action btn-action-danger" title="Completa tus datos antes de pagar">
                                             Completar datos para pagar
                                         </a>
@@ -167,12 +199,7 @@
                                     </a>
 
                                     @if($r->invoice)
-                                        <a href="{{ route('invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary">
-                                            <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                            </svg>
-                                            Ver factura
-                                        </a>
+                                        <a href="{{ route('invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary btn-nowrap">Ver factura</a>
                                     @endif
 
                                     @if($r->status === 'paid' && method_exists($r, 'balanceDue') && $r->balanceDue() > 0)
@@ -196,6 +223,7 @@
                                             <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary);">Cancelar reserva {{ $r->code ?? ('#'.$r->id) }}</h2>
                                             @php
                                                 $daysUntil = now()->diffInDays($r->check_in, false);
+                                                $daysUntilInt = max(0, (int) $daysUntil);
                                                 $percent = $r->cancellationRefundPercent();
                                                 $paid = $r->paidAmount();
                                                 $baseRefundable = min($paid, $r->total_price); // límite por total
@@ -203,16 +231,16 @@
                                             @endphp
                                             <div style="margin-top:0.75rem; font-size: var(--text-sm); color: var(--color-text-secondary); line-height:1.4;">
                                                 <p style="margin-bottom:0.75rem;">
-                                                    Al cancelar ahora, faltan <strong>{{ $daysUntil < 0 ? 0 : $daysUntil }}</strong> días para el check‑in.
+                                                    Al cancelar ahora, faltan <strong>{{ $daysUntilInt }}</strong> días para el check‑in.
                                                     @if($r->status === 'paid')
-                                                        @if($daysUntil < 0)
+                                                        @if($daysUntilInt <= 0)
                                                             El periodo de estancia ya ha comenzado, no procede reembolso.
                                                         @else
                                                             Según la política de cancelación: <br>
                                                             @if($percent > 0)
                                                                 Reembolso aplicable: <strong>{{ $percent }}%</strong> sobre lo pagado (máx. el total de la reserva).
                                                             @else
-                                                                No aplica reembolso ({{ $daysUntil }} días < 7 días antes del check‑in).
+                                                                No aplica reembolso ({{ $daysUntilInt }} días < 7 días antes del check‑in).
                                                             @endif
                                                         @endif
                                                     @else
@@ -223,12 +251,12 @@
                                                     <p style="margin-bottom:0.5rem;">
                                                         Has pagado: <strong>{{ number_format($paid, 2, ',', '.') }} €</strong> de un total de {{ number_format($r->total_price, 2, ',', '.') }} €.
                                                     </p>
-                                                    @if($percent > 0 && $daysUntil >= 0)
+                                                    @if($percent > 0 && $daysUntilInt >= 0)
                                                         <p style="margin-bottom:0.5rem;">
                                                             Estimación de reembolso: <strong>{{ number_format($estimatedRefund, 2, ',', '.') }} €</strong> ({{ $percent }}% de {{ number_format($baseRefundable, 2, ',', '.') }} €).
                                                         </p>
                                                     @endif
-                                                    @if($percent === 0 || $daysUntil < 0)
+                                                    @if($percent === 0 || $daysUntilInt <= 0)
                                                         <p style="margin-bottom:0.5rem; color: var(--color-text-muted);">No se realizará devolución.</p>
                                                     @endif
                                                 @endif
@@ -240,7 +268,12 @@
                                                 <button type="button"
                                                         x-on:click="$dispatch('close-modal', 'confirm-reservation-cancel-{{ $r->id }}')"
                                                         class="btn-action btn-action-secondary">Volver</button>
-                                                <button type="submit" class="btn-action btn-action-danger">Confirmar cancelación</button>
+                                                <button type="submit"
+                                                        style="padding: 0.5rem 1.25rem; font-size: var(--text-sm); font-weight: 600; color: white; background-color: var(--color-error); border: none; border-radius: 2px; cursor: pointer; transition: background-color var(--transition-fast);"
+                                                        onmouseover="this.style.backgroundColor='#d87876'"
+                                                        onmouseout="this.style.backgroundColor='var(--color-error)'">
+                                                    Confirmar cancelación
+                                                </button>
                                             </div>
                                         </form>
                                     </x-modal>

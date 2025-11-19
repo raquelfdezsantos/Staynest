@@ -219,6 +219,11 @@ class StripeController extends Controller
             'status'        => 'succeeded',
             'provider_ref'  => $session->payment_intent ?? ('CS_' . $session->id),
         ]);
+
+        // Sincronizar importe de la factura con el total actual de la reserva (tras modificación)
+        if ($reservation->invoice) {
+            $reservation->invoice->update(['amount' => $reservation->total_price]);
+        }
         
         // NO crear invoice - ya existe del pago inicial
         // Enviar emails de confirmación
