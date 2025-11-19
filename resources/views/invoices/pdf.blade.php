@@ -4,33 +4,83 @@
   <meta charset="utf-8">
   <title>{{ $invoice->number }}</title>
   <style>
+    /* Embedding Inter font (pesos fijos para compatibilidad Dompdf) */
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400;
+      src: url('{{ public_path('fonts/inter/Inter-VariableFont_opsz,wght.woff2') }}') format('woff2'),
+           url('{{ public_path('fonts/inter/Inter-VariableFont_opsz,wght.ttf') }}') format('truetype');
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: italic;
+      font-weight: 400;
+      src: url('{{ public_path('fonts/inter/Inter-Italic-VariableFont_opsz,wght.woff2') }}') format('woff2'),
+           url('{{ public_path('fonts/inter/Inter-Italic-VariableFont_opsz,wght.ttf') }}') format('truetype');
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 600;
+      src: url('{{ public_path('fonts/inter/Inter-VariableFont_opsz,wght.woff2') }}') format('woff2'),
+           url('{{ public_path('fonts/inter/Inter-VariableFont_opsz,wght.ttf') }}') format('truetype');
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: italic;
+      font-weight: 600;
+      src: url('{{ public_path('fonts/inter/Inter-Italic-VariableFont_opsz,wght.woff2') }}') format('woff2'),
+           url('{{ public_path('fonts/inter/Inter-Italic-VariableFont_opsz,wght.ttf') }}') format('truetype');
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 700;
+      src: url('{{ public_path('fonts/inter/Inter-VariableFont_opsz,wght.woff2') }}') format('woff2'),
+           url('{{ public_path('fonts/inter/Inter-VariableFont_opsz,wght.ttf') }}') format('truetype');
+    }
+    @font-face {
+      font-family: 'Inter';
+      font-style: italic;
+      font-weight: 700;
+      src: url('{{ public_path('fonts/inter/Inter-Italic-VariableFont_opsz,wght.woff2') }}') format('woff2'),
+           url('{{ public_path('fonts/inter/Inter-Italic-VariableFont_opsz,wght.ttf') }}') format('truetype');
+    }
     /* Base (alineado a staynest.css - tema claro) */
-    :root { --accent: #4D8D94; --text: #222222; --muted: #666666; --border: #DDDDDD; --border-light: #EEEEEE; }
-    body { font-family: Inter, Arial, sans-serif; font-size: 12px; color: var(--text); margin: 28px; }
-    h1, h2, h3 { margin: 0 0 6px; font-weight: 600; color: #111; font-family: Inter, Arial, sans-serif; }
+    :root { --accent: #4D8D94; --text: #222222; --muted: #555555; --border: #4A4A4A; --bw: 0.5pt; }
+    body { font-family: 'Inter', Arial, sans-serif; font-size: 12px; color: var(--text); margin: 28px; }
+    h1, h2, h3 { margin: 0 0 6px; font-weight: 600; color: #181818; font-family: 'Inter', Arial, sans-serif; }
     .brand { display:flex; align-items:center; gap:12px; }
-    .brand img { height: 40px; }
-    .brand-name { font-size: 18px; font-weight: 700; letter-spacing: 0.3px; color:#111; }
+    .brand img { height: 52px; }
+    .brand-name { font-size: 18px; font-weight: 700; letter-spacing: 0.3px; color:#181818; }
     .header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:18px; }
     .meta { text-align:right; font-size: 12px; color: var(--muted); }
     .pill { display:inline-block; border:1px solid var(--accent); color: var(--accent); padding: 2px 8px; border-radius: 2px; font-size: 10px; }
 
     /* Boxes */
     .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .box { border:1px solid var(--border); padding:10px 12px; border-radius:2px; }
+    .box { border:var(--bw) solid var(--border); padding:10px 12px; border-radius:2px; }
     .box-title { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-bottom: 6px; }
     .kv { margin: 2px 0; }
-    .kv strong { color:#111; }
+    .kv strong { color:#181818; }
 
     /* Tabla */
-    .table-wrap { border:1px solid var(--border); border-radius:2px; overflow:hidden; margin-top:12px; }
-    table { width:100%; border-collapse:collapse; font-size: 12px; }
-    thead th { background: #F5F8F9; color:#111; border:1px solid var(--border); padding:8px; text-align:left; font-weight:600; }
-    tbody td { border:1px solid var(--border-light); padding:8px; }
-    tfoot td { border-top:1px solid var(--border); padding:8px; }
+    .table-wrap { border:var(--bw) solid var(--border); border-radius:2px; overflow:hidden; margin-top:12px; }
+    table { width:100%; border-collapse:collapse; font-size: 12px; border:var(--bw) solid var(--border); }
+    table, thead th, tbody td, tfoot td, strong, b { font-family: 'Inter', Arial, sans-serif; }
+    thead th { background:#E6E6E6; color:#181818; border:var(--bw) solid var(--border); padding:6px 8px; text-align:center; font-weight:600; }
+    tbody td { border:var(--bw) solid var(--border); padding:6px 8px; }
+    tfoot td { border:var(--bw) solid var(--border); padding:6px 8px; }
     .right { text-align:right; }
     .muted { color: var(--muted); }
-    .total-row td { background: #F8FBFC; border-top:1px solid var(--accent); font-weight:700; }
+    .total-row td { background:#F3F3F3; color:#181818; font-weight:600; }
+    .total-row td:first-child { text-align:left; border-right:none; }
+    .total-row td:last-child { text-align:right; border-left:none; }
+    /* Refuerzo fuente Inter en tfoot */
+    tfoot td, tfoot span { font-family:'Inter', Arial, sans-serif !important; }
+    .total-label, .total-amount { font-weight:600; letter-spacing:.02em; }
+    tfoot strong { font-family:'Inter', Arial, sans-serif !important; }
 
     /* Footer */
     .note { margin-top: 10px; color: var(--muted); font-size: 11px; }
@@ -61,11 +111,11 @@
       @endif
     </div>
     <div class="meta">
-      <div style="font-size:14px; font-weight:700; color:#111;">Factura {{ $invoice->number }}</div>
+      <div style="font-size:14px; font-weight:700; color:#181818;">Factura {{ $invoice->number }}</div>
       <div>Emitida: {{ optional($invoice->issued_at)->format('d/m/Y') }}</div>
       @php($status = strtolower($invoice->reservation->status ?? ''))
       @if($status === 'paid')
-        <div class="pill">Pagada</div>
+        <div class="pill" style="border-color:#719179; color:#719179;">Pagada</div>
       @elseif($status === 'pending')
         <div class="pill" style="border-color:#E8CB74; color:#E8CB74;">Pendiente</div>
       @elseif($status === 'cancelled')
@@ -82,6 +132,7 @@
       <div class="kv"><strong>Documento:</strong> {{ $invoice->reservation->user->document_id ?? '—' }}</div>
       <div class="kv"><strong>Correo:</strong> {{ $invoice->reservation->user->email }}</div>
     </div>
+    <br>
     <div class="box">
       <div class="box-title">Alojamiento</div>
       <div class="kv"><strong>Nombre:</strong> {{ $p->name }}</div>
@@ -99,7 +150,7 @@
       <tr>
         <th>Concepto</th>
         <th>Fechas</th>
-        <th class="right">Importe</th>
+        <th class="center">Importe</th>
       </tr>
     </thead>
     <tbody>
@@ -114,8 +165,8 @@
     </tbody>
     <tfoot>
       <tr class="total-row">
-        <td colspan="2"><strong>Total</strong></td>
-        <td class="right"><strong>{{ number_format($invoice->amount, 2, ',', '.') }} €</strong></td>
+        <td class="left" colspan="2"><span class="total-label">Total</span></td>
+        <td class="right"><span class="total-amount">{{ number_format($invoice->amount, 2, ',', '.') }} €</span></td>
       </tr>
     </tfoot>
   </table>
