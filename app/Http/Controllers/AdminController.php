@@ -749,8 +749,41 @@ class AdminController extends Controller
      */
     public function calendarIndex(Request $request)
     {
+        // Si no hay property_id en query, usar la primera propiedad
         $selectedPropertyId = $request->query('property_id');
-        return view('admin.calendar.index', compact('selectedPropertyId'));
+        if (!$selectedPropertyId) {
+            $selectedPropertyId = \App\Models\Property::first()?->id;
+        }
+        
+        $blockedDates = [];
+        
+        if ($selectedPropertyId) {
+            // 1. Fechas bloqueadas manualmente
+            $manuallyBlocked = \App\Models\RateCalendar::where('property_id', $selectedPropertyId)
+                ->where('is_available', false)
+                ->pluck('date')
+                ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
+                ->toArray();
+
+            // 2. Fechas ocupadas por reservas activas
+            $occupiedDates = \App\Models\Reservation::where('property_id', $selectedPropertyId)
+                ->whereIn('status', ['pending', 'paid'])
+                ->get()
+                ->flatMap(function ($reservation) {
+                    $dates = [];
+                    for ($d = $reservation->check_in->copy(); $d->lt($reservation->check_out); $d->addDay()) {
+                        $dates[] = $d->format('Y-m-d');
+                    }
+                    return $dates;
+                })
+                ->toArray();
+
+            // 3. Combinar y eliminar duplicados
+            $blockedDates = array_values(array_unique(array_merge($manuallyBlocked, $occupiedDates)));
+            sort($blockedDates);
+        }
+        
+        return view('admin.calendar.index', compact('selectedPropertyId', 'blockedDates'));
     }
 }
 
