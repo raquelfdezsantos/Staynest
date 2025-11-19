@@ -441,10 +441,12 @@ class ReservationController extends Controller
         }
 
         $newTotal = $rates->sum('price') * (int)$guests;
+        $previousTotal = $reservation->total_price; // Guardar el total anterior
         
         Log::info('[UPDATE] Nuevo total calculado', [
             'rates_sum' => $rates->sum('price'),
             'guests' => $data['guests'],
+            'previousTotal' => $previousTotal,
             'newTotal' => $newTotal,
             'rates' => $rates->pluck('price', 'date')->toArray(),
         ]);
@@ -541,10 +543,38 @@ class ReservationController extends Controller
                 report($e);
             }
         } else {
-            // No hay devolución - enviar email normal de actualización
+            // No hay devolución - puede ser incremento o sin cambio
+            // Si hay incremento (diff > 0), crear registro de pago por la diferencia
+            if ($diff > 0) {
+                DB::transaction(function () use ($reservation, $diff) {
+                    Payment::create([
+                        'reservation_id' => $reservation->id,
+                        'amount'        => $diff, // positivo = pago adicional
+                        'method'        => 'simulated',
+                        'status'        => 'completed',
+                        'provider_ref'  => 'SIM-PAY-' . Str::upper(Str::random(6)),
+                    ]);
+                });
+                Log::info('Pago adicional registrado', ['amount' => $diff]);
+                
+                // Enviar email de recibo de pago adicional
+                if ($reservation->invoice) {
+                    try {
+                        Mail::to($reservation->user->email)->send(
+                            new \App\Mail\PaymentReceiptMail($reservation, $reservation->invoice)
+                        );
+                        Log::info('PaymentReceiptMail enviado al cliente por pago adicional');
+                    } catch (Throwable $e) {
+                        Log::error('Fallo PaymentReceiptMail cliente', ['msg' => $e->getMessage()]);
+                        report($e);
+                    }
+                }
+            }
+            
+            // Enviar email de actualización con información de la diferencia
             Log::info('Intentando enviar ReservationUpdatedMail al cliente', ['email' => $reservation->user->email]);
             try {
-                Mail::to($reservation->user->email)->send(new ReservationUpdatedMail($reservation));
+                Mail::to($reservation->user->email)->send(new ReservationUpdatedMail($reservation, $previousTotal, $diff));
                 Log::info('ReservationUpdatedMail enviado al cliente', ['email' => $reservation->user->email]);
             } catch (Throwable $e) {
                 Log::error('Fallo ReservationUpdatedMail cliente', ['msg' => $e->getMessage()]);
@@ -552,7 +582,7 @@ class ReservationController extends Controller
             }
             Log::info('Intentando enviar ReservationUpdatedMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
             try {
-                Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationUpdatedMail($reservation));
+                Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationUpdatedMail($reservation, $previousTotal, $diff));
                 Log::info('ReservationUpdatedMail enviado al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
             } catch (Throwable $e) {
                 Log::error('Fallo ReservationUpdatedMail admin', ['msg' => $e->getMessage()]);

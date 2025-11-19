@@ -16,7 +16,11 @@ class ReservationUpdatedMail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(public \App\Models\Reservation $reservation) {}
+    public function __construct(
+        public \App\Models\Reservation $reservation,
+        public float $previousTotal = 0,
+        public float $difference = 0
+    ) {}
 
     /**
      * Get the message envelope.
@@ -33,7 +37,11 @@ class ReservationUpdatedMail extends Mailable
     {
         return new Content(
             view: 'emails.reservation_updated',
-            with: ['reservation' => $this->reservation->loadMissing(['user','property'])]
+            with: [
+                'reservation' => $this->reservation->loadMissing(['user','property']),
+                'previousTotal' => $this->previousTotal,
+                'difference' => $this->difference
+            ]
         );
     }
 
