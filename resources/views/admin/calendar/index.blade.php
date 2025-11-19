@@ -127,9 +127,16 @@
       color: var(--color-text-primary);
     }
     
-    html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled) {
+    /* Hover sólo en días disponibles (KISS) */
+    html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
       background: rgba(77, 141, 148, 0.10);
       border-color: var(--color-accent);
+    }
+    /* Días bloqueados: sin hover y sin interacción */
+    .flatpickr-day.unavailable {
+      background: rgba(239, 68, 68, 0.15) !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important; /* elimina hover y clic */
     }
     
     html[data-theme="dark"] .flatpickr-day.selected,
@@ -167,9 +174,14 @@
       color: #222;
     }
     
-    html[data-theme="light"] .flatpickr-day:hover:not(.flatpickr-disabled) {
+    html[data-theme="light"] .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
       background: rgba(77, 141, 148, 0.10);
       border-color: var(--color-accent);
+    }
+    html[data-theme="light"] .flatpickr-day.unavailable {
+      background: rgba(239, 68, 68, 0.15) !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
     }
     
     html[data-theme="light"] .flatpickr-day.selected,
@@ -196,7 +208,7 @@
       justify-content: center !important;
     }
     
-    /* Hacer los círculos más pequeños con espacio entre ellos */
+    /* Hacer los días cuadrados (no círculos) */
     .flatpickr-day {
       max-width: 38px !important;
       max-height: 38px !important;
@@ -204,6 +216,8 @@
       height: 38px !important;
       line-height: 38px !important;
       margin: 2px !important;
+      border-radius: 2px !important;
+      border: none !important;
     }
     
     /* Días de meses anterior/posterior más apagados */
@@ -286,12 +300,12 @@
             const day = String(date.getDate()).padStart(2, '0');
             const dateStr = `${year}-${month}-${day}`;
             
-            // Marcar fechas bloqueadas/ocupadas (borde rojo como en Reservar)
+            // Marcar fechas bloqueadas/ocupadas (solo fondo rojo)
             if (blockedDates.includes(dateStr)) {
-              dayElem.style.backgroundColor = 'rgba(255, 0, 0, 0.05)';
-              dayElem.style.border = '1px solid var(--color-error)';
+              dayElem.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
               dayElem.style.cursor = 'not-allowed';
               dayElem.title = 'Noche bloqueada u ocupada';
+              dayElem.classList.add('unavailable'); // para desactivar hover visual
             }
           }
         });

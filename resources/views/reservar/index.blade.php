@@ -35,8 +35,17 @@
             color: var(--color-text-primary);
         }
         
-        html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled) {
-            background: rgba(77, 141, 148, 0.10);
+        html[data-theme="dark"] .flatpickr-day.unavailable,
+        html[data-theme="dark"] .flatpickr-day.unavailable:hover,
+        html[data-theme="dark"] .flatpickr-day.flatpickr-disabled,
+        html[data-theme="dark"] .flatpickr-day.flatpickr-disabled:hover {
+            background: rgba(239, 68, 68, 0.15) !important;
+            border-color: transparent !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+        html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
+            background: rgba(77,141,148,0.10);
             border-color: var(--color-accent);
         }
         
@@ -75,8 +84,17 @@
             color: #222;
         }
         
-        html[data-theme="light"] .flatpickr-day:hover:not(.flatpickr-disabled) {
-            background: rgba(77, 141, 148, 0.10);
+        html[data-theme="light"] .flatpickr-day.unavailable,
+        html[data-theme="light"] .flatpickr-day.unavailable:hover,
+        html[data-theme="light"] .flatpickr-day.flatpickr-disabled,
+        html[data-theme="light"] .flatpickr-day.flatpickr-disabled:hover {
+            background: rgba(239, 68, 68, 0.15) !important;
+            border-color: transparent !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+        html[data-theme="light"] .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
+            background: rgba(77,141,148,0.10);
             border-color: var(--color-accent);
         }
         
@@ -104,7 +122,7 @@
             justify-content: center !important;
         }
         
-        /* Hacer los círculos más pequeños con espacio entre ellos */
+        /* Hacer los días cuadrados (no círculos) */
         .flatpickr-day {
             max-width: 38px !important;
             max-height: 38px !important;
@@ -112,6 +130,8 @@
             height: 38px !important;
             line-height: 38px !important;
             margin: 2px !important;
+            border-radius: 2px !important;
+            border: none !important;
         }
         
         /* Días de meses anterior/posterior más apagados */
@@ -120,38 +140,21 @@
             opacity: 0.4 !important;
         }
         
-        /* Asegurar opacidad en días de otros meses incluso con colores */
-        .flatpickr-day.prevMonthDay.available,
-        .flatpickr-day.prevMonthDay.unavailable,
-        .flatpickr-day.nextMonthDay.available,
-        .flatpickr-day.nextMonthDay.unavailable {
+        /* Asegurar opacidad en días de otros meses */
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay {
             opacity: 0.4 !important;
         }
-        
-        /* Días disponibles: solo borde verde, fondo transparente */
-        .flatpickr-day.available:not(.flatpickr-disabled):not(.selected) {
-            background: transparent !important;
-            color: var(--color-text-primary) !important;
-            border: 1px solid var(--color-success) !important;
-        }
 
-        /* Días no disponibles: solo borde rojo, fondo con leve transparencia oscura */
+        /* Refuerzo final anti-hover (por si carga otra hoja después) */
         .flatpickr-day.unavailable,
-        .flatpickr-day.flatpickr-disabled,
-        .flatpickr-day.unavailable.flatpickr-disabled {
-            background: rgba(255,0,0,0.05) !important;
-            color: var(--color-text-secondary) !important;
-            border: 1px solid var(--color-error) !important;
-            cursor: not-allowed !important;
-        }
-
-        .flatpickr-day.available:hover:not(.flatpickr-disabled):not(.selected) {
-            background: rgba(0,128,0,0.06) !important;
-        }
-
         .flatpickr-day.unavailable:hover,
+        .flatpickr-day.flatpickr-disabled,
         .flatpickr-day.flatpickr-disabled:hover {
-            background: rgba(255,0,0,0.08) !important;
+            background: rgba(239, 68, 68, 0.15) !important;
+            border-color: transparent !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
         }
     </style>
     

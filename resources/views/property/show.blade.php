@@ -1,6 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+                    <style>
+                        /* KISS: hover sólo en días disponibles */
+                        .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
+                            background: rgba(77,141,148,0.10);
+                            border-color: var(--color-accent, #4d8d94);
+                        }
+                        .flatpickr-day.unavailable,
+                        .flatpickr-day.unavailable.flatpickr-disabled {
+                            background: #ffebee !important;
+                            color: #c62828 !important;
+                            cursor: not-allowed !important;
+                            pointer-events: none !important;
+                        }
+                    </style>
     </x-slot>
 
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8">

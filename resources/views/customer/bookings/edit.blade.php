@@ -23,7 +23,7 @@
     html[data-theme="dark"] .flatpickr-weekdays { background: var(--color-bg-card); }
     html[data-theme="dark"] span.flatpickr-weekday { color: var(--color-text-secondary); }
     html[data-theme="dark"] .flatpickr-day { color: var(--color-text-primary); }
-    html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled) {
+    html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
       background: rgba(77, 141, 148, 0.10);
       border-color: var(--color-accent);
     }
@@ -43,7 +43,7 @@
     html[data-theme="light"] .flatpickr-months { background: #d1d1d1; }
     html[data-theme="light"] .flatpickr-weekdays { background: #d1d1d1; }
     html[data-theme="light"] .flatpickr-day { color: #222; }
-    html[data-theme="light"] .flatpickr-day:hover:not(.flatpickr-disabled) {
+    html[data-theme="light"] .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
       background: rgba(77, 141, 148, 0.10);
       border-color: var(--color-accent);
     }
@@ -64,7 +64,7 @@
       max-width: 308px !important;
       justify-content: center !important;
     }
-    /* Celdas de días */
+    /* Hacer los días cuadrados (no círculos) */
     .flatpickr-day {
       max-width: 38px !important;
       max-height: 38px !important;
@@ -72,32 +72,22 @@
       height: 38px !important;
       line-height: 38px !important;
       margin: 2px !important;
+      border-radius: 2px !important;
+      border: none !important;
     }
-    /* Días de meses anterior/posterior apagados */
-    .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { opacity: 0.4 !important; }
-    .flatpickr-day.prevMonthDay.available, .flatpickr-day.prevMonthDay.unavailable,
-    .flatpickr-day.nextMonthDay.available, .flatpickr-day.nextMonthDay.unavailable { opacity: 0.4 !important; }
+    
+    /* Días de meses anterior/posterior más apagados */
+    .flatpickr-day.prevMonthDay,
+    .flatpickr-day.nextMonthDay {
+      opacity: 0.4 !important;
+    }
 
-    /* Disponibles: borde verde */
-    .flatpickr-day.available:not(.flatpickr-disabled):not(.selected) {
-      background: transparent !important;
-      color: var(--color-text-primary) !important;
-      border: 1px solid var(--color-success) !important;
-    }
-    /* No disponibles: borde rojo */
-    .flatpickr-day.unavailable, .flatpickr-day.flatpickr-disabled, .flatpickr-day.unavailable.flatpickr-disabled {
-      background: rgba(255,0,0,0.05) !important;
-      color: var(--color-text-secondary) !important;
-      border: 1px solid var(--color-error) !important;
+    /* Días no disponibles: fondo rojo + sin interacción (KISS) */
+    .flatpickr-day.unavailable,
+    .flatpickr-day.unavailable.flatpickr-disabled {
+      background: rgba(239, 68, 68, 0.15) !important;
       cursor: not-allowed !important;
-    }
-    .flatpickr-day.available:hover:not(.flatpickr-disabled):not(.selected) { background: rgba(0,128,0,0.06) !important; }
-    .flatpickr-day.unavailable:hover, .flatpickr-day.flatpickr-disabled:hover { background: rgba(255,0,0,0.08) !important; }
-    /* Selección */
-    .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
-      background: var(--color-accent) !important;
-      border-color: var(--color-accent) !important;
-      color:#fff !important;
+      pointer-events: none !important;
     }
     </style>
 
