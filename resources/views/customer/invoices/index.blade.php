@@ -24,47 +24,64 @@
                 </a>
             </div>
         @else
-            {{-- Tabla minimalista --}}
-            <div style="overflow-x: auto; margin-top: 2rem;">
-                <table class="table-admin">
-                    <thead>
-                        <tr>
-                            <th>Nº Factura</th>
-                            <th>Fecha emisión</th>
-                            <th>Alojamiento</th>
-                            <th>Fechas estancia</th>
-                            <th>Importe</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($invoices as $inv)
+            {{-- Tabla de facturas --}}
+            <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); overflow: hidden; margin-top: 2rem;">
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: var(--text-sm);">
+                        <thead style="background: rgba(77, 141, 148, 0.08); border-bottom: 2px solid var(--color-border-light);">
                             <tr>
-                                <td>{{ $inv->number }}</td>
-                                <td>{{ optional($inv->issued_at)->format('d/m/Y') }}</td>
-                                <td>{{ $inv->reservation->property->name ?? '—' }}</td>
-                                <td>
-                                    {{ $inv->reservation->check_in->format('d/m/Y') }} → {{ $inv->reservation->check_out->format('d/m/Y') }}
-                                </td>
-                                <td>{{ number_format($inv->amount, 2, ',', '.') }} €</td>
-                                <td>
-                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-                                        <a href="{{ route('invoices.show', $inv->number) }}" class="btn-action btn-action-secondary" style="font-size: 0.75rem; padding: 0.5rem 0.875rem;">
-                                            Ver
-                                        </a>
-                                        <a href="{{ route('invoices.show', $inv->number) }}?download=1" class="btn-action btn-action-secondary" style="font-size: 0.75rem; padding: 0.5rem 0.875rem;">
-                                            Descargar PDF
-                                        </a>
-                                    </div>
-                                </td>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Nº Factura</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Fecha</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Alojamiento</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Estancia</th>
+                                <th style="padding: 1rem; text-align: right; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Importe</th>
+                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Acciones</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach($invoices as $inv)
+                                <tr style="border-bottom: 1px solid var(--color-border-light); transition: background-color 0.2s;">
+                                    <td style="padding: 1rem; color: var(--color-text-primary); font-family: monospace; font-weight: 600;">
+                                        {{ $inv->number }}
+                                    </td>
+                                    <td style="padding: 1rem; color: var(--color-text-secondary);">
+                                        {{ optional($inv->issued_at)->format('d/m/Y') }}
+                                    </td>
+                                    <td style="padding: 1rem; color: var(--color-text-primary); font-weight: 500;">
+                                        {{ $inv->reservation->property->name ?? '—' }}
+                                    </td>
+                                    <td style="padding: 1rem; color: var(--color-text-secondary); font-size: var(--text-xs);">
+                                        {{ $inv->reservation->check_in->format('d/m/Y') }}<br>
+                                        <span style="opacity: 0.6;">→ {{ $inv->reservation->check_out->format('d/m/Y') }}</span>
+                                    </td>
+                                    <td style="padding: 1rem; text-align: right; color: var(--color-text-primary); font-weight: 600; font-size: var(--text-base);">
+                                        {{ number_format($inv->amount, 2, ',', '.') }} €
+                                    </td>
+                                    <td style="padding: 1rem;">
+                                        <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                                            <a href="{{ route('invoices.show', $inv->number) }}" 
+                                               style="text-transform: none; letter-spacing: 0; font-weight: 600; font-size: var(--text-sm); padding: 0.5rem 1.25rem; border-radius: 2px; text-decoration: none; transition: all var(--transition-fast); background: transparent; border: 1px solid var(--color-border-light); color: var(--color-text-primary); cursor: pointer;"
+                                               onmouseover="this.style.backgroundColor='rgba(77, 141, 148, 0.10)'; this.style.color='var(--color-accent)'; this.style.borderColor='transparent';"
+                                               onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--color-text-primary)'; this.style.borderColor='var(--color-border-light)';">
+                                                Ver
+                                            </a>
+                                            <a href="{{ route('invoices.show', $inv->number) }}?download=1" 
+                                               style="text-transform: none; letter-spacing: 0; font-weight: 600; font-size: var(--text-sm); padding: 0.5rem 1.25rem; border-radius: 2px; text-decoration: none; transition: all var(--transition-fast); background-color: var(--color-accent); color: #fff; border: none; cursor: pointer;"
+                                               onmouseover="this.style.backgroundColor='var(--color-accent-hover)';"
+                                               onmouseout="this.style.backgroundColor='var(--color-accent)';">
+                                                PDF
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
                 {{-- Paginación --}}
                 @if($invoices->hasPages())
-                    <div style="margin-top: 2rem;">
+                    <div style="padding: 1rem; border-top: 1px solid var(--color-border-light); background: rgba(77, 141, 148, 0.03);">
                         {{ $invoices->links() }}
                     </div>
                 @endif
