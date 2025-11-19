@@ -25,6 +25,13 @@ class StripeController extends Controller
 
         abort_unless($reservation->status === 'pending', 403);
 
+        // Validar datos fiscales del usuario antes de permitir el checkout
+        $user = $reservation->user;
+        if (empty($user->address) || empty($user->document_id)) {
+            return redirect()->route('profile.edit')
+                ->with('error', 'Debes completar tu dirección y NIF/CIF/PAS/Otro en tu perfil antes de realizar el pago.');
+        }
+
         $stripe = new StripeClient(config('services.stripe.secret'));
 
         $session = $stripe->checkout->sessions->create([
@@ -55,6 +62,13 @@ class StripeController extends Controller
     public function checkoutDifference(Request $request, Reservation $reservation)
     {
         $this->authorize('pay', $reservation);
+
+        // Validar datos fiscales del usuario antes de permitir el pago de diferencia
+        $user = $reservation->user;
+        if (empty($user->address) || empty($user->document_id)) {
+            return redirect()->route('profile.edit')
+                ->with('error', 'Debes completar tu dirección y NIF/CIF en tu perfil antes de realizar el pago.');
+        }
 
         $balance = $reservation->balanceDue();
         

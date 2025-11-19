@@ -28,6 +28,8 @@ class User extends Authenticatable
         'role',
         'phone',
         'avatar_path',
+        'address',
+        'document_id',
     ];
 
     /**

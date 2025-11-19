@@ -129,7 +129,7 @@
       <div class="box-title">Cliente</div>
       <div class="kv"><strong>Nombre:</strong> {{ $invoice->reservation->user->name }}</div>
       <div class="kv"><strong>Dirección:</strong> {{ $invoice->reservation->user->address ?? '—' }}</div>
-      <div class="kv"><strong>Documento:</strong> {{ $invoice->reservation->user->document_id ?? '—' }}</div>
+      <div class="kv"><strong>NIF/CIF/PAS/Otro:</strong> {{ $invoice->reservation->user->document_id ?? '—' }}</div>
       <div class="kv"><strong>Correo:</strong> {{ $invoice->reservation->user->email }}</div>
     </div>
     <br>
@@ -140,7 +140,7 @@
       <div class="kv"><strong>Registro alquiler:</strong> {{ $p->rental_registration ?? '—' }}</div>
       <div class="kv"><strong>Dirección:</strong> {{ $p->address ?? '—' }}, {{ $p->postal_code ?? '' }} {{ $p->city ?? '' }} {{ $p->province ? '(' . $p->province . ')' : '' }}</div>
       <div class="kv"><strong>Propietario:</strong> {{ $p->owner_name ?? '—' }}</div>
-      <div class="kv"><strong>CIF/NIF:</strong> {{ $p->owner_tax_id ?? '—' }}</div>
+      <div class="kv"><strong>NIF/CIF:</strong> {{ $p->owner_tax_id ?? '—' }}</div>
     </div>
   </div>
 

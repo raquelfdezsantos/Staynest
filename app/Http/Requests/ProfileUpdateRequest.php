@@ -31,6 +31,8 @@ class ProfileUpdateRequest extends FormRequest
                 'mimes:jpg,jpeg,png,webp',
                 'max:2048'
             ],
+            'address' => ['nullable','string','max:255'],
+            'document_id' => ['nullable','string','max:50'],
         ];
     }
 
@@ -50,6 +52,8 @@ class ProfileUpdateRequest extends FormRequest
             'avatar.image' => 'El archivo debe ser una imagen.',
             'avatar.mimes' => 'La imagen debe ser JPG, PNG o WEBP.',
             'avatar.max' => 'La imagen no puede pesar más de 2MB.',
+            'address.max' => 'La dirección no puede superar :max caracteres.',
+            'document_id.max' => 'El NIF/CIF no puede superar :max caracteres.',
         ];
     }
 
@@ -64,6 +68,8 @@ class ProfileUpdateRequest extends FormRequest
             'name' => 'nombre',
             'email' => 'email',
             'avatar' => 'foto de perfil',
+            'address' => 'dirección',
+            'document_id' => 'NIF/CIF',
         ];
     }
 }

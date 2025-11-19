@@ -1,0 +1,10 @@
+{
+    "inter": {
+        "normal": "\/var\/www\/html\/storage\/fonts\/inter_normal_0501955a2a234ef8249788e91d75bc46",
+        "italic": "\/var\/www\/html\/storage\/fonts\/inter_italic_39c7bea15cd945ce7b89b71ed8be60da",
+        "600": "\/var\/www\/html\/storage\/fonts\/inter_600_0501955a2a234ef8249788e91d75bc46",
+        "600_italic": "\/var\/www\/html\/storage\/fonts\/inter_600_italic_39c7bea15cd945ce7b89b71ed8be60da",
+        "bold": "\/var\/www\/html\/storage\/fonts\/inter_bold_0501955a2a234ef8249788e91d75bc46",
+        "bold_italic": "inter_bold_italic_39c7bea15cd945ce7b89b71ed8be60da"
+    }
+}

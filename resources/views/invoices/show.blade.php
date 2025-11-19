@@ -29,7 +29,7 @@
                             <div class="invoice-legal text-neutral-200">
                                 <div><strong>Nombre:</strong> {{ $invoice->reservation->user->name }}</div>
                                 <div><strong>Dirección:</strong> {{ $invoice->reservation->user->address ?? '—' }}</div>
-                                <div><strong>Documento:</strong> {{ $invoice->reservation->user->document_id ?? '—' }}</div>
+                                <div><strong>NIF/CIF/PAS/Otro:</strong> {{ $invoice->reservation->user->document_id ?? '—' }}</div>
                                 <div><strong>Correo:</strong> {{ $invoice->reservation->user->email }}</div>
                             </div>
                         </div>

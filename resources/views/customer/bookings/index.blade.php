@@ -30,6 +30,13 @@
             <div class="alert alert-error">{{ session('error') }}</div>
         @endif
 
+        @php $currentUser = auth()->user(); @endphp
+        @if($currentUser && (empty($currentUser->address) || empty($currentUser->document_id)))
+            <div class="alert alert-error" style="margin-bottom:1rem;">
+                Antes de realizar el pago debes completar tu dirección y NIF/CIF en <a href="{{ route('profile.edit') }}" style="text-decoration:underline;">Mi perfil</a>.
+            </div>
+        @endif
+
         @if($reservations->isEmpty())
             <div style="text-align: center; padding: 4rem 2rem;">
                 <svg style="margin: 0 auto; width: 4rem; height: 4rem; color: var(--color-text-muted); margin-bottom: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,12 +146,19 @@
 
                             <div class="reservation-actions">
                                 @if($r->status === 'pending')
-                                    <form method="POST" action="{{ route('stripe.checkout', $r->id) }}" style="display: inline;">
-                                        @csrf
-                                        <button type="submit" class="btn-action btn-action-primary">
-                                            Pagar ahora
-                                        </button>
-                                    </form>
+                                    @php $u = auth()->user(); @endphp
+                                    @if($u && (empty($u->address) || empty($u->document_id)))
+                                        <a href="{{ route('profile.edit') }}" class="btn-action btn-action-danger" title="Completa tus datos antes de pagar">
+                                            Completar datos para pagar
+                                        </a>
+                                    @else
+                                        <form method="POST" action="{{ route('stripe.checkout', $r->id) }}" style="display: inline;">
+                                            @csrf
+                                            <button type="submit" class="btn-action btn-action-primary">
+                                                Pagar ahora
+                                            </button>
+                                        </form>
+                                    @endif
                                 @endif
 
                                 @if($r->status !== 'cancelled')

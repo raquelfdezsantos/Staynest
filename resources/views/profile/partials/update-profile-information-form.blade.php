@@ -4,7 +4,7 @@
             Información personal
         </h2>
         <p style="margin-top: 0.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
-            Actualiza tu nombre, email y foto de perfil.
+            Actualiza tu nombre, email, dirección, NIF/CIF/PAS/Otro y foto de perfil. La dirección y el número de documento son necesarios para emitir facturas y proceder al pago.
         </p>
     </header>
 
@@ -69,6 +69,30 @@
                     @endif
                 </div>
             @endif
+        </div>
+
+        {{-- Dirección fiscal --}}
+        <div>
+            <x-input-label for="address" value="Dirección (facturación)" />
+            <x-text-input id="address"
+                          name="address"
+                          type="text"
+                          class="block mt-1 w-full"
+                          :value="old('address', $user->address)"
+                          autocomplete="street-address" />
+            <p style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top:0.25rem;">Incluye calle, número, localidad y código postal para la factura.</p>
+        </div>
+
+        {{-- NIF/CIF --}}
+        <div>
+            <x-input-label for="document_id" value="NIF/CIF/PAS/Otro" />
+            <x-text-input id="document_id"
+                          name="document_id"
+                          type="text"
+                          class="block mt-1 w-full"
+                          :value="old('document_id', $user->document_id)"
+                          autocomplete="off" />
+            <p style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top:0.25rem;">Necesario para facturación y completar el pago.</p>
         </div>
 
         {{-- Avatar --}}

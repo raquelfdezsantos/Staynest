@@ -45,6 +45,7 @@ $maxWidth = [
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
+    x-cloak
     x-transition:enter="ease-out duration-300"
     x-transition:enter-start="opacity-0"
     x-transition:enter-end="opacity-100"
@@ -52,7 +53,7 @@ $maxWidth = [
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     class="modal-overlay fixed inset-0"
-    style="z-index: 9999; background-color: rgba(0, 0, 0, 0.5); padding: 1rem;"
+    style="display: none; z-index: 9999; background-color: rgba(0, 0, 0, 0.5); padding: 1rem;"
     @click="show = false"
 >
     <div
