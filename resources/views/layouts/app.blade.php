@@ -38,8 +38,12 @@
 </head>
 
 <body>
-    {{-- Navegación unificada: siempre nav-public con dropdown de usuario si está logueado --}}
-    <x-nav-public :transparent="request()->routeIs('home')" />
+    {{-- Navegación: admin o pública --}}
+    @if(request()->routeIs('admin.*'))
+        <x-nav-admin />
+    @else
+        <x-nav-public :transparent="request()->routeIs('home')" />
+    @endif
 
     <!-- Page Content -->
     {{-- Home sin container (hero full), resto con container --}}

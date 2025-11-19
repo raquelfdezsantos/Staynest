@@ -1,224 +1,198 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Panel de Administración') }}
-        </h2>
-    </x-slot>
+    <div class="max-w-7xl mx-auto px-4" style="padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl);">
+        
+        {{-- Header --}}
+        <header style="margin-bottom: 2rem;">
+            <h1 style="font-family: var(--font-serif); font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
+                Dashboard
+            </h1>
+            <p style="color: var(--color-text-secondary); font-size: var(--text-base);">
+                Resumen general de reservas y estadísticas.
+            </p>
+        </header>
 
-    <div class="mb-4 flex gap-2">
-        <a href="{{ route('admin.property.index') }}" class="px-3 py-1 rounded bg-gray-100 border text-sm">Propiedad</a>
-        <a href="{{ route('admin.photos.index') }}" class="px-3 py-1 rounded bg-gray-100 border text-sm">Fotos</a>
-        <a href="{{ route('admin.calendar.index') }}"
-            class="px-3 py-1 rounded bg-gray-100 border text-sm">Calendario</a>
-    </div>
+        {{-- Mensajes --}}
+        @if (session('success'))
+            <div class="alert alert-success" style="margin-bottom: 1.5rem;">{{ session('success') }}</div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-error" style="margin-bottom: 1.5rem;">{{ session('error') }}</div>
+        @endif
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-
-            @if (session('success'))
-                <div class="mb-4 p-3 bg-green-100 text-green-700 rounded">{{ session('success') }}</div>
-            @endif
-            @if (session('error'))
-                <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">{{ session('error') }}</div>
-            @endif
-
-            {{-- Widgets de estadísticas --}}
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                {{-- Reservas activas --}}
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-indigo-500 rounded-md p-3">
-                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                </svg>
-                            </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Reservas Activas</dt>
-                                    <dd class="text-3xl font-semibold text-gray-900">{{ $stats['activeReservations'] }}</dd>
-                                </dl>
-                            </div>
-                        </div>
+        {{-- Widgets de estadísticas --}}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            {{-- Reservas activas --}}
+            <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="background: var(--color-accent); border-radius: 2px; padding: 0.75rem; flex-shrink: 0;">
+                        <svg style="width: 1.5rem; height: 1.5rem; color: #fff;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
                     </div>
-                </div>
-
-                {{-- Ingresos totales --}}
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
-                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Ingresos Totales</dt>
-                                    <dd class="text-3xl font-semibold text-gray-900">{{ number_format($stats['totalRevenue'], 2, ',', '.') }} €</dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Ocupación del mes --}}
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
-                                <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
-                            </div>
-                            <div class="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Ocupación {{ now()->format('F') }}</dt>
-                                    <dd class="text-3xl font-semibold text-gray-900">{{ $stats['occupancyRate'] }}%</dd>
-                                </dl>
-                            </div>
-                        </div>
+                    <div>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.25rem;">Reservas Activas</p>
+                        <p style="font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary);">{{ $stats['activeReservations'] }}</p>
                     </div>
                 </div>
             </div>
 
-            {{-- Próximas reservas --}}
-            @if($stats['upcomingReservations']->isNotEmpty())
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold mb-4">Próximas Reservas</h3>
-                        <div class="space-y-3">
-                            @foreach($stats['upcomingReservations'] as $upcoming)
-                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                    <div class="flex items-center space-x-4">
-                                        <div class="flex-shrink-0">
-                                            <div class="h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                                <span class="text-indigo-600 font-semibold">{{ substr($upcoming->user->name ?? 'U', 0, 1) }}</span>
-                                            </div>
-                                        </div>
-                                        <div>
-                                            <p class="text-sm font-medium text-gray-900">{{ $upcoming->user->name ?? 'Usuario' }}</p>
-                                            <p class="text-sm text-gray-500">
-                                                {{ $upcoming->check_in->format('d/m/Y') }} - {{ $upcoming->check_out->format('d/m/Y') }}
-                                                · {{ $upcoming->guests }} huésped(es)
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="text-right">
-                                        <p class="text-sm font-semibold text-gray-900">{{ number_format($upcoming->total_price, 2, ',', '.') }} €</p>
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            {{ $upcoming->status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                            {{ ucfirst($upcoming->status) }}
-                                        </span>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+            {{-- Ingresos totales --}}
+            <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="background: var(--color-success); border-radius: 2px; padding: 0.75rem; flex-shrink: 0;">
+                        <svg style="width: 1.5rem; height: 1.5rem; color: #fff;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.25rem;">Ingresos Totales</p>
+                        <p style="font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary);">{{ number_format($stats['totalRevenue'], 2, ',', '.') }} €</p>
                     </div>
                 </div>
-            @endif
+            </div>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <h3 class="text-lg font-semibold mb-4">Todas las Reservas</h3>
+            {{-- Ocupación del mes --}}
+            <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1.5rem;">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="background: #3b82f6; border-radius: 2px; padding: 0.75rem; flex-shrink: 0;">
+                        <svg style="width: 1.5rem; height: 1.5rem; color: #fff;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.25rem;">Ocupación {{ now()->format('F') }}</p>
+                        <p style="font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary);">{{ $stats['occupancyRate'] }}%</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                    <table class="w-full text-left border border-gray-200 rounded overflow-hidden">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="p-3">ID</th>
-                                <th class="p-3">Cliente</th>
-                                <th class="p-3">Propiedad</th>
-                                <th class="p-3">Check-in</th>
-                                <th class="p-3">Check-out</th>
-                                <th class="p-3">Huéspedes</th>
-                                <th class="p-3">Total</th>
-                                <th class="p-3">Estado</th>
-                                <th class="p-3">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($reservations as $r)
-                                <tr class="border-t">
-                                    <td class="p-3">{{ $r->id }}</td>
-                                    <td class="p-3">{{ $r->user?->name ?? '—' }}</td>
-                                    <td class="p-3">{{ $r->property?->name ?? '—' }}</td>
-                                    <td class="p-3">{{ $r->check_in->format('Y-m-d') }}</td>
-                                    <td class="p-3">{{ $r->check_out->format('Y-m-d') }}</td>
-                                    <td class="p-3">{{ $r->guests }}</td>
-                                    <td class="p-3">{{ number_format($r->total_price, 2, ',', '.') }} €</td>
-                                    <td class="p-3">{{ ucfirst($r->status) }}</td>
-                                    <td class="p-3">
-                                        {{-- Editar siempre en admin --}}
-                                        <a href="{{ route('admin.reservations.edit', $r->id) }}"
-                                            class="text-indigo-600 hover:underline">Editar</a>
+        {{-- Próximas reservas --}}
+        @if($stats['upcomingReservations']->isNotEmpty())
+            <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1.5rem; margin-bottom: 2rem;">
+                <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Próximas Reservas</h3>
+                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                    @foreach($stats['upcomingReservations'] as $upcoming)
+                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; background: rgba(77, 141, 148, 0.05); border-radius: 2px;">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: rgba(77, 141, 148, 0.15); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <span style="color: var(--color-accent); font-weight: 600; font-size: var(--text-sm);">{{ substr($upcoming->user->name ?? 'U', 0, 1) }}</span>
+                                </div>
+                                <div>
+                                    <p style="font-size: var(--text-sm); font-weight: 500; color: var(--color-text-primary);">{{ $upcoming->user->name ?? 'Usuario' }}</p>
+                                    <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+                                        {{ $upcoming->check_in->format('d/m/Y') }} - {{ $upcoming->check_out->format('d/m/Y') }}
+                                        · {{ $upcoming->guests }} huésped(es)
+                                    </p>
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <p style="font-size: var(--text-sm); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.25rem;">{{ number_format($upcoming->total_price, 2, ',', '.') }} €</p>
+                                <span class="badge {{ $upcoming->status === 'paid' ? 'badge-success' : 'badge-warning' }}" style="font-size: var(--text-xs);">
+                                    {{ $upcoming->status === 'paid' ? 'Pagada' : 'Pendiente' }}
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); overflow: hidden;">
+            <div style="padding: 1.5rem; border-bottom: 1px solid var(--color-border-light);">
+                <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary);">Todas las Reservas</h3>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: var(--text-sm);">
+                    <thead style="background: rgba(77, 141, 148, 0.08); border-bottom: 2px solid var(--color-border-light);">
+                        <tr>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">ID</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Cliente</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Propiedad</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Check-in</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Check-out</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Huéspedes</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Total</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Estado</th>
+                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($reservations as $r)
+                            <tr style="border-bottom: 1px solid var(--color-border-light);">
+                                <td style="padding: 0.75rem; color: var(--color-text-primary); font-family: monospace; font-weight: 600;">#{{ $r->id }}</td>
+                                <td style="padding: 0.75rem; color: var(--color-text-primary);">{{ $r->user?->name ?? '—' }}</td>
+                                <td style="padding: 0.75rem; color: var(--color-text-secondary);">{{ $r->property?->name ?? '—' }}</td>
+                                <td style="padding: 0.75rem; color: var(--color-text-secondary); font-size: var(--text-xs);">{{ $r->check_in->format('d/m/Y') }}</td>
+                                <td style="padding: 0.75rem; color: var(--color-text-secondary); font-size: var(--text-xs);">{{ $r->check_out->format('d/m/Y') }}</td>
+                                <td style="padding: 0.75rem; color: var(--color-text-secondary);">{{ $r->guests }}</td>
+                                <td style="padding: 0.75rem; color: var(--color-text-primary); font-weight: 600;">{{ number_format($r->total_price, 2, ',', '.') }} €</td>
+                                <td style="padding: 0.75rem;">
+                                    @if($r->status === 'pending')
+                                        <span class="badge badge-warning">Pendiente</span>
+                                    @elseif($r->status === 'paid')
+                                        <span class="badge badge-success">Pagada</span>
+                                    @elseif($r->status === 'cancelled')
+                                        <span class="badge badge-error">Cancelada</span>
+                                    @else
+                                        <span class="badge badge-info">{{ ucfirst($r->status) }}</span>
+                                    @endif
+                                </td>
+                                <td style="padding: 0.75rem;">
+                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                                        <a href="{{ route('admin.reservations.edit', $r->id) }}" style="color: var(--color-accent); text-decoration: none; font-weight: 500; font-size: var(--text-sm);" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Editar</a>
 
                                         @if ($r->status === 'pending')
-                                            <div class="flex gap-2">
-                                                <form method="POST" action="{{ route('reservations.pay', $r->id) }}">
-                                                    @csrf
-                                                    <button class="px-3 py-1 rounded bg-indigo-600 text-white text-sm"
-                                                        onclick="return confirm('¿Marcar como pagada y generar factura?')">
-                                                        Marcar pagada
-                                                    </button>
-                                                </form>
+                                            <form method="POST" action="{{ route('reservations.pay', $r->id) }}" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" style="padding: 0.375rem 0.75rem; border-radius: 2px; background: var(--color-accent); color: #fff; border: none; font-size: var(--text-sm); font-weight: 500; cursor: pointer; transition: background var(--transition-fast);" onmouseover="this.style.backgroundColor='var(--color-accent-hover)'" onmouseout="this.style.backgroundColor='var(--color-accent)'" onclick="return confirm('¿Marcar como pagada y generar factura?')">
+                                                    Marcar pagada
+                                                </button>
+                                            </form>
 
-                                                <form method="POST" action="{{ route('admin.reservations.cancel', $r->id) }}">
-                                                    @csrf
-                                                    <button class="px-3 py-1 rounded bg-red-600 text-white text-sm"
-                                                        onclick="return confirm('¿Cancelar esta reserva y reponer noches?')">
-                                                        Cancelar
-                                                    </button>
-                                                </form>
-                                            </div>
+                                            <form method="POST" action="{{ route('admin.reservations.cancel', $r->id) }}" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" style="padding: 0.375rem 0.75rem; border-radius: 2px; background: var(--color-error); color: #fff; border: none; font-size: var(--text-sm); font-weight: 500; cursor: pointer; transition: background var(--transition-fast);" onmouseover="this.style.backgroundColor='#d87876'" onmouseout="this.style.backgroundColor='var(--color-error)'" onclick="return confirm('¿Cancelar esta reserva y reponer noches?')">
+                                                    Cancelar
+                                                </button>
+                                            </form>
 
                                         @elseif ($r->status === 'paid' && $r->invoice)
-                                            <div class="flex gap-2 items-center">
-                                                <a class="text-indigo-600 hover:underline"
-                                                    href="{{ route('invoices.show', $r->invoice->number) }}">
-                                                    Ver factura
-                                                </a>
-                                                <a class="text-indigo-600 hover:underline ml-3"
-                                                    href="{{ route('invoices.show', $r->invoice->number) }}?download=1">
-                                                    Descargar PDF
-                                                </a>
+                                            <a style="color: var(--color-accent); text-decoration: none; font-weight: 500; font-size: var(--text-sm);" href="{{ route('invoices.show', $r->invoice->number) }}" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Ver factura</a>
+                                            <a style="color: var(--color-accent); text-decoration: none; font-weight: 500; font-size: var(--text-sm);" href="{{ route('invoices.show', $r->invoice->number) }}?download=1" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">PDF</a>
 
-                                                <form method="POST" action="{{ route('admin.reservations.refund', $r->id) }}"
-                                                    class="inline">
-                                                    @csrf
-                                                    <button
-                                                        class="text-red-600 hover:underline"
-                                                        onclick="return confirm('Esto marcará la reserva como cancelada y registrará reembolso. ¿Continuar?')">
-                                                        Reembolsar y cancelar
-                                                    </button>
-                                                </form>
-                                            </div>
-
+                                            <form method="POST" action="{{ route('admin.reservations.refund', $r->id) }}" style="display: inline;">
+                                                @csrf
+                                                <button type="submit" style="color: var(--color-error); background: none; border: none; font-weight: 500; font-size: var(--text-sm); cursor: pointer; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'" onclick="return confirm('Esto marcará la reserva como cancelada y registrará reembolso. ¿Continuar?')">
+                                                    Reembolsar
+                                                </button>
+                                            </form>
 
                                         @elseif ($r->status === 'paid')
-                                            {{-- Pagada pero aún sin invoice (raro, pero por si acaso) --}}
-                                            <span class="text-gray-500">Sin factura</span>
+                                            <span style="color: var(--color-text-muted); font-size: var(--text-sm);">Sin factura</span>
 
                                         @else
                                             —
                                         @endif
-                                    </td>
-
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td class="p-3" colspan="9">No hay reservas.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-
-
-                    <div class="mt-4">
-                        {{ $reservations->links() }}
-                    </div>
-                </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td style="padding: 2rem; text-align: center; color: var(--color-text-secondary);" colspan="9">No hay reservas.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
 
+            @if($reservations->hasPages())
+                <div style="padding: 1rem; border-top: 1px solid var(--color-border-light);">
+                    {{ $reservations->links() }}
+                </div>
+            @endif
         </div>
+
     </div>
 </x-app-layout>
