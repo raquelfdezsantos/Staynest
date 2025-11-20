@@ -59,7 +59,7 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
-            <x-primary-button>Guardar</x-primary-button>
+            <x-primary-button class="sn-sentence">Guardar</x-primary-button>
         </div>
     </form>
 </section>

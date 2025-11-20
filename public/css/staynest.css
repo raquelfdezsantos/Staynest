@@ -278,7 +278,7 @@ a {
     transition: color var(--transition-fast);
 }
 
-a:hover:not(.nav-link):not(.btn):not(.btn-primary):not(.entorno-cta) {
+a:hover:not(.nav-link):not(.btn):not(.btn-primary):not(.entorno-cta):not(.btn-action) {
     color: var(--color-accent-hover);
 }
 
@@ -796,12 +796,12 @@ html[data-theme="light"] .nav-header--transparent {
 .btn-secondary {
     background-color: transparent;
     color: var(--color-text-primary);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-accent);
 }
 
 .btn-secondary:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+    border-color: transparent;
+    color: var(--color-text-primary);
 }
 
 /* ============================================================================
@@ -873,18 +873,26 @@ html[data-theme="light"] .nav-header--transparent {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    padding: var(--spacing-sm) var(--spacing-lg);
+    padding: 0.5rem 1.25rem;
     font-family: var(--font-sans);
-    font-size: var(--text-base);
-    font-weight: 500;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: normal;
     border-radius: 2px;
     border: none;
     cursor: pointer;
     transition: all var(--transition-fast);
     text-decoration: none;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    text-transform: none;
+    letter-spacing: 0;
 }
+
+/* Casing unificado: primera mayúscula, resto minúsculas */
+.btn, .btn-action, .entorno-cta { text-transform: lowercase; }
+.btn::first-letter, .btn-action::first-letter, .entorno-cta::first-letter { text-transform: uppercase; }
+.btn .sn-uppercase, .btn-action .sn-uppercase, .entorno-cta .sn-uppercase { text-transform: uppercase !important; }
+.sn-sentence { text-transform: lowercase !important; }
+.sn-sentence::first-letter { text-transform: uppercase !important; }
 
 .btn-action-primary {
     background-color: var(--color-accent);
@@ -893,28 +901,29 @@ html[data-theme="light"] .nav-header--transparent {
 
 .btn-action-primary:hover {
     background-color: var(--color-accent-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
 }
 
 .btn-action-secondary {
     background-color: transparent;
-    color: var(--color-accent);
+    color: var(--color-text-primary);
     border: 1px solid var(--color-accent);
 }
 
 .btn-action-secondary:hover {
-    background-color: rgba(77, 141, 148, 0.08);
+    background-color: rgba(77, 141, 148, 0.10);
+    border-color: transparent;
+    color: var(--color-text-primary);
 }
 
 .btn-action-danger {
     background-color: transparent;
-    color: var(--color-error);
+    color: var(--color-text-primary);
     border: 1px solid var(--color-error);
 }
 
 .btn-action-danger:hover {
     background-color: rgba(204, 89, 86, 0.08);
+    color: var(--color-text-primary);
 }
 
 .btn-action-success {
@@ -1059,7 +1068,7 @@ html[data-theme="light"] .nav-header--transparent {
     padding: 0.5rem 1.25rem;
     font-size: 0.875rem;
     font-weight: 600;
-    text-transform: capitalize;
+    text-transform: none;
     border-radius: 2px;
 }
 
@@ -1136,23 +1145,25 @@ html[data-theme="light"] .nav-header--transparent {
 /* Editar: texto blanco, sin borde ni bg; hover como enlaces del header */
 .reservation-card .reservation-actions .btn-action-secondary {
     background: transparent;
-    border: none;
+    border: 1px solid var(--color-accent);
     color: var(--color-text-primary);
 }
 .reservation-card .reservation-actions .btn-action-secondary:hover {
     background-color: rgba(77, 141, 148, 0.10);
-    color: var(--color-accent);
+    color: var(--color-text-primary);
+    border-color: transparent;
 }
 
 /* Cancelar: texto blanco, sin borde ni bg; hover rojo como "Cerrar sesión" */
 .reservation-card .reservation-actions .btn-action-danger {
     background: transparent;
-    border: none;
+    border: 1px solid var(--color-error);
     color: var(--color-text-primary);
 }
 .reservation-card .reservation-actions .btn-action-danger:hover {
     background-color: rgba(204, 89, 86, 0.15);
-    color: var(--color-error);
+    color: var(--color-text-primary);
+    border-color: transparent;
 }
 
 /* Formularios */

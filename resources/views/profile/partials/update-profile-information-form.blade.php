@@ -110,7 +110,7 @@
             {{-- Botón custom para activar el input --}}
             <button type="button" 
                     onclick="document.getElementById('avatar').click()"
-                    class="btn btn-primary"
+                    class="btn btn-primary sn-sentence"
                     style="margin-top: 0.5rem;">
                 Seleccionar archivo
             </button>
@@ -160,7 +160,7 @@
         </script>
 
         <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
-            <x-primary-button>Guardar cambios</x-primary-button>
+            <x-primary-button class="sn-sentence">Guardar cambios</x-primary-button>
         </div>
     </form>
 </section>

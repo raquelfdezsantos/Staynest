@@ -106,7 +106,7 @@
                     <div class="flex flex-col gap-2">
                                                 @php($backUrl = request()->is('admin/*') ? route('admin.invoices.index') : route('invoices.index'))
                                                 <a href="{{ $backUrl }}" class="btn-action btn-action-secondary">← Volver</a>
-                                                <a href="{{ route('invoices.show', $invoice->number) }}?download=1" class="btn-action btn-action-primary">Descargar PDF</a>
+                                                <a href="{{ route('invoices.show', $invoice->number) }}?download=1" class="btn-action btn-action-primary">Descargar <span style="text-transform:uppercase">PDF</span></a>
                     </div>
                 </div>
                 <div class="text-xs text-neutral-500 leading-relaxed">
@@ -153,14 +153,6 @@
             .invoice-actions .btn-action-primary:focus {
                 color: #fff !important;
             }
-            .invoice-actions .btn-action-secondary {
-                background: transparent;
-                border: none;
-                color: var(--color-text-primary);
-            }
-            .invoice-actions .btn-action-secondary:hover {
-                background-color: rgba(77, 141, 148, 0.10);
-                color: var(--color-accent);
-            }
+            /* Usar estilos globales para btn-action-secondary (borde teal, hover sin borde) */
         </style>
 @endsection

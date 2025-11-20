@@ -12,9 +12,7 @@
     <button type="button"
             x-data=""
             x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-            style="padding: 0.5rem 1.25rem; font-size: var(--text-sm); font-weight: 600; color: white; background-color: var(--color-error); border: none; border-radius: 2px; cursor: pointer; transition: background-color var(--transition-fast);"
-            onmouseover="this.style.backgroundColor='#d87876'"
-            onmouseout="this.style.backgroundColor='var(--color-error)'">
+            class="btn-action btn-action-danger sn-sentence">
         Eliminar cuenta
     </button>
 
@@ -52,10 +50,7 @@
                     Cancelar
                 </button>
 
-                <button type="submit"
-                        style="padding: 0.5rem 1.25rem; font-size: var(--text-sm); font-weight: 600; color: white; background-color: var(--color-error); border: none; border-radius: 2px; cursor: pointer; transition: background-color var(--transition-fast);"
-                        onmouseover="this.style.backgroundColor='#d87876'"
-                        onmouseout="this.style.backgroundColor='var(--color-error)'">
+                <button type="submit" class="btn-action btn-action-danger sn-sentence">
                     Eliminar cuenta
                 </button>
             </div>

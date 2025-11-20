@@ -59,18 +59,8 @@
                                     </td>
                                     <td style="padding: 1rem;">
                                         <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
-                                            <a href="{{ route('invoices.show', $inv->number) }}" 
-                                               style="text-transform: none; letter-spacing: 0; font-weight: 600; font-size: var(--text-sm); padding: 0.5rem 1.25rem; border-radius: 2px; text-decoration: none; transition: all var(--transition-fast); background: transparent; border: 1px solid var(--color-border-light); color: var(--color-text-primary); cursor: pointer;"
-                                               onmouseover="this.style.backgroundColor='rgba(77, 141, 148, 0.10)'; this.style.color='var(--color-accent)'; this.style.borderColor='transparent';"
-                                               onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--color-text-primary)'; this.style.borderColor='var(--color-border-light)';">
-                                                Ver
-                                            </a>
-                                            <a href="{{ route('invoices.show', $inv->number) }}?download=1" 
-                                               style="text-transform: none; letter-spacing: 0; font-weight: 600; font-size: var(--text-sm); padding: 0.5rem 1.25rem; border-radius: 2px; text-decoration: none; transition: all var(--transition-fast); background-color: var(--color-accent); color: #fff; border: none; cursor: pointer;"
-                                               onmouseover="this.style.backgroundColor='var(--color-accent-hover)';"
-                                               onmouseout="this.style.backgroundColor='var(--color-accent)';">
-                                                PDF
-                                            </a>
+                                            <a href="{{ route('invoices.show', $inv->number) }}" class="btn-action btn-action-secondary"><span class="sn-sentence">Ver</span></a>
+                                            <a href="{{ route('invoices.show', $inv->number) }}?download=1" class="btn-action btn-action-primary"><span class="sn-uppercase">PDF</span></a>
                                         </div>
                                     </td>
                                 </tr>

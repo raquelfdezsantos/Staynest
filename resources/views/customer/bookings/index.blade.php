@@ -1,15 +1,6 @@
 <x-app-layout>
     <div class="max-w-5xl mx-auto px-4" style="padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl);">
         <style>
-            /* Botones secundarios/peligro con borde sutil por defecto (accesibilidad) */
-            .reservation-actions .btn-action.btn-action-secondary,
-            .reservation-actions .btn-action.btn-action-danger {
-                border: 1px solid var(--color-border-light) !important;
-            }
-            .reservation-actions .btn-action.btn-action-secondary:hover,
-            .reservation-actions .btn-action.btn-action-danger:hover {
-                border-color: transparent !important;
-            }
             .btn-nowrap { white-space: nowrap; }
         </style>
         
