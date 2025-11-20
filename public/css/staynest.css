@@ -880,7 +880,6 @@ html[data-theme="light"] .nav-header--transparent {
     font-family: var(--font-sans);
     font-size: 0.875rem;
     font-weight: 600;
-    line-height: 1.15rem; /* más compacto para igualar componente login sin crecimiento extra */
     border-radius: 2px;
     border: none;
     cursor: pointer;
@@ -1128,7 +1127,6 @@ html[data-theme="light"] .nav-header--transparent {
     text-transform: none;
     letter-spacing: 0;
     font-weight: 600;
-    line-height: 1.25rem; /* igual que text-sm de Tailwind */
     padding: 0.5rem 1.25rem; /* px-5 py-2 */
     border-radius: 2px;
 }
