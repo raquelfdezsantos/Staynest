@@ -64,28 +64,28 @@
                     <div class="overflow-hidden text-sm">
                          <table class="w-full text-sm">
                             <thead>
-                                <tr class="text-neutral-300 text-center" style="color:#999999;">
-                                    <th class="py-2 font-medium" style="font-size: var(--text-base); text-align:center;">Concepto</th>
-                                    <th class="py-2 font-medium" style="font-size: var(--text-base); text-align:center;">Noches</th>
-                                    <th class="py-2 font-medium" style="font-size: var(--text-base); text-align:center;">Huéspedes</th>
-                                    <th class="py-2 font-medium" style="font-size: var(--text-base); text-align:center;">Importe</th>
+                                <tr class="text-center">
+                                    <th class="py-2 font-medium" style="font-size: var(--text-base); text-align:center; color: var(--color-text-secondary);">Concepto</th>
+                                    <th class="py-2 font-medium" style="font-size: var(--text-base); text-align:center; color: var(--color-text-secondary);">Noches</th>
+                                    <th class="py-2 font-medium" style="font-size: var(--text-base); text-align:center; color: var(--color-text-secondary);">Huéspedes</th>
+                                    <th class="py-2 font-medium" style="font-size: var(--text-base); text-align:center; color: var(--color-text-secondary);">Importe</th>
                                 </tr>
                             </thead>
-                            <tbody class="border-t border-neutral-700">
+                            <tbody class="border-t" style="border-color: var(--color-border-light);">
                                 <tr>
                                      <td class="py-2 pr-4">
-                                         <div style="color:#fff;">Reserva {{ $res->code }}</div>
-                                         <div style="color:#fff;">{{ $res->property->name }}</div>
+                                         <div style="color: var(--color-text-primary); font-weight: 500;">Reserva {{ $res->code }}</div>
+                                         <div style="color: var(--color-text-primary); font-weight: 500;">{{ $res->property->name }}</div>
                                      </td>
-                                     <td class="py-2" style="color:#999999;">{{ $nights }}</td>
-                                     <td class="py-2" style="color:#999999;">@if(count($parts)) {{ implode(', ',$parts) }} (total: {{ $res->guests }}) @else {{ $res->guests }} @endif</td>
-                                     <td class="py-2 text-center font-semibold" style="color:#999999;">{{ number_format($invoice->amount,2,',','.') }} €</td>
+                                     <td class="py-2" style="color: var(--color-text-secondary);">{{ $nights }}</td>
+                                     <td class="py-2" style="color: var(--color-text-secondary);">@if(count($parts)) {{ implode(', ',$parts) }} (total: {{ $res->guests }}) @else {{ $res->guests }} @endif</td>
+                                     <td class="py-2 text-center font-semibold" style="color: var(--color-text-secondary);">{{ number_format($invoice->amount,2,',','.') }} €</td>
                                 </tr>
                             </tbody>
-                            <tfoot class="border-t border-neutral-700" style="font-size:1rem;">
+                            <tfoot class="border-t" style="border-color: var(--color-border-light); font-size:1rem;">
                                 <tr>
-                                    <td colspan="3" class="py-2 font-medium" style="text-align:left; color:#999999;">Total</td>
-                                    <td class="py-2 text-center font-bold" style="color:#fff !important;">{{ number_format($invoice->amount,2,',','.') }} €</td>
+                                    <td colspan="3" class="py-2 font-medium" style="text-align:left; color: var(--color-text-secondary);">Total</td>
+                                    <td class="py-2 text-center font-bold" style="color: var(--color-text-primary);">{{ number_format($invoice->amount,2,',','.') }} €</td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -101,8 +101,8 @@
             </div>
 
                         <aside class="space-y-6">
-                                <div class="p-5 invoice-actions" style="border-radius:var(--radius-base); background: var(--color-bg-primary); border:1px solid var(--color-border-light);">
-                    <h3 style="font-size: var(--text-base); font-weight:600; color:#d1d1d1; margin:0 0 0.75rem; text-transform: uppercase; letter-spacing:0.05em;">Acciones</h3>
+                                <div class="p-5 invoice-actions" style="border-radius:var(--radius-base); border:1px solid var(--color-border-light);">
+                    <h3 style="font-size: var(--text-base); font-weight:600; margin:0 0 0.75rem; text-transform: uppercase; letter-spacing:0.05em;">Acciones</h3>
                     <div class="flex flex-col gap-2">
                                                 @php($backUrl = request()->is('admin/*') ? route('admin.invoices.index') : route('invoices.index'))
                                                 <a href="{{ $backUrl }}" class="btn-action btn-action-secondary">← Volver</a>
@@ -117,32 +117,48 @@
     </div>
         <style>
             /* Estilos específicos para la factura */
-            html[data-theme="dark"] .invoice-actions { color: #d1d1d1; }
+            html[data-theme="dark"] .invoice-actions { 
+                background: #222222 !important;
+                color: #d1d1d1 !important; 
+            }
+            html[data-theme="light"] .invoice-actions { 
+                background: #d1d1d1 !important;
+                color: #000 !important;
+            }
+            html[data-theme="dark"] .invoice-actions h3 { color: #d1d1d1 !important; }
+            html[data-theme="light"] .invoice-actions h3 { color: #000 !important; }
+            
             /* Modo claro: mapear fondos/bordes como en /reservar */
             html[data-theme="light"] .invoice-page .bg-neutral-800 { background-color: var(--color-bg-secondary) !important; }
             html[data-theme="light"] .invoice-page .border-neutral-700 { border-color: var(--color-border-light) !important; }
             html[data-theme="light"] .invoice-page .text-neutral-300 { color: var(--color-text-secondary) !important; }
             html[data-theme="light"] .invoice-page .text-neutral-400 { color: var(--color-text-muted) !important; }
             html[data-theme="light"] .invoice-page .text-neutral-200 { color: var(--color-text-primary) !important; }
+            
             /* Igualar estilo de botones al de Mis reservas */
             .invoice-actions .btn-action {
                 text-transform: none;
                 letter-spacing: 0;
                 font-weight: 600;
-                line-height: 1.25rem; /* text-sm */
+                line-height: 1.25rem;
                 font-size: var(--text-sm);
-                padding: 0.5rem 1.25rem; /* px-5 py-2 */
+                padding: 0.5rem 1.25rem;
                 border-radius: 2px;
             }
             .invoice-actions .btn-action-primary:hover {
                 transform: none;
                 box-shadow: none;
-                color: #fff !important; /* Evitar que el a:hover global cambie el color */
+                color: #fff !important;
             }
             .invoice-actions .btn-action-primary,
             .invoice-actions .btn-action-primary:focus {
                 color: #fff !important;
             }
-            /* Usar estilos globales para btn-action-secondary (borde teal, hover sin borde) */
+            /* Hover Volver: mismo efecto que header público (.nav-link) */
+            .invoice-actions .btn-action-secondary:hover {
+                color: var(--color-accent) !important;
+                background-color: rgba(77, 141, 148, 0.10) !important;
+                border-color: transparent !important;
+            }
         </style>
 @endsection
