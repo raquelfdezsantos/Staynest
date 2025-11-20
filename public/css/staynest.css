@@ -55,10 +55,13 @@
     /* Colores principales */
     --color-bg-primary: #181818;
     /* Fondo principal - negro menos puro */
+    --color-bg-primary-rgb: 24, 24, 24;
     --color-bg-secondary: #222;
     /* Fondo secundario - negro más suave */
     --color-bg-card: #222;
     /* Fondo de cards */
+    --color-bg-card-rgb: 34, 34, 34;
+    --color-bg-secondary-rgb: 34, 34, 34;
 
     /* Textos */
     --color-text-primary: #FFFFFF;
@@ -67,10 +70,12 @@
     /* Texto secundario - gris medio */
     --color-text-muted: #666666;
     /* Texto apagado */
+    --color-text-muted-rgb: 102, 102, 102;
 
     /* Acento verde azulado (identidad Staynest) */
     --color-accent: #4D8D94;
     /* Teal equilibrado */
+    --color-accent-rgb: 77, 141, 148;
     --color-accent-hover: #5FAAB1;
     /* Hover más visible en dark */
     --color-accent-active: #3E7E85;
@@ -81,6 +86,7 @@
     /* Bordes y separadores */
     --color-border-light: #333333;
     /* Bordes sutiles */
+    --color-border-rgb: 255, 255, 255;
 
     /* Estados */
     --color-success: #719179;
@@ -150,20 +156,26 @@
 [data-theme="light"] {
     /* Light más confortable (menos blanco para reducir fatiga visual) */
     --color-bg-primary: #E6E6E6;
+    --color-bg-primary-rgb: 230, 230, 230;
     --color-bg-secondary: #D1D1D1;
     --color-bg-card: #E3E3E3;
+    --color-bg-card-rgb: 227, 227, 227;
+    --color-bg-secondary-rgb: 209, 209, 209;
 
     --color-text-primary: #000000;
     --color-text-secondary: #333333;
     --color-text-muted: #4b4b4b;
+    --color-text-muted-rgb: 75, 75, 75;
 
     /* Acento: mismo tono de marca/tinta que en dark */
     --color-accent: #4D8D94;
+    --color-accent-rgb: 77, 141, 148;
     --color-accent-hover: #5FAAB1;
     --color-accent-active: #3E7E85;
 
     --color-border: #E0E0E0;
     --color-border-light: #BABABA;
+    --color-border-rgb: 0, 0, 0;
 
     /* Sombras más visibles en modo claro */
     --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
