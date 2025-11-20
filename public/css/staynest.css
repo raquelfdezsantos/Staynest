@@ -894,7 +894,7 @@ html[data-theme="light"] .nav-header--transparent {
 .btn, .btn-action, .entorno-cta { text-transform: lowercase; }
 .btn::first-letter, .btn-action::first-letter, .entorno-cta::first-letter { text-transform: uppercase; }
 .btn .sn-uppercase, .btn-action .sn-uppercase, .entorno-cta .sn-uppercase { text-transform: uppercase !important; }
-.sn-sentence { text-transform: lowercase !important; }
+.sn-sentence { text-transform: none !important; }
 .sn-sentence::first-letter { text-transform: uppercase !important; }
 
 .btn-action-primary {
