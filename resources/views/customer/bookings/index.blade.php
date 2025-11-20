@@ -1,37 +1,6 @@
 <x-app-layout>
     <div class="max-w-5xl mx-auto px-4" style="padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl);">
         <style>
-            /* Mejora badge 'Pendiente de pago' en modo oscuro */
-            html[data-theme="dark"] .badge-warning {
-                background: rgba(255, 184, 76, 0.12);
-                color: #ffb84c;
-                border: 1px solid #ffb84c;
-            }
-            html[data-theme="dark"] .badge-warning:hover {
-                background: rgba(255, 184, 76, 0.2);
-            }
-            /* Badge Pagada con bg verde como alert-success (forzar especificidad) */
-            .badge.badge-success {
-                background: rgba(16,185,129,0.12) !important;
-                color: var(--color-success) !important;
-                border: 1px solid var(--color-success) !important;
-            }
-            html[data-theme="dark"] .badge.badge-success {
-                background: rgba(16,185,129,0.14) !important;
-                color: var(--color-success) !important;
-                border: 1px solid var(--color-success) !important;
-            }
-            /* Badge Cancelada con bg de error (igual que alert-error) */
-            .badge.badge-error {
-                background: rgba(204, 89, 86, 0.10) !important;
-                color: var(--color-error) !important;
-                border: 1px solid var(--color-error) !important;
-            }
-            html[data-theme="dark"] .badge.badge-error {
-                background: rgba(204, 89, 86, 0.14) !important;
-                color: var(--color-error) !important;
-                border: 1px solid var(--color-error) !important;
-            }
             /* Botones secundarios/peligro con borde sutil por defecto (accesibilidad) */
             .reservation-actions .btn-action.btn-action-secondary,
             .reservation-actions .btn-action.btn-action-danger {
@@ -95,7 +64,7 @@
                             </div>
                             <div>
                                 @if($r->status === 'pending')
-                                    <span class="badge badge-warning">Pendiente de pago</span>
+                                    <span class="badge badge-warning">Pendiente</span>
                                 @elseif($r->status === 'paid')
                                     <span class="badge badge-success">Pagada</span>
                                 @elseif($r->status === 'cancelled')
