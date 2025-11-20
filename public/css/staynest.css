@@ -663,6 +663,10 @@ html[data-theme="light"] .nav-header--transparent {
     position: relative;
 }
 
+.nav-link:focus {
+    outline: none;
+}
+
 .nav-link:hover {
     color: var(--color-accent);
     background-color: rgba(77, 141, 148, 0.10);
