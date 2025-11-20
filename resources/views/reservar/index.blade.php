@@ -177,7 +177,7 @@
         <div class="grid md:grid-cols-3 gap-8" style="align-items: start;">
             <!-- Formulario -->
             <form 
-                class="md:col-span-2 space-y-6" 
+                class="md:col-span-2 space-y-6 reservar-form-mobile"
                 method="POST" 
                 action="@guest {{ route('reservas.prepare') }} @else {{ route('reservas.store') }} @endguest" 
                 id="reservationForm"
@@ -267,8 +267,7 @@
                         placeholder="Cuéntanos cualquier necesidad especial"
                     >{{ old('notes', $prefill['notes'] ?? '') }}</textarea>
                 </div>
-
-                <div class="pt-2">
+                <div class="pt-2 reservar-btn-mobile">
                     <button 
                         type="submit"
                         class="bg-[color:var(--color-accent)] hover:bg-[color:var(--color-accent-hover)] text-white text-sm font-semibold px-5 py-2"
@@ -280,8 +279,8 @@
             </form>
 
             <!-- Resumen - alineado con los inputs de fechas -->
-            <aside class="space-y-4" style="margin-top: 3rem;">
-                <div class="bg-neutral-800 border border-neutral-700 p-4" style="border-radius:var(--radius-base);">
+            <aside class="space-y-4 reservar-aside-mobile" style="margin-top: 3rem;">
+                <div class="bg-neutral-800 border border-neutral-700 p-4 reservar-resumen-mobile" style="border-radius:var(--radius-base);">
                     <h3 class="font-semibold mb-2">Resumen</h3>
                     <ul class="text-sm text-neutral-300 space-y-1">
                         <li>Fechas: <span class="text-neutral-400" id="summary-dates">—</span></li>
@@ -293,12 +292,20 @@
                         <p class="text-2xl font-serif" id="summary-total">—</p>
                     </div>
                 </div>
-                <div class="text-xs text-neutral-400">
+                <div class="text-xs text-neutral-400 reservar-msg-mobile">
                     La disponibilidad y precio se calcularán aquí. Después conectaremos con el flujo de reserva y pago
                     existente.
                 </div>
             </aside>
         </div>
+        <style>
+        @media (max-width: 540px) {
+            /* En móvil, el form es flex column para que los elementos dentro se ordenen bien */
+            .reservar-form-mobile { display: flex; flex-direction: column; }
+            /* Reducir el margen superior del aside para que esté más pegado al form, igual a gap-4 */
+            .reservar-aside-mobile { margin-top: 0.5rem !important; }
+        }
+        </style>
 
         {{-- Script Flatpickr --}}
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -586,6 +593,41 @@
                 @endif
                 @endauth
             });
+
+            // Función para mover el botón según el tamaño de pantalla
+            function moveButtonIfMobile() {
+                const isMobile = window.innerWidth <= 540;
+                const form = document.getElementById('reservationForm');
+                const aside = document.querySelector('.reservar-aside-mobile');
+                const btnDiv = document.querySelector('.reservar-btn-mobile');
+                if (!form || !aside || !btnDiv) return;
+                const btnParent = btnDiv.parentNode;
+                if (isMobile) {
+                    // Si el botón no está después del aside, moverlo
+                    if (btnParent !== aside.parentNode) {
+                        // Primero, si está en el form, removerlo
+                        if (btnParent === form) {
+                            form.removeChild(btnDiv);
+                        }
+                        // Insertar después del aside
+                        aside.parentNode.insertBefore(btnDiv, aside.nextSibling);
+                    }
+                } else {
+                    // Si no es móvil, si el botón no está en el form, devolverlo
+                    if (btnParent !== form) {
+                        // Remover del aside.parentNode
+                        aside.parentNode.removeChild(btnDiv);
+                        // Añadir al final del form
+                        form.appendChild(btnDiv);
+                    }
+                }
+            }
+
+            // Llamar al cargar
+            moveButtonIfMobile();
+
+            // Llamar al cambiar tamaño de ventana
+            window.addEventListener('resize', moveButtonIfMobile);
         </script>
     </div>
 @endsection
