@@ -1,14 +1,10 @@
 <x-app-layout>
     <div class="max-w-5xl mx-auto px-4" style="padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl);">
         
-        {{-- Header simple --}}
-        <header style="margin-bottom: 2rem;">
-            <h1 style="font-family: var(--font-serif); font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
-                Mis facturas
-            </h1>
-            <p style="color: var(--color-text-secondary); font-size: var(--text-base);">
-                Consulta y descarga todas tus facturas emitidas.
-            </p>
+        {{-- Header centrado como otras páginas públicas --}}
+        <header class="mb-16 text-center">
+            <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Mis facturas</h1>
+            <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Consulta y descarga todas tus facturas emitidas.</p>
         </header>
 
         @if($invoices->isEmpty())
@@ -24,8 +20,8 @@
                 </a>
             </div>
         @else
-            {{-- Tabla de facturas (estilo minimal: sin fondo ni borde contenedor) --}}
-            <div style="overflow: hidden; margin-top: 2rem;">
+            {{-- Tabla de facturas con glassmorphism --}}
+            <div style="overflow: hidden; margin-top: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px);">
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse; font-size: var(--text-sm); background: transparent;">
                         <thead style="border-bottom: 1px solid var(--color-border-light); background: transparent;">
@@ -40,7 +36,7 @@
                         </thead>
                         <tbody>
                             @foreach($invoices as $inv)
-                                <tr style="border-bottom: 1px solid var(--color-border-light);">
+                                <tr style="transition: all 0.3s ease;" onmouseover="this.style.backgroundColor = 'rgba(var(--color-bg-card-rgb), 0.9)';" onmouseout="this.style.backgroundColor = 'transparent';">
                                     <td style="padding: 1rem; color: var(--color-text-primary); font-family: monospace; font-weight: 600;">
                                         {{ $inv->number }}
                                     </td>
@@ -69,7 +65,7 @@
                     </table>
                 </div>
 
-                {{-- Paginación (sin fondo) --}}
+                {{-- Paginación --}}
                 @if($invoices->hasPages())
                     <div style="padding: 1rem; border-top: 1px solid var(--color-border-light);">
                         {{ $invoices->links() }}
