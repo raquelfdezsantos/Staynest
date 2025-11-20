@@ -23,7 +23,7 @@
     html[data-theme="dark"] .flatpickr-weekdays { background: var(--color-bg-card); }
     html[data-theme="dark"] span.flatpickr-weekday { color: var(--color-text-secondary); }
     html[data-theme="dark"] .flatpickr-day { color: var(--color-text-primary); }
-    html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
+    html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled) {
       background: rgba(77, 141, 148, 0.10);
       border-color: var(--color-accent);
     }
@@ -43,7 +43,7 @@
     html[data-theme="light"] .flatpickr-months { background: #d1d1d1; }
     html[data-theme="light"] .flatpickr-weekdays { background: #d1d1d1; }
     html[data-theme="light"] .flatpickr-day { color: #222; }
-    html[data-theme="light"] .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
+    html[data-theme="light"] .flatpickr-day:hover:not(.flatpickr-disabled) {
       background: rgba(77, 141, 148, 0.10);
       border-color: var(--color-accent);
     }
@@ -64,7 +64,7 @@
       max-width: 308px !important;
       justify-content: center !important;
     }
-    /* Hacer los días cuadrados (no círculos) */
+    /* Celdas de días */
     .flatpickr-day {
       max-width: 38px !important;
       max-height: 38px !important;
@@ -72,22 +72,36 @@
       height: 38px !important;
       line-height: 38px !important;
       margin: 2px !important;
-      border-radius: 2px !important;
-      border: none !important;
     }
-    
-    /* Días de meses anterior/posterior más apagados */
-    .flatpickr-day.prevMonthDay,
-    .flatpickr-day.nextMonthDay {
-      opacity: 0.4 !important;
-    }
+    /* Días de meses anterior/posterior apagados */
+    .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { opacity: 0.4 !important; }
+    .flatpickr-day.prevMonthDay.available, .flatpickr-day.prevMonthDay.unavailable,
+    .flatpickr-day.nextMonthDay.available, .flatpickr-day.nextMonthDay.unavailable { opacity: 0.4 !important; }
 
-    /* Días no disponibles: fondo rojo + sin interacción (KISS) */
-    .flatpickr-day.unavailable,
-    .flatpickr-day.unavailable.flatpickr-disabled {
-      background: rgba(239, 68, 68, 0.15) !important;
+    /* Disponibles: borde verde */
+    .flatpickr-day.available:not(.flatpickr-disabled):not(.selected) {
+      background: transparent !important;
+      color: var(--color-text-primary) !important;
+      border: 1px solid var(--color-success) !important;
+    }
+    /* No disponibles: borde rojo */
+    .flatpickr-day.unavailable, .flatpickr-day.flatpickr-disabled, .flatpickr-day.unavailable.flatpickr-disabled {
+      background: rgba(255,0,0,0.05) !important;
+      color: var(--color-text-secondary) !important;
+      border: 1px solid var(--color-error) !important;
       cursor: not-allowed !important;
-      pointer-events: none !important;
+    }
+    .flatpickr-day.available:hover:not(.flatpickr-disabled):not(.selected) { background: rgba(0,128,0,0.06) !important; }
+    .flatpickr-day.unavailable:hover, .flatpickr-day.flatpickr-disabled:hover { background: rgba(255,0,0,0.08) !important; }
+    /* Selección */
+    .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
+      background: var(--color-accent) !important;
+      border-color: var(--color-accent) !important;
+      color:#fff !important;
+    }
+    @media (max-width: 540px) {
+        .reservar-form-mobile { display: flex; flex-direction: column; }
+        .reservar-aside-mobile { margin-top: 0.5rem !important; }
     }
     </style>
 
@@ -105,7 +119,7 @@
     </div>
 
     <div class="grid md:grid-cols-3 gap-8" style="align-items: start;">
-      <form class="md:col-span-2 space-y-6" method="POST" action="{{ route('reservas.update', $reservation) }}" id="editReservationForm">
+      <form class="md:col-span-2 space-y-6 reservar-form-mobile" method="POST" action="{{ route('reservas.update', $reservation) }}" id="editReservationForm">
         @csrf
         @method('PUT')
 
@@ -155,12 +169,12 @@
           <textarea id="notes" name="notes" class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 h-28" placeholder="Cuéntanos cualquier necesidad especial">{{ old('notes', $reservation->notes) }}</textarea>
         </div>
 
-        <div class="pt-2">
+        <div class="pt-2 reservar-btn-mobile">
           <button type="submit" class="bg-[color:var(--color-accent)] hover:bg-[color:var(--color-accent-hover)] text-white text-sm font-semibold px-5 py-2" style="border-radius: 2px;">Guardar cambios</button>
         </div>
       </form>
 
-      <aside class="space-y-4" style="margin-top: 3rem;">
+      <aside class="space-y-4 reservar-aside-mobile" style="margin-top: 3rem;">
         <div class="bg-neutral-800 border border-neutral-700 p-4" style="border-radius:var(--radius-base);">
           <h3 class="font-semibold mb-2">Reserva actual</h3>
           <ul class="text-sm text-neutral-300 space-y-1">
@@ -435,6 +449,41 @@
           errorDiv.classList.add('hidden');
         }
       });
+
+      // Función para mover el botón según el tamaño de pantalla
+      function moveButtonIfMobile() {
+        const isMobile = window.innerWidth <= 540;
+        const form = document.getElementById('editReservationForm');
+        const aside = document.querySelector('.reservar-aside-mobile');
+        const btnDiv = document.querySelector('.reservar-btn-mobile');
+        if (!form || !aside || !btnDiv) return;
+        const btnParent = btnDiv.parentNode;
+        if (isMobile) {
+          // Si el botón no está después del aside, moverlo
+          if (btnParent !== aside.parentNode) {
+            // Primero, si está en el form, removerlo
+            if (btnParent === form) {
+              form.removeChild(btnDiv);
+            }
+            // Insertar después del aside
+            aside.parentNode.insertBefore(btnDiv, aside.nextSibling);
+          }
+        } else {
+          // Si no es móvil, si el botón no está en el form, devolverlo
+          if (btnParent !== form) {
+            // Remover del aside.parentNode
+            aside.parentNode.removeChild(btnDiv);
+            // Añadir al final del form
+            form.appendChild(btnDiv);
+          }
+        }
+      }
+
+      // Llamar al cargar
+      moveButtonIfMobile();
+
+      // Llamar al cambiar tamaño de ventana
+      window.addEventListener('resize', moveButtonIfMobile);
     </script>
   </div>
 @endsection

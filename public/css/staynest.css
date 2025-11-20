@@ -1872,7 +1872,7 @@ footer { flex-shrink: 0; }
         overflow-wrap: break-word !important;
     }
 
-    /* Equilibrar col1 con el mismo ancho m�ximo */
+    /* Equilibrar col1 con el mismo ancho máximo */
     .footer-col-1 {
         max-width: 32ch;
     }
