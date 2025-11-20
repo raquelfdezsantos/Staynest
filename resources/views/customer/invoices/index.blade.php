@@ -24,23 +24,23 @@
                 </a>
             </div>
         @else
-            {{-- Tabla de facturas --}}
-            <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); overflow: hidden; margin-top: 2rem;">
+            {{-- Tabla de facturas (estilo minimal: sin fondo ni borde contenedor) --}}
+            <div style="overflow: hidden; margin-top: 2rem;">
                 <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: var(--text-sm);">
-                        <thead style="background: rgba(77, 141, 148, 0.08); border-bottom: 2px solid var(--color-border-light);">
+                    <table style="width: 100%; border-collapse: collapse; font-size: var(--text-sm); background: transparent;">
+                        <thead style="border-bottom: 1px solid var(--color-border-light); background: transparent;">
                             <tr>
-                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Nº Factura</th>
-                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Fecha</th>
-                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Alojamiento</th>
-                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Estancia</th>
-                                <th style="padding: 1rem; text-align: right; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Importe</th>
-                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Acciones</th>
+                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Nº Factura</th>
+                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Fecha</th>
+                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Alojamiento</th>
+                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Estancia</th>
+                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Importe</th>
+                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($invoices as $inv)
-                                <tr style="border-bottom: 1px solid var(--color-border-light); transition: background-color 0.2s;">
+                                <tr style="border-bottom: 1px solid var(--color-border-light);">
                                     <td style="padding: 1rem; color: var(--color-text-primary); font-family: monospace; font-weight: 600;">
                                         {{ $inv->number }}
                                     </td>
@@ -69,9 +69,9 @@
                     </table>
                 </div>
 
-                {{-- Paginación --}}
+                {{-- Paginación (sin fondo) --}}
                 @if($invoices->hasPages())
-                    <div style="padding: 1rem; border-top: 1px solid var(--color-border-light); background: rgba(77, 141, 148, 0.03);">
+                    <div style="padding: 1rem; border-top: 1px solid var(--color-border-light);">
                         {{ $invoices->links() }}
                     </div>
                 @endif

@@ -184,6 +184,9 @@ html, body {
     overflow-x: hidden;
 }
 
+/* Texto secundario fijo (gris medio unificado en ambos temas) */
+.sn-text-secondary-fixed { color:#999999 !important; }
+
 
 html {
     scroll-behavior: smooth;
@@ -877,7 +880,7 @@ html[data-theme="light"] .nav-header--transparent {
     font-family: var(--font-sans);
     font-size: 0.875rem;
     font-weight: 600;
-    line-height: normal;
+    line-height: 1.15rem; /* más compacto para igualar componente login sin crecimiento extra */
     border-radius: 2px;
     border: none;
     cursor: pointer;
