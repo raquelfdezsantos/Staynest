@@ -5,104 +5,157 @@
 @section('content')
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
-    /* Calendario Flatpickr - Modo Oscuro */
-    html[data-theme="dark"] .flatpickr-calendar {
-      background: var(--color-bg-card);
-      border: 1px solid var(--color-border-light);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-    html[data-theme="dark"] .flatpickr-months {
-      background: var(--color-bg-card);
-      border-bottom: 1px solid var(--color-border-light);
-    }
-    html[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months,
-    html[data-theme="dark"] .flatpickr-current-month input.cur-year {
-      color: var(--color-text-primary);
-      background: var(--color-bg-secondary);
-    }
-    html[data-theme="dark"] .flatpickr-weekdays { background: var(--color-bg-card); }
-    html[data-theme="dark"] span.flatpickr-weekday { color: var(--color-text-secondary); }
-    html[data-theme="dark"] .flatpickr-day { color: var(--color-text-primary); }
-    html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled) {
-      background: rgba(77, 141, 148, 0.10);
-      border-color: var(--color-accent);
-    }
-    html[data-theme="dark"] .flatpickr-day.selected,
-    html[data-theme="dark"] .flatpickr-day.startRange,
-    html[data-theme="dark"] .flatpickr-day.endRange {
-      background: var(--color-accent);
-      border-color: var(--color-accent);
-      color: white;
-    }
-    html[data-theme="dark"] .flatpickr-day.today { border-color: var(--color-accent); }
-    html[data-theme="dark"] .flatpickr-months .flatpickr-prev-month svg,
-    html[data-theme="dark"] .flatpickr-months .flatpickr-next-month svg { fill: var(--color-text-primary); }
+        /* Calendario Flatpickr - Modo Oscuro */
+        html[data-theme="dark"] .flatpickr-calendar {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border-light);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        html[data-theme="dark"] .flatpickr-months {
+            background: var(--color-bg-card);
+            border-bottom: 1px solid var(--color-border-light);
+        }
+        
+        html[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months,
+        html[data-theme="dark"] .flatpickr-current-month input.cur-year {
+            color: var(--color-text-primary);
+            background: var(--color-bg-secondary);
+        }
+        
+        html[data-theme="dark"] .flatpickr-weekdays {
+            background: var(--color-bg-card);
+        }
+        
+        html[data-theme="dark"] span.flatpickr-weekday {
+            color: var(--color-text-secondary);
+        }
+        
+        html[data-theme="dark"] .flatpickr-day {
+            color: var(--color-text-primary);
+        }
+        
+        html[data-theme="dark"] .flatpickr-day.unavailable,
+        html[data-theme="dark"] .flatpickr-day.unavailable:hover,
+        html[data-theme="dark"] .flatpickr-day.flatpickr-disabled,
+        html[data-theme="dark"] .flatpickr-day.flatpickr-disabled:hover {
+            background: rgba(239, 68, 68, 0.15) !important;
+            border-color: transparent !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+        html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
+            background: rgba(77,141,148,0.10);
+            border-color: var(--color-accent);
+        }
+        
+        html[data-theme="dark"] .flatpickr-day.selected,
+        html[data-theme="dark"] .flatpickr-day.startRange,
+        html[data-theme="dark"] .flatpickr-day.endRange {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+            color: white;
+        }
+        
+        html[data-theme="dark"] .flatpickr-day.today {
+            border-color: var(--color-accent);
+        }
+        
+        html[data-theme="dark"] .flatpickr-months .flatpickr-prev-month svg,
+        html[data-theme="dark"] .flatpickr-months .flatpickr-next-month svg {
+            fill: var(--color-text-primary);
+        }
+        
+        /* Modo Claro */
+        html[data-theme="light"] .flatpickr-calendar {
+            background: #d1d1d1;
+            border: 1px solid #e0e0e0;
+        }
+        
+        html[data-theme="light"] .flatpickr-months {
+            background: #d1d1d1;
+        }
+        
+        html[data-theme="light"] .flatpickr-weekdays {
+            background: #d1d1d1;
+        }
+        
+        html[data-theme="light"] .flatpickr-day {
+            color: #222;
+        }
+        
+        html[data-theme="light"] .flatpickr-day.unavailable,
+        html[data-theme="light"] .flatpickr-day.unavailable:hover,
+        html[data-theme="light"] .flatpickr-day.flatpickr-disabled,
+        html[data-theme="light"] .flatpickr-day.flatpickr-disabled:hover {
+            background: rgba(239, 68, 68, 0.15) !important;
+            border-color: transparent !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
+        html[data-theme="light"] .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
+            background: rgba(77,141,148,0.10);
+            border-color: var(--color-accent);
+        }
+        
+        html[data-theme="light"] .flatpickr-day.selected,
+        html[data-theme="light"] .flatpickr-day.startRange,
+        html[data-theme="light"] .flatpickr-day.endRange {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+            color: white;
+        }
+        
+        html[data-theme="light"] .flatpickr-day.today {
+            border-color: var(--color-accent);
+        }
+        
+        /* Ajustar el grid de días para el nuevo tamaño */
+        .flatpickr-days {
+            width: 308px !important;
+        }
+        
+        .dayContainer {
+            width: 308px !important;
+            min-width: 308px !important;
+            max-width: 308px !important;
+            justify-content: center !important;
+        }
+        
+        /* Hacer los días cuadrados (no círculos) */
+        .flatpickr-day {
+            max-width: 38px !important;
+            max-height: 38px !important;
+            width: 38px !important;
+            height: 38px !important;
+            line-height: 38px !important;
+            margin: 2px !important;
+            border-radius: 2px !important;
+            border: none !important;
+        }
+        
+        /* Días de meses anterior/posterior más apagados */
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay {
+            opacity: 0.4 !important;
+        }
+        
+        /* Asegurar opacidad en días de otros meses */
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay {
+            opacity: 0.4 !important;
+        }
 
-    /* Modo Claro */
-    html[data-theme="light"] .flatpickr-calendar { background: #d1d1d1; border: 1px solid #e0e0e0; }
-    html[data-theme="light"] .flatpickr-months { background: #d1d1d1; }
-    html[data-theme="light"] .flatpickr-weekdays { background: #d1d1d1; }
-    html[data-theme="light"] .flatpickr-day { color: #222; }
-    html[data-theme="light"] .flatpickr-day:hover:not(.flatpickr-disabled) {
-      background: rgba(77, 141, 148, 0.10);
-      border-color: var(--color-accent);
-    }
-    html[data-theme="light"] .flatpickr-day.selected,
-    html[data-theme="light"] .flatpickr-day.startRange,
-    html[data-theme="light"] .flatpickr-day.endRange {
-      background: var(--color-accent);
-      border-color: var(--color-accent);
-      color: white;
-    }
-    html[data-theme="light"] .flatpickr-day.today { border-color: var(--color-accent); }
-
-    /* Ajustar el grid de días para el nuevo tamaño */
-    .flatpickr-days { width: 308px !important; }
-    .dayContainer {
-      width: 308px !important;
-      min-width: 308px !important;
-      max-width: 308px !important;
-      justify-content: center !important;
-    }
-    /* Celdas de días */
-    .flatpickr-day {
-      max-width: 38px !important;
-      max-height: 38px !important;
-      width: 38px !important;
-      height: 38px !important;
-      line-height: 38px !important;
-      margin: 2px !important;
-    }
-    /* Días de meses anterior/posterior apagados */
-    .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay { opacity: 0.4 !important; }
-    .flatpickr-day.prevMonthDay.available, .flatpickr-day.prevMonthDay.unavailable,
-    .flatpickr-day.nextMonthDay.available, .flatpickr-day.nextMonthDay.unavailable { opacity: 0.4 !important; }
-
-    /* Disponibles: borde verde */
-    .flatpickr-day.available:not(.flatpickr-disabled):not(.selected) {
-      background: transparent !important;
-      color: var(--color-text-primary) !important;
-      border: 1px solid var(--color-success) !important;
-    }
-    /* No disponibles: borde rojo */
-    .flatpickr-day.unavailable, .flatpickr-day.flatpickr-disabled, .flatpickr-day.unavailable.flatpickr-disabled {
-      background: rgba(255,0,0,0.05) !important;
-      color: var(--color-text-secondary) !important;
-      border: 1px solid var(--color-error) !important;
-      cursor: not-allowed !important;
-    }
-    .flatpickr-day.available:hover:not(.flatpickr-disabled):not(.selected) { background: rgba(0,128,0,0.06) !important; }
-    .flatpickr-day.unavailable:hover, .flatpickr-day.flatpickr-disabled:hover { background: rgba(255,0,0,0.08) !important; }
-    /* Selección */
-    .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange {
-      background: var(--color-accent) !important;
-      border-color: var(--color-accent) !important;
-      color:#fff !important;
-    }
-    @media (max-width: 540px) {
-        .reservar-form-mobile { display: flex; flex-direction: column; }
-        .reservar-aside-mobile { margin-top: 0.5rem !important; }
-    }
+        /* Refuerzo final anti-hover (por si carga otra hoja después) */
+        .flatpickr-day.unavailable,
+        .flatpickr-day.unavailable:hover,
+        .flatpickr-day.flatpickr-disabled,
+        .flatpickr-day.flatpickr-disabled:hover {
+            background: rgba(239, 68, 68, 0.15) !important;
+            border-color: transparent !important;
+            cursor: not-allowed !important;
+            pointer-events: none !important;
+        }
     </style>
 
   <div class="sn-reservar max-w-5xl mx-auto px-4 py-10">
