@@ -57,7 +57,7 @@
                                     <td style="padding: 1rem; text-align: right; color: var(--color-text-primary); font-weight: 600; font-size: var(--text-base);">
                                         {{ number_format($inv->amount, 2, ',', '.') }} €
                                     </td>
-                                    <td style="padding: 1rem;">
+                                    <td style="padding: 0rem 1rem;">
                                         <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
                                             <a href="{{ route('invoices.show', $inv->number) }}" class="btn-action btn-action-secondary"><span class="sn-sentence">Ver</span></a>
                                             <a href="{{ route('invoices.show', $inv->number) }}?download=1" class="btn-action btn-action-primary"><span class="sn-uppercase">PDF</span></a>
