@@ -1,18 +1,12 @@
 @if(auth()->user()->role !== 'admin')
-<section>
-    <header style="margin-bottom: 1.5rem;">
-        <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary);">
-            Eliminar cuenta
-        </h2>
-        <p style="margin-top: 0.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
-            Una vez eliminada tu cuenta, todos tus datos se borrarán permanentemente. Antes de eliminarla, descarga cualquier información que desees conservar.
-        </p>
-    </header>
+    <p style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+        Una vez eliminada tu cuenta, todos tus datos se borrarán permanentemente. Antes de eliminarla, descarga cualquier información que desees conservar.
+    </p>
 
     <button type="button"
             x-data=""
             x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-            class="btn-action btn-action-danger sn-sentence">
+            class="btn-action btn-action-danger sn-sentence py-2 px-5">
         Eliminar cuenta
     </button>
 
@@ -56,5 +50,4 @@
             </div>
         </form>
     </x-modal>
-</section>
 @endif

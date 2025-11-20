@@ -1,13 +1,3 @@
-<section>
-    <header style="margin-bottom: 1.5rem;">
-        <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary);">
-            Cambiar contraseña
-        </h2>
-        <p style="margin-top: 0.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
-            Asegúrate de usar una contraseña segura para proteger tu cuenta.
-        </p>
-    </header>
-
     @if (session('status') === 'password-updated')
         <x-alert type="success" class="mb-4">Contraseña actualizada.</x-alert>
     @endif
@@ -59,7 +49,6 @@
         </div>
 
         <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
-            <x-primary-button class="sn-sentence">Guardar</x-primary-button>
+            <x-primary-button class="sn-sentence py-2 px-5">Guardar</x-primary-button>
         </div>
     </form>
-</section>

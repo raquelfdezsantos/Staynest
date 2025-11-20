@@ -1,13 +1,3 @@
-<section>
-    <header style="margin-bottom: 1.5rem;">
-        <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary);">
-            Información personal
-        </h2>
-        <p style="margin-top: 0.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
-            Actualiza tu nombre, email, dirección, NIF/CIF/PAS/Otro y foto de perfil. La dirección y el número de documento son necesarios para emitir facturas y proceder al pago.
-        </p>
-    </header>
-
     @if (session('status') === 'profile-updated')
         <x-alert type="success" class="mb-4">Perfil actualizado.</x-alert>
     @endif
@@ -30,9 +20,7 @@
 
     <form method="post" action="{{ route('profile.update') }}" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem;" enctype="multipart/form-data">
         @csrf
-        @method('patch')
-
-        {{-- Nombre --}}
+        @method('patch')        {{-- Nombre --}}
         <div>
             <x-input-label for="name" value="Nombre" />
             <x-text-input id="name" 
@@ -160,7 +148,6 @@
         </script>
 
         <div style="display: flex; align-items: center; gap: 1rem; margin-top: 0.5rem;">
-            <x-primary-button class="sn-sentence">Guardar cambios</x-primary-button>
+            <x-primary-button class="sn-sentence py-2 px-5">Guardar cambios</x-primary-button>
         </div>
     </form>
-</section>

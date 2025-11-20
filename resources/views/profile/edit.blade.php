@@ -1,31 +1,29 @@
 <x-app-layout>
-    <div class="max-w-5xl mx-auto px-4" style="padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl);">
-        
-        {{-- Header simple --}}
-        <header style="margin-bottom: 2rem;">
-            <h1 style="font-family: var(--font-serif); font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
-                Mi perfil
-            </h1>
-            <p style="color: var(--color-text-secondary); font-size: var(--text-base);">
-                Actualiza tu información personal y configuración de la cuenta.
-            </p>
+    <div class="max-w-5xl mx-auto px-4 py-10">
+        {{-- Header centrado --}}
+        <header class="mb-16 text-center">
+            <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Mi perfil</h1>
+            <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Actualiza tu información personal y configuración de la cuenta.</p>
         </header>
 
-        <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <div class="grid gap-8">
             {{-- Información del perfil --}}
-            <div style="padding: 2rem; border: 1px solid var(--color-border-light); border-radius: var(--radius-base);">
+            <section class="profile-card p-6" style="border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.8); backdrop-filter: blur(10px);">
+                <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary); margin:0 0 1rem; text-transform: uppercase; letter-spacing:0.05em;">Información del perfil</h2>
                 @include('profile.partials.update-profile-information-form')
-            </div>
+            </section>
 
             {{-- Cambiar contraseña --}}
-            <div style="padding: 2rem; border: 1px solid var(--color-border-light); border-radius: var(--radius-base);">
+            <section class="profile-card p-6" style="border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.8); backdrop-filter: blur(10px);">
+                <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary); margin:0 0 1rem; text-transform: uppercase; letter-spacing:0.05em;">Cambiar contraseña</h2>
                 @include('profile.partials.update-password-form')
-            </div>
+            </section>
 
             {{-- Eliminar cuenta --}}
-            <div style="padding: 2rem; border: 1px solid var(--color-border-light); border-radius: var(--radius-base);">
+            <section class="profile-card p-6" style="border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.8); backdrop-filter: blur(10px);">
+                <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary); margin:0 0 1rem; text-transform: uppercase; letter-spacing:0.05em;">Eliminar cuenta</h2>
                 @include('profile.partials.delete-user-form')
-            </div>
+            </section>
         </div>
     </div>
 </x-app-layout>
