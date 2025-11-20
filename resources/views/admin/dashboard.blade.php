@@ -137,7 +137,7 @@
 
         {{-- Próximas reservas --}}
         @if($stats['upcomingReservations']->isNotEmpty())
-            <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1.5rem; margin-bottom: 2rem;">
+            <div style="padding: 1.5rem; margin-bottom: 2rem;">
                 <h3 style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Próximas Reservas</h3>
                 <div style="display: flex; flex-direction: column; gap: 0;">
                     @foreach($stats['upcomingReservations'] as $upcoming)
@@ -172,14 +172,14 @@
             </div>
         @endif
 
-        <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); overflow: hidden;">
+        <div style="overflow: hidden;">
             <div style="padding: 1.5rem; border-bottom: 1px solid var(--color-border-light);">
                 <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary);">Todas las Reservas</h3>
             </div>
             
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; font-size: var(--text-sm);">
-                    <thead style="background: rgba(77, 141, 148, 0.08); border-bottom: 2px solid var(--color-border-light);">
+                    <thead style="border-bottom: 2px solid var(--color-border-light);">
                         <tr>
                             <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">ID</th>
                             <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Cliente</th>
