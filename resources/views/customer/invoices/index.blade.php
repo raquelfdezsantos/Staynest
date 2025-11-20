@@ -50,9 +50,9 @@
                                     <td style="padding: 1rem; color: var(--color-text-primary); font-weight: 500;">
                                         {{ $inv->reservation->property->name ?? '—' }}
                                     </td>
-                                    <td style="padding: 1rem; color: var(--color-text-secondary); font-size: var(--text-xs);">
+                                    <td style="padding: 1rem; color: #333333; font-size: var(--text-xs);" class="invoice-stay-dates">
                                         {{ $inv->reservation->check_in->format('d/m/Y') }}<br>
-                                        <span style="opacity: 0.6;">→ {{ $inv->reservation->check_out->format('d/m/Y') }}</span>
+                                        → {{ $inv->reservation->check_out->format('d/m/Y') }}
                                     </td>
                                     <td style="padding: 1rem; text-align: right; color: var(--color-text-primary); font-weight: 600; font-size: var(--text-base);">
                                         {{ number_format($inv->amount, 2, ',', '.') }} €
@@ -78,4 +78,13 @@
             </div>
         @endif
     </div>
+
+    <style>
+        html[data-theme="light"] .invoice-stay-dates {
+            color: #333333 !important;
+        }
+        html[data-theme="dark"] .invoice-stay-dates {
+            color: #999999 !important;
+        }
+    </style>
 </x-app-layout>
