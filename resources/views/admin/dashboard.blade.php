@@ -118,7 +118,14 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                     </svg>
                     <div style="flex: 1;">
-                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">Ocupación {{ now()->format('F') }}</p>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">
+                            Ocupación
+                            @php
+                                $meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+                                $mes = $meses[now()->format('n') - 1];
+                            @endphp
+                            {{ $mes }}
+                        </p>
                         <p style="font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary); line-height: 1;">{{ $stats['occupancyRate'] }}%</p>
                     </div>
                 </div>
@@ -152,7 +159,21 @@
                                         </p>
                                         <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
                                             {{ $upcoming->check_in->format('d/m/Y') }} - {{ $upcoming->check_out->format('d/m/Y') }}
-                                            · {{ $upcoming->guests }} huésped(es)
+                                            · 
+                                            @php
+                                                $parts = [];
+                                                $ad = (int) ($upcoming->adults ?? 0);
+                                                $ch = (int) ($upcoming->children ?? 0);
+                                                $pt = (int) ($upcoming->pets ?? 0);
+                                                if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
+                                                if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
+                                                if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
+                                            @endphp
+                                            @if(count($parts))
+                                                {{ implode(', ', $parts) }}
+                                            @else
+                                                {{ $upcoming->guests }} {{ $upcoming->guests === 1 ? 'persona' : 'personas' }}
+                                            @endif
                                         </p>
                                     </div>
                                 </div>
@@ -194,7 +215,22 @@
                                 <td style="padding: 1rem; color: var(--color-text-primary);">{{ $r->user?->name ?? '—' }}</td>
                                 <td style="padding: 1rem; color: var(--color-text-secondary);">{{ $r->property?->name ?? '—' }}</td>
                                 <td style="padding: 1rem; color: var(--color-text-secondary); font-size: var(--text-sm);">{{ $r->check_in->format('d/m/Y') }} → {{ $r->check_out->format('d/m/Y') }}</td>
-                                <td style="padding: 1rem; color: var(--color-text-secondary);">{{ $r->guests }}</td>
+                                <td style="padding: 1rem; color: var(--color-text-secondary);">
+                                    @php
+                                        $parts = [];
+                                        $ad = (int) ($r->adults ?? 0);
+                                        $ch = (int) ($r->children ?? 0);
+                                        $pt = (int) ($r->pets ?? 0);
+                                        if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
+                                        if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
+                                        if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
+                                    @endphp
+                                    @if(count($parts))
+                                        {{ implode(', ', $parts) }}
+                                    @else
+                                        {{ $r->guests }} {{ $r->guests === 1 ? 'persona' : 'personas' }}
+                                    @endif
+                                </td>
                                 <td style="padding: 1rem; color: var(--color-text-primary); font-weight: 600; font-size: var(--text-lg);">{{ number_format($r->total_price, 2, ',', '.') }} €</td>
                                 <td style="padding: 1rem;">
                                     @if($r->status === 'pending')
