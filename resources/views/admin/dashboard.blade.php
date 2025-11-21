@@ -267,7 +267,7 @@
 
                                             @elseif ($r->status === 'paid' && $r->invoice)
                                                 <a href="{{ route('invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary">Ver factura</a>
-                                                <a href="{{ route('invoices.show', $r->invoice->number) }}?download=1" class="btn-action btn-action-secondary">Pdf</a>
+                                                <a href="{{ route('invoices.show', $r->invoice->number) }}?download=1" class="btn-action btn-action-secondary">PDF</a>
 
                                                 <form method="POST" action="{{ route('admin.reservations.refund', $r->id) }}" style="display: inline;">
                                                     @csrf
