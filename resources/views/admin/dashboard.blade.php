@@ -1,16 +1,7 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto px-4 admin-slim-badges" style="padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl);">
+    <div class="sn-reservar max-w-5xl mx-auto px-4 py-10 admin-slim-badges">
         <style>
             /* Badges: usar estilos globales neutros de staynest.css (sin overrides locales) */
-            /* Botones con borde gris claro por defecto */
-            .btn-action.btn-action-secondary,
-            .btn-action.btn-action-danger {
-                border: 1px solid var(--color-border-light) !important;
-            }
-            .btn-action.btn-action-secondary:hover,
-            .btn-action.btn-action-danger:hover {
-                border-color: transparent !important;
-            }
             /* Admin: acciones como en Mis reservas (pequeños, oración, texto blanco, borde claro) */
             .admin-actions .btn-action {
                 text-transform: none;
@@ -22,10 +13,13 @@
                 border-radius: 2px;
                 color: #fff;
             }
-            .admin-actions .btn-action.btn-action-secondary,
+            .admin-actions .btn-action.btn-action-secondary {
+                background: transparent;
+                border: 1px solid var(--color-accent) !important;
+            }
             .admin-actions .btn-action.btn-action-danger {
                 background: transparent;
-                border: 1px solid var(--color-border-light) !important;
+                border: 1px solid var(--color-error) !important;
             }
             /* Admin: badges discretos, monocromos y accesibles */
             .admin-slim-badges .badge {
@@ -75,14 +69,10 @@
             .admin-slim-badges .badge-info { color: var(--color-text-primary); }
         </style>
         
-        {{-- Header --}}
-        <header style="margin-bottom: 2rem;">
-            <h1 style="font-family: var(--font-serif); font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
-                Dashboard
-            </h1>
-            <p style="color: var(--color-text-secondary); font-size: var(--text-base);">
-                Resumen general de reservas y estadísticas.
-            </p>
+        {{-- Header centrado como otras páginas públicas --}}
+        <header class="mb-16 text-center">
+            <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Dashboard</h1>
+            <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Resumen general de reservas y estadísticas.</p>
         </header>
 
         {{-- Mensajes --}}
@@ -137,72 +127,71 @@
 
         {{-- Próximas reservas --}}
         @if($stats['upcomingReservations']->isNotEmpty())
-            <div style="padding: 1.5rem; margin-bottom: 2rem;">
-                <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Próximas reservas</h2>
-                <div style="display: flex; flex-direction: column; gap: 0;">
-                    @foreach($stats['upcomingReservations'] as $upcoming)
-                        <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.875rem 0; border-bottom: 1px solid var(--color-border-light);">
-                            <div style="display: flex; align-items: center; gap: 0.875rem;">
-                                <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                    <span style="color: var(--color-text-secondary); font-weight: 500; font-size: var(--text-sm);">{{ substr($upcoming->user->name ?? 'U', 0, 1) }}</span>
+            <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Próximas reservas</h2>
+            <div style="margin-bottom: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px);">
+                <div style="padding: 1.5rem;">
+                    <div style="display: flex; flex-direction: column; gap: 0;">
+                        @foreach($stats['upcomingReservations'] as $upcoming)
+                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.875rem 0; border-bottom: 1px solid var(--color-border-light);">
+                                <div style="display: flex; align-items: center; gap: 0.875rem;">
+                                    <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                        <span style="color: var(--color-text-secondary); font-weight: 500; font-size: var(--text-sm);">{{ substr($upcoming->user->name ?? 'U', 0, 1) }}</span>
+                                    </div>
+                                    <div>
+                                        <p style="font-size: var(--text-base); font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.125rem;">{{ $upcoming->user->name ?? 'Usuario' }}</p>
+                                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+                                            {{ $upcoming->check_in->format('d/m/Y') }} - {{ $upcoming->check_out->format('d/m/Y') }}
+                                            · {{ $upcoming->guests }} huésped(es)
+                                        </p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p style="font-size: var(--text-base); font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.125rem;">{{ $upcoming->user->name ?? 'Usuario' }}</p>
-                                    <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
-                                        {{ $upcoming->check_in->format('d/m/Y') }} - {{ $upcoming->check_out->format('d/m/Y') }}
-                                        · {{ $upcoming->guests }} huésped(es)
-                                    </p>
+                                <div style="text-align: right;">
+                                    <p style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.25rem;">{{ number_format($upcoming->total_price, 2, ',', '.') }} €</p>
+                                    @if($upcoming->status === 'pending')
+                                        <span class="badge badge-warning" style="font-size: var(--text-xs);">Pendiente</span>
+                                    @elseif($upcoming->status === 'paid')
+                                        <span class="badge badge-success" style="font-size: var(--text-xs);">Pagada</span>
+                                    @elseif($upcoming->status === 'cancelled')
+                                        <span class="badge badge-error" style="font-size: var(--text-xs);">Cancelada</span>
+                                    @else
+                                        <span class="badge badge-info" style="font-size: var(--text-xs);">{{ ucfirst($upcoming->status) }}</span>
+                                    @endif
                                 </div>
                             </div>
-                            <div style="text-align: right;">
-                                <p style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.25rem;">{{ number_format($upcoming->total_price, 2, ',', '.') }} €</p>
-                                @if($upcoming->status === 'pending')
-                                    <span class="badge badge-warning" style="font-size: var(--text-xs);">Pendiente</span>
-                                @elseif($upcoming->status === 'paid')
-                                    <span class="badge badge-success" style="font-size: var(--text-xs);">Pagada</span>
-                                @elseif($upcoming->status === 'cancelled')
-                                    <span class="badge badge-error" style="font-size: var(--text-xs);">Cancelada</span>
-                                @else
-                                    <span class="badge badge-info" style="font-size: var(--text-xs);">{{ ucfirst($upcoming->status) }}</span>
-                                @endif
-                            </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
                 </div>
             </div>
         @endif
 
-        <div style="overflow: hidden;">
-            <div style="padding: 1.5rem; border-bottom: 1px solid var(--color-border-light);">
-                <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary);">Todas las reservas</h2>
-            </div>
+        <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Todas las reservas</h2>
+        <div style="overflow: hidden; background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px);">
             
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; font-size: var(--text-base);">
                     <thead style="border-bottom: 2px solid var(--color-border-light);">
                         <tr>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">ID</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Cliente</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Propiedad</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Check-in</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Check-out</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Huéspedes</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Total</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Estado</th>
-                            <th style="padding: 0.75rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Acciones</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">ID</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Cliente</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Propiedad</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Check-in</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Check-out</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Huéspedes</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Total</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Estado</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($reservations as $r)
                             <tr style="border-bottom: 1px solid var(--color-border-light);">
-                                <td style="padding: 0.75rem; color: var(--color-text-primary); font-family: monospace; font-weight: 600;">#{{ $r->id }}</td>
-                                <td style="padding: 0.75rem; color: var(--color-text-primary);">{{ $r->user?->name ?? '—' }}</td>
-                                <td style="padding: 0.75rem; color: var(--color-text-secondary);">{{ $r->property?->name ?? '—' }}</td>
-                                <td style="padding: 0.75rem; color: var(--color-text-secondary); font-size: var(--text-sm);">{{ $r->check_in->format('d/m/Y') }}</td>
-                                <td style="padding: 0.75rem; color: var(--color-text-secondary); font-size: var(--text-sm);">{{ $r->check_out->format('d/m/Y') }}</td>
-                                <td style="padding: 0.75rem; color: var(--color-text-secondary);">{{ $r->guests }}</td>
-                                <td style="padding: 0.75rem; color: var(--color-text-primary); font-weight: 600;">{{ number_format($r->total_price, 2, ',', '.') }} €</td>
-                                <td style="padding: 0.75rem;">
+                                <td style="padding: 1rem; color: var(--color-text-primary); font-family: monospace; font-weight: 600;">#{{ $r->id }}</td>
+                                <td style="padding: 1rem; color: var(--color-text-primary);">{{ $r->user?->name ?? '—' }}</td>
+                                <td style="padding: 1rem; color: var(--color-text-secondary);">{{ $r->property?->name ?? '—' }}</td>
+                                <td style="padding: 1rem; color: var(--color-text-secondary); font-size: var(--text-sm);">{{ $r->check_in->format('d/m/Y') }}</td>
+                                <td style="padding: 1rem; color: var(--color-text-secondary); font-size: var(--text-sm);">{{ $r->check_out->format('d/m/Y') }}</td>
+                                <td style="padding: 1rem; color: var(--color-text-secondary);">{{ $r->guests }}</td>
+                                <td style="padding: 1rem; color: var(--color-text-primary); font-weight: 600;">{{ number_format($r->total_price, 2, ',', '.') }} €</td>
+                                <td style="padding: 1rem;">
                                     @if($r->status === 'pending')
                                         <span class="badge badge-warning">Pendiente</span>
                                     @elseif($r->status === 'paid')
@@ -213,8 +202,10 @@
                                         <span class="badge badge-info">{{ ucfirst($r->status) }}</span>
                                     @endif
                                 </td>
-                                <td style="padding: 0.75rem;">
-                                    <div class="admin-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                            </tr>
+                            <tr style="border-bottom: 1px solid var(--color-border-light);">
+                                <td colspan="8" style="padding: 1rem;">
+                                    <div class="admin-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; justify-content: center;">
                                         <a href="{{ route('admin.reservations.edit', $r->id) }}" class="btn-action btn-action-secondary">Editar</a>
 
                                         @if ($r->status === 'pending')
@@ -254,7 +245,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td style="padding: 2rem; text-align: center; color: var(--color-text-secondary);" colspan="9">No hay reservas.</td>
+                                <td style="padding: 2rem; text-align: center; color: var(--color-text-secondary);" colspan="8">No hay reservas.</td>
                             </tr>
                         @endforelse
                     </tbody>

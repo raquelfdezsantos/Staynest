@@ -1,4 +1,4 @@
-<header class="nav-header nav-header--solid" style="border-bottom: 2px solid var(--color-accent);">
+<header class="nav-header nav-header--solid" style="border-bottom: 1px solid var(--color-border-light);">
     <nav class="nav-container">
         <x-logo />
 
