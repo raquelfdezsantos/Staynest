@@ -49,9 +49,15 @@
                 </a>
             @endif
 
-            <x-primary-button class="ms-3">
-                Iniciar sesión
-            </x-primary-button>
+            <div class="flex space-x-3">
+                <a href="{{ route('register') }}" class="text-sm px-4 py-2 rounded border transition-colors" style="color: var(--color-accent); border-color: var(--color-accent); text-decoration: none;" onmouseover="this.style.backgroundColor='rgba(77,141,148,0.1)';" onmouseout="this.style.backgroundColor='transparent';">
+                    Registrarse
+                </a>
+
+                <x-primary-button class="ms-3">
+                    Iniciar sesión
+                </x-primary-button>
+            </div>
         </div>
     </form>
 </x-guest-layout>

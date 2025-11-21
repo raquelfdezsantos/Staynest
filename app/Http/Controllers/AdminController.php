@@ -549,6 +549,8 @@ class AdminController extends Controller
             'capacity' => 'required|integer|min:1|max:50',
             'tourism_license' => 'nullable|string|max:100',
             'rental_registration' => 'nullable|string|max:100',
+            'services' => 'nullable|array',
+            'services.*' => 'string',
         ]);
 
         $property->update($validated);

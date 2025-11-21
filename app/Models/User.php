@@ -30,6 +30,8 @@ class User extends Authenticatable
         'avatar_path',
         'address',
         'document_id',
+        'birth_date',
+        'payment_method',
     ];
 
     /**

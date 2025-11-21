@@ -34,6 +34,9 @@ class Property extends Model
         'rental_registration',
         'latitude',
         'longitude',
+        'services',
+        'owner_name',
+        'owner_tax_id',
     ];
 
     /**
@@ -57,12 +60,14 @@ class Property extends Model
     }
 
     /**
-     * Relación: una propiedad puede tener muchas reservas.
+     * Conversión automática de atributos a tipos nativos.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return array<string, string>
      */
-    public function reservations()
+    protected function casts(): array
     {
-        return $this->hasMany(\App\Models\Reservation::class);
+        return [
+            'services' => 'array',
+        ];
     }
 }
