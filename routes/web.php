@@ -119,6 +119,7 @@ Route::middleware(['auth', 'role:admin'])
 
         // Reservas
         Route::post('/reservations/{id}/cancel', [AdminController::class, 'cancel'])->name('reservations.cancel');
+        Route::get('/reservations/{reservation}', [AdminController::class, 'show'])->name('reservations.show');
         Route::get('/reservations/{id}/edit', [AdminController::class, 'edit'])->name('reservations.edit');
         Route::put('/reservations/{id}', [AdminController::class, 'update'])->name('reservations.update');
         Route::post('/reservations/{id}/refund', [AdminController::class, 'refund'])->name('reservations.refund');

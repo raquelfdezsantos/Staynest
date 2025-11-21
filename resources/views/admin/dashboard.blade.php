@@ -180,7 +180,7 @@
                                 <div style="text-align: right;">
                                     <p style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.25rem;">{{ number_format($upcoming->total_price, 2, ',', '.') }} €</p>
                                     <div style="margin-top: 0.5rem;">
-                                        <a href="{{ route('admin.reservations.edit', $upcoming->id) }}" class="btn-action btn-action-primary" style="text-transform: none !important;">Ver Reserva</a>
+                                        <a href="{{ route('admin.reservations.show', $upcoming->id) }}" class="btn-action btn-action-primary" style="text-transform: none !important;">Ver Reserva</a>
                                     </div>
                                 </div>
                             </div>
@@ -248,7 +248,7 @@
                                 <td colspan="7" style="padding: 0;">
                                     <div style="border-top: 1px solid var(--color-border-light); margin: 0 2rem; padding: 1rem 0 2rem 0;">
                                         <div class="admin-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; justify-content: center;">
-                                            <a href="{{ route('admin.reservations.edit', $r->id) }}" class="btn-action btn-action-secondary">Editar</a>
+                                            <a href="{{ route('admin.reservations.show', $r->id) }}" class="btn-action btn-action-secondary">Ver</a>
 
                                             @if ($r->status === 'pending')
                                                 <form method="POST" action="{{ route('reservations.pay', $r->id) }}" style="display: inline;">

@@ -191,6 +191,13 @@ class AdminController extends Controller
         return view('admin.reservations.edit', compact('reservation')); // crea vista simple
     }
 
+    /** Vista de detalles (admin) */
+    public function show(Reservation $reservation)
+    {
+        $reservation->loadMissing('property', 'user');
+        return view('admin.reservations.show', compact('reservation'));
+    }
+
     /** Update (admin) — permite pending/paid */
     public function update(Request $request, int $id)
     {
