@@ -125,9 +125,9 @@
             </div>
         </div>
 
-        {{-- Próximas reservas --}}
+        {{-- Próximos check-in --}}
         @if($stats['upcomingReservations']->isNotEmpty())
-            <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Próximas reservas</h2>
+            <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Próximos check-in</h2>
             <div style="margin-bottom: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px);">
                 <div style="padding: 1.5rem;">
                     <div style="display: flex; flex-direction: column; gap: 0;">
@@ -138,7 +138,18 @@
                                         <span style="color: var(--color-text-secondary); font-weight: 500; font-size: var(--text-sm);">{{ substr($upcoming->user->name ?? 'U', 0, 1) }}</span>
                                     </div>
                                     <div>
-                                        <p style="font-size: var(--text-base); font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.125rem;">{{ $upcoming->user->name ?? 'Usuario' }}</p>
+                                        <p style="font-size: var(--text-base); font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.125rem;">
+                                            {{ $upcoming->user->name ?? 'Usuario' }} • {{ $upcoming->property->name ?? 'Propiedad' }}
+                                            @if($upcoming->status === 'pending')
+                                                <span class="badge badge-warning" style="font-size: var(--text-xs); margin-left: 0.5rem;">Pendiente</span>
+                                            @elseif($upcoming->status === 'paid')
+                                                <span class="badge badge-success" style="font-size: var(--text-xs); margin-left: 0.5rem;">Pagada</span>
+                                            @elseif($upcoming->status === 'cancelled')
+                                                <span class="badge badge-error" style="font-size: var(--text-xs); margin-left: 0.5rem;">Cancelada</span>
+                                            @else
+                                                <span class="badge badge-info" style="font-size: var(--text-xs); margin-left: 0.5rem;">{{ ucfirst($upcoming->status) }}</span>
+                                            @endif
+                                        </p>
                                         <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
                                             {{ $upcoming->check_in->format('d/m/Y') }} - {{ $upcoming->check_out->format('d/m/Y') }}
                                             · {{ $upcoming->guests }} huésped(es)
@@ -147,15 +158,9 @@
                                 </div>
                                 <div style="text-align: right;">
                                     <p style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.25rem;">{{ number_format($upcoming->total_price, 2, ',', '.') }} €</p>
-                                    @if($upcoming->status === 'pending')
-                                        <span class="badge badge-warning" style="font-size: var(--text-xs);">Pendiente</span>
-                                    @elseif($upcoming->status === 'paid')
-                                        <span class="badge badge-success" style="font-size: var(--text-xs);">Pagada</span>
-                                    @elseif($upcoming->status === 'cancelled')
-                                        <span class="badge badge-error" style="font-size: var(--text-xs);">Cancelada</span>
-                                    @else
-                                        <span class="badge badge-info" style="font-size: var(--text-xs);">{{ ucfirst($upcoming->status) }}</span>
-                                    @endif
+                                    <div style="margin-top: 0.5rem;">
+                                        <a href="{{ route('admin.reservations.edit', $upcoming->id) }}" class="btn-action btn-action-primary" style="text-transform: none !important;">Ver Reserva</a>
+                                    </div>
                                 </div>
                             </div>
                         @endforeach
