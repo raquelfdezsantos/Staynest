@@ -103,7 +103,7 @@
                 <div class="p-6" style="border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.8); backdrop-filter: blur(10px);">
                     <h3 style="font-size: var(--text-lg); font-weight:600; margin:0 0 1rem; text-transform: uppercase; letter-spacing:0.05em; color: var(--color-text-primary);">Acciones</h3>
                     <div class="flex flex-col gap-3 invoice-actions">
-                        @php($backUrl = request()->is('admin/*') ? route('admin.invoices.index') : route('invoices.index'))
+                        @php($backUrl = Auth::check() && Auth::user()->role === 'admin' ? route('admin.dashboard') : route('invoices.index'))
                         <a href="{{ $backUrl }}" class="btn-action btn-action-secondary">Volver</a>
                         <a href="{{ route('invoices.show', $invoice->number) }}?download=1" class="btn-action btn-action-primary">Descargar PDF</a>
                     </div>
