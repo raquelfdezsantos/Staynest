@@ -174,8 +174,7 @@
                             <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">ID</th>
                             <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Cliente</th>
                             <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Propiedad</th>
-                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Check-in</th>
-                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Check-out</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Fechas</th>
                             <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Huéspedes</th>
                             <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Total</th>
                             <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Estado</th>
@@ -183,14 +182,15 @@
                     </thead>
                     <tbody>
                         @forelse($reservations as $r)
-                            <tr style="border-bottom: 1px solid var(--color-border-light);">
-                                <td style="padding: 1rem; color: var(--color-text-primary); font-family: monospace; font-weight: 600;">#{{ $r->id }}</td>
+                            <tr style="border-bottom: none;">
+                                <td style="padding: 1rem;">
+                                    <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin: 0; font-family: monospace; font-weight: 600;">#{{ $r->id }}</p>
+                                </td>
                                 <td style="padding: 1rem; color: var(--color-text-primary);">{{ $r->user?->name ?? '—' }}</td>
                                 <td style="padding: 1rem; color: var(--color-text-secondary);">{{ $r->property?->name ?? '—' }}</td>
-                                <td style="padding: 1rem; color: var(--color-text-secondary); font-size: var(--text-sm);">{{ $r->check_in->format('d/m/Y') }}</td>
-                                <td style="padding: 1rem; color: var(--color-text-secondary); font-size: var(--text-sm);">{{ $r->check_out->format('d/m/Y') }}</td>
+                                <td style="padding: 1rem; color: var(--color-text-secondary); font-size: var(--text-sm);">{{ $r->check_in->format('d/m/Y') }} → {{ $r->check_out->format('d/m/Y') }}</td>
                                 <td style="padding: 1rem; color: var(--color-text-secondary);">{{ $r->guests }}</td>
-                                <td style="padding: 1rem; color: var(--color-text-primary); font-weight: 600;">{{ number_format($r->total_price, 2, ',', '.') }} €</td>
+                                <td style="padding: 1rem; color: var(--color-text-primary); font-weight: 600; font-size: var(--text-lg);">{{ number_format($r->total_price, 2, ',', '.') }} €</td>
                                 <td style="padding: 1rem;">
                                     @if($r->status === 'pending')
                                         <span class="badge badge-warning">Pendiente</span>
@@ -204,48 +204,50 @@
                                 </td>
                             </tr>
                             <tr style="border-bottom: 1px solid var(--color-border-light);">
-                                <td colspan="8" style="padding: 1rem;">
-                                    <div class="admin-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; justify-content: center;">
-                                        <a href="{{ route('admin.reservations.edit', $r->id) }}" class="btn-action btn-action-secondary">Editar</a>
+                                <td colspan="7" style="padding: 0;">
+                                    <div style="border-top: 1px solid var(--color-border-light); margin: 0 2rem; padding: 1rem 0 2rem 0;">
+                                        <div class="admin-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; justify-content: center;">
+                                            <a href="{{ route('admin.reservations.edit', $r->id) }}" class="btn-action btn-action-secondary">Editar</a>
 
-                                        @if ($r->status === 'pending')
-                                            <form method="POST" action="{{ route('reservations.pay', $r->id) }}" style="display: inline;">
-                                                @csrf
-                                                <button type="submit" class="btn-action btn-action-primary" onclick="return confirm('¿Marcar como pagada y generar factura?')">
-                                                    Marcar pagada
-                                                </button>
-                                            </form>
+                                            @if ($r->status === 'pending')
+                                                <form method="POST" action="{{ route('reservations.pay', $r->id) }}" style="display: inline;">
+                                                    @csrf
+                                                    <button type="submit" class="btn-action btn-action-primary" onclick="return confirm('¿Marcar como pagada y generar factura?')">
+                                                        Marcar pagada
+                                                    </button>
+                                                </form>
 
-                                            <form method="POST" action="{{ route('admin.reservations.cancel', $r->id) }}" style="display: inline;">
-                                                @csrf
-                                                <button type="submit" class="btn-action btn-action-danger" onclick="return confirm('¿Cancelar esta reserva y reponer noches?')">
-                                                    Cancelar
-                                                </button>
-                                            </form>
+                                                <form method="POST" action="{{ route('admin.reservations.cancel', $r->id) }}" style="display: inline;">
+                                                    @csrf
+                                                    <button type="submit" class="btn-action btn-action-danger" onclick="return confirm('¿Cancelar esta reserva y reponer noches?')">
+                                                        Cancelar
+                                                    </button>
+                                                </form>
 
-                                        @elseif ($r->status === 'paid' && $r->invoice)
-                                            <a href="{{ route('invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary">Ver factura</a>
-                                            <a href="{{ route('invoices.show', $r->invoice->number) }}?download=1" class="btn-action btn-action-secondary">Pdf</a>
+                                            @elseif ($r->status === 'paid' && $r->invoice)
+                                                <a href="{{ route('invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary">Ver factura</a>
+                                                <a href="{{ route('invoices.show', $r->invoice->number) }}?download=1" class="btn-action btn-action-secondary">Pdf</a>
 
-                                            <form method="POST" action="{{ route('admin.reservations.refund', $r->id) }}" style="display: inline;">
-                                                @csrf
-                                                <button type="submit" class="btn-action btn-action-danger" onclick="return confirm('Esto marcará la reserva como cancelada y registrará reembolso. ¿Continuar?')">
-                                                    Reembolsar
-                                                </button>
-                                            </form>
+                                                <form method="POST" action="{{ route('admin.reservations.refund', $r->id) }}" style="display: inline;">
+                                                    @csrf
+                                                    <button type="submit" class="btn-action btn-action-danger" onclick="return confirm('Esto marcará la reserva como cancelada y registrará reembolso. ¿Continuar?')">
+                                                        Reembolsar
+                                                    </button>
+                                                </form>
 
-                                        @elseif ($r->status === 'paid')
-                                            <span style="color: var(--color-text-muted); font-size: var(--text-sm);">Sin factura</span>
+                                            @elseif ($r->status === 'paid')
+                                                <span style="color: var(--color-text-muted); font-size: var(--text-sm);">Sin factura</span>
 
-                                        @else
-                                            —
-                                        @endif
+                                            @else
+                                                —
+                                            @endif
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td style="padding: 2rem; text-align: center; color: var(--color-text-secondary);" colspan="8">No hay reservas.</td>
+                                <td style="padding: 2rem; text-align: center; color: var(--color-text-secondary);" colspan="7">No hay reservas.</td>
                             </tr>
                         @endforelse
                     </tbody>
