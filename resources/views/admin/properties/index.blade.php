@@ -88,16 +88,13 @@
                         </div>
                     @else
                         <div style="padding: 1rem 1.25rem 1.25rem;">
-                            <form method="POST" action="{{ route('admin.properties.restore', $property->id) }}">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" 
-                                        class="btn-action btn-action-success" 
-                                        style="width: 100%;"
-                                        onclick="return confirm('¿Restaurar esta propiedad?')">
-                                    <span class="sn-sentence">Restaurar propiedad</span>
-                                </button>
-                            </form>
+                            <button type="button"
+                                    x-data=""
+                                    x-on:click.prevent="$dispatch('open-modal', 'confirm-restore-{{ $property->id }}')"
+                                    class="btn-action btn-action-success" 
+                                    style="width: 100%;">
+                                <span class="sn-sentence">Restaurar propiedad</span>
+                            </button>
                         </div>
                     @endif
                 </div>
@@ -111,6 +108,47 @@
                 </div>
             @endforelse
         </div>
+
+        {{-- Modales de confirmación para restaurar --}}
+        @foreach($properties as $property)
+            @if($property->trashed())
+                <x-modal name="confirm-restore-{{ $property->id }}" focusable>
+                    <div style="padding: 2rem; border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.9); backdrop-filter: blur(10px);">
+                        <form method="POST" action="{{ route('admin.properties.restore', $property->id) }}">
+                            @csrf
+                            @method('PATCH')
+
+                            <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
+                                ¿Restaurar esta propiedad?
+                            </h2>
+
+                            <p style="margin-bottom: 1.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+                                La propiedad "{{ $property->name }}" volverá a estar activa y visible en tu listado.
+                            </p>
+
+                            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                <button type="button"
+                                        @click="$dispatch('close-modal', 'confirm-restore-{{ $property->id }}')"
+                                        class="btn-action btn-action-secondary"
+                                        style="background-color: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-accent); border-radius: var(--radius-base); transition: all 0.3s ease; font-size: 14px;"
+                                        onmouseover="this.style.color = 'var(--color-accent)'; this.style.backgroundColor = 'rgba(77, 141, 148, 0.10)'; this.style.border = 'none';"
+                                        onmouseout="this.style.backgroundColor = 'var(--color-bg-secondary)'; this.style.color = 'var(--color-text-primary)'; this.style.border = '1px solid var(--color-accent)';">
+                                    <span class="sn-sentence">Cancelar</span>
+                                </button>
+
+                                <button type="submit" 
+                                        class="btn-action btn-action-success"
+                                        style="background-color: var(--color-success); color: #fff; border: 1px solid var(--color-success); border-radius: var(--radius-base); transition: all 0.3s ease; font-size: 14px;"
+                                        onmouseover="this.style.opacity = '0.9';"
+                                        onmouseout="this.style.opacity = '1';">
+                                    <span class="sn-sentence">Restaurar propiedad</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </x-modal>
+            @endif
+        @endforeach
     </div>
 
     <style>
