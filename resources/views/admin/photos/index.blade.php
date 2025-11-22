@@ -9,10 +9,10 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             {{-- Mensajes --}}
             @if (session('success'))
-                <div class="mb-6 p-4 bg-green-900 text-green-100 border border-green-700" style="border-radius: 2px;">{{ session('success') }}</div>
+                <div class="alert alert-success">{{ session('success') }}</div>
             @endif
             @if (session('error'))
-                <div class="mb-6 p-4 bg-red-900 text-red-100 border border-red-700" style="border-radius: 2px;">{{ session('error') }}</div>
+                <div class="alert alert-error">{{ session('error') }}</div>
             @endif
 
             {{-- Formulario de subida --}}
@@ -26,7 +26,7 @@
                         
                         <div class="mb-4">
                             <label for="photos" class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">
-                                Selecciona hasta 10 fotos (JPG, PNG, WEBP - máx. 5MB cada una)
+                                Selecciona hasta 30 fotos (JPG, PNG, WEBP - máx. 5MB cada una)
                             </label>
                             <input 
                                 type="file" 
@@ -94,7 +94,7 @@
                                                     title="Marcar como portada"
                                                     class="btn-photo btn-photo-star"
                                                 >
-                                                    ★
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                                                 </button>
                                             </form>
                                         @endif
@@ -108,7 +108,7 @@
                                                 title="Eliminar foto"
                                                 class="btn-photo btn-photo-delete"
                                             >
-                                                🗑️
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
                                             </button>
                                         </form>
                                     </div>
@@ -122,7 +122,7 @@
                         </div>
 
                         <p class="text-sm mt-4" style="color: var(--color-text-secondary);">
-                            💡 <strong>Tip:</strong> Arrastra las fotos desde la barra inferior "ARRASTRAR" para reordenarlas. Haz clic en ★ para marcar como portada o 🗑️ para eliminar.
+                            <strong>Tip:</strong> Arrastra las fotos desde la barra inferior para reordenarlas. Haz clic en ★ para marcar como portada o en el icono de papelera para eliminar.
                         </p>
                     @endif
                 </div>
@@ -136,11 +136,16 @@
         .admin-photos-page .btn-action {
             font-size: var(--text-sm);
             padding: 0.5rem 1.25rem;
-            border-radius: 2px;
+            border-radius: var(--radius-sm);
             text-transform: none;
             letter-spacing: 0;
             font-weight: 600;
             line-height: 1.25rem;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
         }
 
         .admin-photos-page .btn-action-primary {
@@ -166,6 +171,13 @@
         }
 
         /* File input styling */
+        .admin-file-input {
+            padding: 0.75rem;
+            border: 1px solid var(--color-border-light);
+            border-radius: 2px;
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
         .admin-file-input::file-selector-button {
             margin-right: 1rem;
             padding: 0.5rem 1rem;
@@ -190,7 +202,10 @@
             border-radius: 2px;
             overflow: hidden;
             background-color: var(--color-bg-secondary);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .photo-card:hover {
+            border: 1px solid var(--color-accent);
         }
 
         .photo-img {
@@ -202,26 +217,31 @@
 
         .photo-badge {
             position: absolute;
-            font-size: 12px;
-            font-weight: 600;
-            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 10px;
             border-radius: 2px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             z-index: 20;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .photo-badge-cover {
             top: 8px;
             left: 8px;
-            background-color: #eab308;
-            color: white;
+            background-color: var(--color-warning);
+            color: #000;
+            border: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .photo-badge-order {
-            bottom: 48px;
+            bottom: 36px;
             right: 8px;
             background-color: var(--color-bg-primary);
             color: var(--color-text-primary);
+            border: 1px solid var(--color-border-light);
+            font-size: 13px;
         }
 
         .photo-actions {
@@ -234,30 +254,38 @@
         }
 
         .btn-photo {
-            padding: 6px 10px;
+            padding: 8px 10px;
             color: white;
             border: none;
             border-radius: 2px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-photo svg {
+            display: block;
         }
 
         .btn-photo-star {
-            background-color: #eab308;
+            background-color: var(--color-warning);
+            color: #000;
         }
 
         .btn-photo-star:hover {
-            background-color: #ca8a04;
+            opacity: 0.9;
         }
 
         .btn-photo-delete {
-            background-color: #ef4444;
+            background-color: var(--color-error);
         }
 
         .btn-photo-delete:hover {
-            background-color: #dc2626;
+            opacity: 0.9;
         }
 
         .drag-handle {
@@ -265,16 +293,17 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 40px;
+            height: 36px;
             background-color: var(--color-accent);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: move;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 25;
         }
 

@@ -679,7 +679,7 @@ class AdminController extends Controller
         }
 
         $request->validate([
-            'photos' => 'required|array|min:1|max:10',
+            'photos' => 'required|array|min:1|max:30',
             'photos.*' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120', // 5MB máximo
         ]);
 
