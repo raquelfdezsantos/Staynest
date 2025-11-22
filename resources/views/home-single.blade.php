@@ -58,6 +58,16 @@
                 </article>
             </section>
 
+            {{-- CAPACIDAD --}}
+            <section style="margin-bottom: var(--spacing-xl); padding-bottom: var(--spacing-lg); border-bottom: 1px solid var(--color-border);">
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <svg style="width: 1.5rem; height: 1.5rem; color: var(--color-accent); flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span style="color: var(--color-text-primary); font-size: var(--text-base);">Capacidad: <strong>{{ $property->capacity }} {{ $property->capacity == 1 ? 'persona' : 'personas' }}</strong></span>
+                </div>
+            </section>
+
             {{-- SERVICIOS --}}
             @php
                 $services = $property->services ?? [];
