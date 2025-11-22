@@ -1586,7 +1586,8 @@ html[data-theme="light"] .nav-header--transparent {
 }
 
 /* Variante para anclar el hero al top real bajo header fijo (compensa padding de body) */
-.sn-hero--flush-top { margin-top: calc(-1 * var(--sn-header-h, 0px)); }
+body:not(.sn-hero-mode) .sn-hero--flush-top { margin-top: calc(-1 * var(--sn-header-h, 0px)); }
+body.sn-hero-mode .sn-hero--flush-top { margin-top: 0; }
 
 .sn-hero__overlay{
   position:absolute; inset:0;
@@ -1890,5 +1891,81 @@ footer { flex-shrink: 0; }
     .footer-col-1 {
         max-width: 32ch;
     }
+}
+
+/* ============================================================================
+   HEADER CON LOGO ANIMADO (Hero Mode)
+   ============================================================================ */
+
+/* Acciones de usuario: siempre a la derecha */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+/* Logo grande del hero (fuera del nav-container) */
+.nav-logo-hero {
+    position: absolute;
+    top: 15vh;
+    left: 8cm;
+    z-index: 1001;
+    opacity: 0;
+}
+
+.nav-logo-hero .nav-logo {
+    height: 96px;
+}
+
+/* Mostrar logo hero solo en modo transparente */
+.nav-header--transparent .nav-logo-hero {
+    opacity: 1;
+}
+
+.nav-header--solid .nav-logo-hero {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Logo del nav-container */
+.nav-logo-wrapper {
+    opacity: 0;
+}
+
+.nav-logo-wrapper .nav-logo {
+    height: 48px;
+}
+
+/* Ocultar logo del nav-container en modo transparente */
+.nav-header--transparent .nav-logo-wrapper {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Mostrar logo del nav-container en modo sólido */
+.nav-header--solid .nav-logo-wrapper {
+    opacity: 1;
+}
+
+/* Grupo derecho: menú + acciones juntos */
+.nav-right-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+}
+
+/* Menú de navegación: a la izquierda en modo transparente, junto a acciones en modo sólido */
+.nav-header--transparent .nav-menu {
+    position: absolute;
+    left: var(--spacing-xl);
+}
+
+.nav-header--solid .nav-menu {
+    /* Flex del nav-right-group lo posiciona automáticamente */
+}
+
+/* En modo transparente, body sin padding-top */
+body.sn-has-fixed-header.sn-hero-mode {
+    padding-top: 0 !important;
 }
 
