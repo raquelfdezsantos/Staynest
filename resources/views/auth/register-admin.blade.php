@@ -11,11 +11,11 @@
             </p>
         </header>
 
-        <form method="POST" action="{{ route('register.admin') }}" novalidate class="space-y-6">
+        <form method="POST" action="{{ route('register.admin') }}" novalidate>
         @csrf
 
         <!-- Datos Personales -->
-        <div>
+        <div class="mb-16">
             <h3 class="text-xl font-semibold mb-4">Datos Personales</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -88,7 +88,7 @@
         </div>
 
         <!-- Datos del Alojamiento -->
-        <div>
+        <div class="mb-7">
             <h3 class="text-xl font-semibold mb-4">Datos del Alojamiento</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
