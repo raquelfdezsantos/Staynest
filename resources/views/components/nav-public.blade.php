@@ -34,7 +34,7 @@
                                 class="nav-link {{ request()->routeIs('properties.byOwner') ? 'active' : '' }}">Propiedades</a></li>
                     @endif
                 @else
-                    {{-- Fallback para páginas sin propiedad (institucionales) --}}
+                    {{-- Menú para páginas institucionales (sin propiedad específica) --}}
                     <li><a href="{{ route('home') }}"
                             class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Inicio</a></li>
                 @endif
@@ -210,20 +210,10 @@
         // Header sólido al hacer scroll (solo Home y páginas de propiedades comienzan transparentes)
         function updateHeaderMode() {
             var header = document.querySelector('.nav-header');
-            if (!header) {
-                console.log('Header no encontrado');
-                return;
-            }
+            if (!header) return;
 
             var threshold = 80;
             const IS_TRANSPARENT_PAGE = @json(request()->routeIs('home') || request()->routeIs('properties.show'));
-
-            console.log('updateHeaderMode:', {
-                scrollY: window.scrollY,
-                threshold: threshold,
-                isTransparentPage: IS_TRANSPARENT_PAGE,
-                headerClasses: header.className
-            });
 
             // Páginas normales: siempre sólido, pase lo que pase
             if (!IS_TRANSPARENT_PAGE) {
@@ -235,13 +225,11 @@
 
             // Home y propiedades: transparente arriba, sólido al hacer scroll
             if (window.scrollY > threshold) {
-                console.log('Scroll > threshold: cambiando a SÓLIDO');
                 header.classList.add('nav-header--solid');
                 header.classList.remove('nav-header--transparent');
                 document.body.classList.remove('sn-hero-mode');
                 document.body.style.paddingTop = '';
             } else {
-                console.log('Scroll <= threshold: cambiando a TRANSPARENTE');
                 header.classList.add('nav-header--transparent');
                 header.classList.remove('nav-header--solid');
                 document.body.classList.add('sn-hero-mode');
@@ -250,7 +238,6 @@
         }
 
         window.addEventListener('load', function () {
-            console.log('Página cargada, ejecutando updateHeaderMode');
             updateHeaderMode();
             setTimeout(updateHeaderMode, 150);
             setTimeout(updateHeaderMode, 500);
@@ -266,12 +253,6 @@
                             const header = document.querySelector('.nav-header');
                             if (!header) return;
                             
-                            console.log('IntersectionObserver:', {
-                                isIntersecting: entry.isIntersecting,
-                                intersectionRatio: entry.intersectionRatio,
-                                boundingClientRect: entry.boundingClientRect.top
-                            });
-                            
                             // Si el hero está completamente visible, header transparente
                             // En cuanto se hace scroll, header sólido
                             if (entry.intersectionRatio >= 0.95) {
@@ -279,13 +260,11 @@
                                 header.classList.remove('nav-header--solid');
                                 document.body.classList.add('sn-hero-mode');
                                 document.body.style.paddingTop = '0';
-                                console.log('Hero visible: TRANSPARENTE');
                             } else {
                                 header.classList.add('nav-header--solid');
                                 header.classList.remove('nav-header--transparent');
                                 document.body.classList.remove('sn-hero-mode');
                                 document.body.style.paddingTop = '';
-                                console.log('Hero oculto: SÓLIDO');
                             }
                         });
                     }, {
@@ -293,7 +272,6 @@
                     });
                     
                     observer.observe(hero);
-                    console.log('IntersectionObserver configurado para el hero');
                 }
             }
         });
