@@ -12,7 +12,7 @@
     <x-nav-public />
     
     <main class="container mt-xl">
-        @if(request()->routeIs('register'))
+        @if(request()->routeIs('register') || request()->routeIs('register.client') || request()->routeIs('register.admin'))
         <div class="sn-reservar" style="max-width: 64rem; margin: 0 auto; padding: 2.5rem 1rem;">
             {{ $slot }}
         </div>
