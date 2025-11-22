@@ -16,5 +16,25 @@ class AppServiceProvider extends ServiceProvider
     {
         // Registro explícito del alias 'role' por si el Kernel no se carga 
         $this->app['router']->aliasMiddleware('role', EnsureUserHasRole::class);
+
+        // Compartir la propiedad con el componente de navegación
+        \Illuminate\Support\Facades\View::composer('components.nav-public', function ($view) {
+            $property = null;
+            
+            // Intentar obtener la propiedad desde la vista actual si existe
+            if ($view->offsetExists('property')) {
+                $property = $view->offsetGet('property');
+            } 
+            // Si no existe, intentar obtener la propiedad por defecto (home)
+            else if (request()->routeIs('home')) {
+                $property = \App\Models\Property::with('user')->where('slug', 'piso-turistico-centro')->first();
+            }
+            // Si estamos en la ruta de una propiedad específica
+            else if (request()->routeIs('properties.show')) {
+                $property = request()->route('property');
+            }
+            
+            $view->with('property', $property);
+        });
     }
 }

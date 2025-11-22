@@ -42,12 +42,12 @@
     @if(request()->routeIs('admin.*'))
         <x-nav-admin />
     @else
-        <x-nav-public :transparent="request()->routeIs('home')" />
+        <x-nav-public :transparent="request()->routeIs('home') || request()->routeIs('properties.show')" />
     @endif
 
     <!-- Page Content -->
     {{-- Home sin container (hero full), resto con container --}}
-    <main class="{{ request()->routeIs('home') ? '' : 'container mt-xl' }}">
+    <main class="{{ request()->routeIs('home') || request()->routeIs('properties.show') ? '' : 'container mt-xl' }}">
         @yield('content')
         {{ $slot ?? '' }}
     </main>
@@ -95,17 +95,18 @@
                     </ul>
                 </div>
 
-                {{-- Columna 3: Propiedad --}}
+                {{-- Columna 3: Navegación --}}
                 <div class="footer-col-3">
+                    <h3
+                        style="font-family:var(--font-serif); font-size:var(--text-lg); color:var(--color-text-primary); margin-bottom:var(--spacing-md);">
+                        Staynest</h3>
+                    <ul style="list-style:none; padding:0;">
+                        <li style="margin-bottom:var(--spacing-xs);">
+                            <a href="{{ route('discover') }}" class="sn-link">Descubre Staynest</a>
+                        </li>
+                    </ul>
                     @if($property)
-                        <div class="footer-prop-wrap footer-prop">
-                            <h3
-                                style="font-family:var(--font-serif); font-size:var(--text-lg); color:var(--color-text-primary); margin-bottom:var(--spacing-md);">
-                                {{ $property->name }}
-                            </h3>
-                            <p style="color:var(--color-text-secondary);">&copy; {{ date('Y') }} Todos los derechos
-                                reservados.</p>
-                        </div>
+                        <p style="color:var(--color-text-secondary); margin-top:var(--spacing-md);">&copy; {{ date('Y') }} Todos los derechos reservados.</p>
                     @endif
                 </div>
             </div>

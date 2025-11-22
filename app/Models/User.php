@@ -45,6 +45,16 @@ class User extends Authenticatable
     ];
 
     /**
+     * Relación: un usuario admin puede tener varias propiedades.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function properties()
+    {
+        return $this->hasMany(Property::class);
+    }
+
+    /**
      * Conversión automática de atributos a tipos nativos.
      *
      * @return array<string, string>

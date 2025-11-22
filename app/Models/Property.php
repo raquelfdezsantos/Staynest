@@ -22,6 +22,7 @@ class Property extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'user_id',
         'name',
         'slug',
         'description',
@@ -38,6 +39,16 @@ class Property extends Model
         'owner_name',
         'owner_tax_id',
     ];
+
+    /**
+     * Relación: una propiedad pertenece a un usuario admin.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /**
      * Relación: una propiedad puede tener muchas fotos.

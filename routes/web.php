@@ -23,29 +23,30 @@ use App\Http\Controllers\QuoteController;
 */
 
 Route::get('/', function () {
-    // Home adaptativa: si hay 1 propiedad, mostrar Home single; si hay >1, Home multi
-    $count = Property::count();
-    if ($count === 1) {
-        $property = Property::with('photos')->first();
-        return view('home-single', compact('property'));
+    // Home: muestra la propiedad principal (piso-turistico-centro del seeder)
+    $property = Property::with('photos')->where('slug', 'piso-turistico-centro')->first();
+    
+    // Si no existe esa propiedad, mostrar la primera disponible
+    if (!$property) {
+        $property = Property::with('photos')->whereNull('deleted_at')->first();
     }
-
-    // Si hay varias, permitimos destacar una por slug conocido si existe; si no, usamos multi
-    $highlightSlug = 'apartamento-nordeste';
-    $highlight = Property::with('photos')->where('slug', $highlightSlug)->first();
-    if ($highlight && $count > 1) {
-        // Podemos seguir mostrando multi igualmente; si en el futuro quieres un hero destacado, lo añadimos
-        $properties = Property::with('photos')->orderBy('id')->get();
-        return view('home-multi', compact('properties'));
+    
+    // Si no hay propiedades, mostrar página de bienvenida
+    if (!$property) {
+        return view('welcome');
     }
-
-    $properties = Property::with('photos')->orderBy('id')->get();
-    return view('home-multi', compact('properties'));
+    
+    return view('home-single', compact('property'));
 })->name('home');
 
-// Propiedades
-Route::get('/propiedades', [PropertyController::class, 'index'])->name('properties.index');
-Route::get('/propiedad/{property:slug}', [PropertyController::class, 'show'])->name('properties.show');
+// Ruta individual para cada propiedad
+Route::get('/propiedades/{property:slug}', [PropertyController::class, 'show'])->name('properties.show');
+
+// Lista de propiedades de un administrador (solo si tiene más de una)
+Route::get('/propiedades-de/{userId}', [PropertyController::class, 'byOwner'])->name('properties.byOwner');
+
+// Página institucional: Descubre Staynest (muestra todas las propiedades)
+Route::get('/descubre-staynest', [PropertyController::class, 'discover'])->name('discover');
 
 // Contacto (único formulario + mapa)
 Route::get('/contacto', [ContactController::class, 'create'])->name('contact.create');

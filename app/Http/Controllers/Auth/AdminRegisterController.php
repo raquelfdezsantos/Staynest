@@ -75,8 +75,9 @@ class AdminRegisterController extends Controller
                 'role' => 'admin',
             ]);
 
-            // Crear propiedad
+            // Crear propiedad asociada al usuario
             $property = Property::create([
+                'user_id' => $user->id,
                 'name' => $request->property_name,
                 'slug' => \Illuminate\Support\Str::slug($request->property_name),
                 'address' => $request->property_address,

@@ -1,6 +1,4 @@
-@props(['transparent' => false])
-
-@php($totalProperties = \App\Models\Property::whereNull('deleted_at')->count())
+@props(['transparent' => false, 'property' => null])
 
 <header class="nav-header {{ $transparent ? 'nav-header--transparent' : 'nav-header--solid' }}"
     data-sn-transparent="{{ $transparent ? '1' : '0' }}">
@@ -17,9 +15,9 @@
                     class="nav-link {{ request()->routeIs('contact.*') ? 'active' : '' }}">Contacto</a></li>
             <li><a href="{{ route('reservar') }}"
                     class="nav-link {{ request()->routeIs('reservar') ? 'active' : '' }}">Reservar</a></li>
-            @if($totalProperties > 1)
-                <li><a href="{{ route('properties.index') }}"
-                        class="nav-link {{ request()->routeIs('properties.index') ? 'active' : '' }}">Propiedades</a></li>
+            @if($property && $property->user && $property->user->properties()->whereNull('deleted_at')->count() > 1)
+                <li><a href="{{ route('properties.byOwner', $property->user_id) }}"
+                        class="nav-link {{ request()->routeIs('properties.byOwner') ? 'active' : '' }}">Propiedades</a></li>
             @endif
             
             {{-- Menú de usuario logueado --}}
@@ -181,22 +179,22 @@
             });
         }
 
-        // Header sólido al hacer scroll (solo Home comienza transparente)
+        // Header sólido al hacer scroll (solo Home y páginas de propiedades comienzan transparentes)
         function updateHeaderMode() {
             var header = document.querySelector('.nav-header');
             if (!header) return;
 
             var threshold = 40;
-            const IS_HOME = @json(request()->routeIs('home'));
+            const IS_TRANSPARENT_PAGE = @json(request()->routeIs('home') || request()->routeIs('properties.show'));
 
-            // No-home: siempre sólido, pase lo que pase
-            if (!IS_HOME) {
+            // Páginas normales: siempre sólido, pase lo que pase
+            if (!IS_TRANSPARENT_PAGE) {
                 header.classList.add('nav-header--solid');
                 header.classList.remove('nav-header--transparent');
                 return;
             }
 
-            // Home: transparente arriba, sólido al hacer scroll
+            // Home y propiedades: transparente arriba, sólido al hacer scroll
             if (window.scrollY > threshold) {
                 header.classList.add('nav-header--solid');
                 header.classList.remove('nav-header--transparent');

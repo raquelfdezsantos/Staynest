@@ -32,8 +32,17 @@ class MultiPropertySeeder extends Seeder
      */
     public function run(): void
     {
+        // Obtener el usuario admin para asignar las propiedades
+        $admin = \App\Models\User::where('email', 'admin@vut.test')->first();
+        
+        if (!$admin) {
+            $this->command->error('No se encontró el usuario admin. Ejecuta InitialDataSeeder primero.');
+            return;
+        }
+
         // 1. Apartamento Centro (ACTIVA)
         $centro = Property::create([
+            'user_id' => $admin->id,
             'name' => 'Apartamento Turístico Centro',
             'slug' => 'apartamento-turistico-centro',
             'description' => 'Acogedor apartamento en pleno centro histórico de Valencia. Totalmente reformado, con aire acondicionado, WiFi de alta velocidad y vistas a la calle peatonal. A 5 minutos andando de la Catedral y el Mercado Central. Ideal para parejas o familias pequeñas que quieran disfrutar de la ciudad sin necesidad de coche.',
@@ -53,6 +62,7 @@ class MultiPropertySeeder extends Seeder
 
         // 2. Chalet con Piscina (ACTIVA)
         $chalet = Property::create([
+            'user_id' => $admin->id,
             'name' => 'Chalet con Piscina y Jardín',
             'slug' => 'chalet-piscina-jardin',
             'description' => 'Espectacular chalet independiente con piscina privada, jardín de 200m² y barbacoa. Ubicado en zona residencial tranquila a 15 minutos del centro. Dispone de 3 dormitorios dobles, 2 baños completos, salón amplio con chimenea y garaje para 2 coches. Perfecto para grupos y familias que buscan privacidad y comodidad.',
@@ -73,6 +83,7 @@ class MultiPropertySeeder extends Seeder
 
         // 3. Estudio Playa (SOFT DELETED - dada de baja)
         $estudio = Property::create([
+            'user_id' => $admin->id,
             'name' => 'Estudio Primera Línea de Playa',
             'slug' => 'estudio-playa-malvarrosa',
             'description' => 'Estudio moderno con vistas al mar en primera línea de playa de la Malvarrosa. Totalmente equipado con cocina americana, terraza con vistas panorámicas y parking incluido. A pie de playa y cerca de restaurantes y transporte público.',

@@ -26,7 +26,7 @@ class InitialDataSeeder extends Seeder
     public function run(): void
     {
         // Creación de administrador
-        User::updateOrCreate(
+        $admin = User::updateOrCreate(
             ['email' => 'admin@vut.test'],
             [
                 'name' => 'Admin',
@@ -46,10 +46,11 @@ class InitialDataSeeder extends Seeder
             ]
         );
 
-        // Propiedad de ejemplo
+        // Propiedad de ejemplo asociada al admin
         $property = Property::updateOrCreate(
             ['slug' => 'piso-turistico-centro'],
             [
+                'user_id' => $admin->id,
                 'name' => 'Piso Turístico Centro',
                 'description' => 'Alojamiento cómodo en el centro. Cerca de todo.',
                 'address' => 'Avenida de Portugal, 18',

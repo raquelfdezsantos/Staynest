@@ -114,7 +114,7 @@ class PropertyController extends Controller
             ->values()
             ->toArray();
 
-        return view('property.show', compact('property', 'fromPrice', 'blockedDates', 'checkinDates', 'checkoutDates'));
+        return view('home-single', compact('property', 'fromPrice', 'blockedDates', 'checkinDates', 'checkoutDates'));
     }
 
     /**
@@ -173,5 +173,45 @@ class PropertyController extends Controller
             'prefill',
             'auto'
         ));
+    }
+
+    /**
+     * Muestra todas las propiedades de un administrador específico.
+     *
+     * @param int $userId ID del usuario admin
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function byOwner($userId)
+    {
+        $properties = Property::with('photos')
+            ->where('user_id', $userId)
+            ->whereNull('deleted_at')
+            ->get();
+
+        if ($properties->isEmpty()) {
+            abort(404, 'No se encontraron propiedades para este propietario');
+        }
+
+        $ownerName = $properties->first()->user->name ?? 'Este propietario';
+
+        return view('properties.by-owner', compact('properties', 'ownerName'));
+    }
+
+    /**
+     * Página institucional: Descubre Staynest
+     * 
+     * Muestra información sobre el modelo de negocio y un grid
+     * con TODAS las propiedades disponibles en la plataforma.
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function discover()
+    {
+        $properties = Property::with(['photos', 'user'])
+            ->whereNull('deleted_at')
+            ->latest()
+            ->get();
+
+        return view('discover', compact('properties'));
     }
 }
