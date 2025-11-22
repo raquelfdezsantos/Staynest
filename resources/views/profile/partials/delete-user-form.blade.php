@@ -1,16 +1,15 @@
-@if(auth()->user()->role !== 'admin')
-    <p style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-text-secondary);">
-        Una vez eliminada tu cuenta, todos tus datos se borrarán permanentemente. Antes de eliminarla, descarga cualquier información que desees conservar.
-    </p>
+<p style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+    Una vez eliminada tu cuenta, todos tus datos se borrarán permanentemente. Antes de eliminarla, descarga cualquier información que desees conservar.
+</p>
 
-    <button type="button"
-            x-data=""
-            x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-            class="btn-action btn-action-danger sn-sentence py-2 px-5">
-        Eliminar cuenta
-    </button>
+<button type="button"
+        x-data=""
+        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+        class="btn-action btn-action-danger sn-sentence py-2 px-5">
+    Eliminar cuenta
+</button>
 
-    <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable @click.away="$dispatch('close-modal', 'confirm-user-deletion')">
+<x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable @click.away="$dispatch('close-modal', 'confirm-user-deletion')">
         <div @click.away="$dispatch('close-modal', 'confirm-user-deletion')" style="padding: 2rem; border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.9); backdrop-filter: blur(10px);">
             <form method="post" action="{{ route('profile.destroy') }}">
                 @csrf
@@ -58,4 +57,3 @@
             </form>
         </div>
     </x-modal>
-@endif
