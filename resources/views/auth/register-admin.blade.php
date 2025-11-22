@@ -1,15 +1,22 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register.admin') }}" novalidate>
+@extends('layouts.app')
+
+@section('title', 'Registro de Administrador')
+
+@section('content')
+    <div class="sn-reservar max-w-5xl mx-auto px-4 py-10">
+        <header class="mb-8 text-center">
+            <h1 class="text-4xl font-serif mb-3">Registro de Administrador</h1>
+            <p class="text-neutral-300">
+                Completa todos los datos para crear tu cuenta y alojamiento
+            </p>
+        </header>
+
+        <form method="POST" action="{{ route('register.admin') }}" novalidate class="space-y-6">
         @csrf
 
-        <div class="text-center mb-6">
-            <h2 class="text-xl font-semibold" style="color: var(--color-text-primary);">Registro de Administrador</h2>
-            <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">Completa todos los datos para crear tu cuenta y alojamiento</p>
-        </div>
-
         <!-- Datos Personales -->
-        <div class="section-card">
-            <h3 class="section-title">Datos Personales</h3>
+        <div>
+            <h3 class="text-xl font-semibold mb-4">Datos Personales</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Nombre -->
@@ -81,8 +88,8 @@
         </div>
 
         <!-- Datos del Alojamiento -->
-        <div class="section-card">
-            <h3 class="section-title">Datos del Alojamiento</h3>
+        <div>
+            <h3 class="text-xl font-semibold mb-4">Datos del Alojamiento</h3>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- Nombre del alojamiento -->
@@ -146,38 +153,15 @@
             </div>
         @endif
 
-        <div class="flex items-center justify-between mt-6">
+        <div class="flex items-center justify-between pt-3">
             <a href="{{ route('register') }}" class="text-sm" style="color: var(--color-text-secondary);" onmouseover="this.style.color='var(--color-accent)';" onmouseout="this.style.color='var(--color-text-secondary);';">
                 ← Volver
             </a>
 
             <x-primary-button>
-                Crear cuenta y alojamiento
+                Crear cuenta
             </x-primary-button>
         </div>
     </form>
-
-    <style>
-        .section-card {
-            background: var(--color-bg-card);
-            border: 1px solid var(--color-border-light);
-            border-radius: var(--radius-base);
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .section-title {
-            font-size: var(--text-lg);
-            font-weight: 600;
-            color: var(--color-text-primary);
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--color-border-light);
-            padding-bottom: 0.5rem;
-        }
-
-        /* Light mode */
-        html[data-theme="light"] .section-card {
-            background: #fff;
-        }
-    </style>
-</x-guest-layout>
+    </div>
+@endsection
