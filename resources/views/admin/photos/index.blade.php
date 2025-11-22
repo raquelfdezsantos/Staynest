@@ -24,7 +24,7 @@
                         @csrf
                         
                         <div class="mb-4">
-                            <label for="photos" class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">
+                            <label class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">
                                 Selecciona hasta 30 fotos (JPG, PNG, WEBP - máx. 5MB cada una)
                             </label>
                             <input 
@@ -34,9 +34,15 @@
                                 multiple
                                 accept="image/jpeg,image/png,image/webp"
                                 required
-                                class="admin-file-input block w-full text-sm"
-                                style="color: var(--color-text-primary);"
+                                style="display: none;"
                             >
+                            <button type="button" onclick="document.getElementById('photos').click()" class="btn-action btn-action-secondary sn-sentence" style="height: 36px;">
+                                <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span id="file-label">Elegir archivos</span>
+                            </button>
+                            <span id="file-count" style="color: var(--color-text-secondary); font-size: 0.875rem; margin-left: 0.75rem;"></span>
                             @error('photos')
                                 <p class="mt-1 text-sm" style="color: #ef4444;">{{ $message }}</p>
                             @enderror
@@ -45,9 +51,24 @@
                             @enderror
                         </div>
 
-                        <button type="submit" class="btn-action btn-action-primary">
+                        <button type="submit" class="btn-action btn-action-primary sn-sentence" style="height: 36px;">
                             Subir fotos
                         </button>
+                        
+                        <script>
+                            document.getElementById('photos').addEventListener('change', function() {
+                                const count = this.files.length;
+                                const label = document.getElementById('file-label');
+                                const countSpan = document.getElementById('file-count');
+                                if (count > 0) {
+                                    label.textContent = count === 1 ? '1 archivo seleccionado' : count + ' archivos seleccionados';
+                                    countSpan.textContent = '';
+                                } else {
+                                    label.textContent = 'Elegir archivos';
+                                    countSpan.textContent = '';
+                                }
+                            });
+                        </script>
                     </form>
                 </div>
             </div>
