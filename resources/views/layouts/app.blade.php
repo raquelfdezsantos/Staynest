@@ -64,18 +64,38 @@
                     <h3
                         style="font-family:var(--font-serif); font-size:var(--text-lg); color:var(--color-text-primary); margin-bottom:var(--spacing-md);">
                         Información Legal</h3>
-                    @php $property = \App\Models\Property::first(); @endphp
-                    @if($property && ($property->tourism_license || $property->rental_registration))
-                        @if($property->tourism_license)
+                    @php 
+                        // Intentar obtener la propiedad actual desde la vista
+                        $footerProperty = isset($property) ? $property : null;
+                        
+                        // Si no existe, intentar obtenerla desde el slug en la URL
+                        if (!$footerProperty && request()->route('property')) {
+                            $footerProperty = request()->route('property') instanceof \App\Models\Property 
+                                ? request()->route('property') 
+                                : \App\Models\Property::where('slug', request()->route('property'))->first();
+                        }
+                        
+                        // Si estamos en área de admin, obtener la primera propiedad del admin autenticado
+                        if (!$footerProperty && request()->routeIs('admin.*') && auth()->check()) {
+                            $footerProperty = \App\Models\Property::where('user_id', auth()->id())->first();
+                        }
+                        
+                        // Si aún no hay propiedad, usar la primera disponible
+                        if (!$footerProperty) {
+                            $footerProperty = \App\Models\Property::first();
+                        }
+                    @endphp
+                    @if($footerProperty && ($footerProperty->tourism_license || $footerProperty->rental_registration))
+                        @if($footerProperty->tourism_license)
                             <p style="margin-bottom:var(--spacing-sm);">
                                 <span style="font-weight:500;">Asturias — Registro autonómico</span><br>
-                                {{ $property->tourism_license }}
+                                {{ $footerProperty->tourism_license }}
                             </p>
                         @endif
-                        @if($property->rental_registration)
+                        @if($footerProperty->rental_registration)
                             <p>
                                 <span style="font-weight:500;">España — Registro nacional</span><br>
-                                {{ $property->rental_registration }}
+                                {{ $footerProperty->rental_registration }}
                             </p>
                         @endif
                     @endif
@@ -105,7 +125,7 @@
                             <a href="{{ route('discover') }}" class="sn-link">Descubre Staynest</a>
                         </li>
                     </ul>
-                    @if($property)
+                    @if(isset($footerProperty) && $footerProperty)
                         <p style="color:var(--color-text-secondary); margin-top:var(--spacing-md);">&copy; {{ date('Y') }} Todos los derechos reservados.</p>
                     @endif
                 </div>
