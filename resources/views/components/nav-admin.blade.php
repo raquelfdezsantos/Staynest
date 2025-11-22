@@ -34,13 +34,26 @@
                         </svg>
                     </button>
                     <ul class="nav-dropdown-menu">
-                        <li><a href="{{ route('home') }}" class="nav-dropdown-item">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                <path d="M9 22V12h6v10"/>
-                            </svg>
-                            Ver sitio público
-                        </a></li>
+                        @php
+                            $adminProperty = \App\Models\Property::where('user_id', auth()->id())->first();
+                        @endphp
+                        @if($adminProperty)
+                            <li><a href="{{ route('properties.show', $adminProperty->slug) }}" class="nav-dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path d="M9 22V12h6v10"/>
+                                </svg>
+                                Ver sitio público
+                            </a></li>
+                        @else
+                            <li><a href="{{ route('home') }}" class="nav-dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path d="M9 22V12h6v10"/>
+                                </svg>
+                                Ver sitio público
+                            </a></li>
+                        @endif
                         <li><a href="{{ route('profile.edit') }}" class="nav-dropdown-item">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="3"/>
