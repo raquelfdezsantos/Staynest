@@ -57,6 +57,18 @@ class ClientRegisterController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        // Detectar propiedad desde el parámetro property
+        $propertySlug = $request->input('property');
+        
+        if (!$propertySlug) {
+            $property = \App\Models\Property::whereNull('deleted_at')->first();
+            $propertySlug = $property ? $property->slug : null;
+        }
+        
+        $target = $propertySlug 
+            ? route('properties.reservas.index', $propertySlug)
+            : route('home');
+
+        return redirect($target);
     }
 }

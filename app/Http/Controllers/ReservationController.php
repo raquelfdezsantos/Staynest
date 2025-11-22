@@ -73,7 +73,7 @@ class ReservationController extends Controller
 
 
     /** Listado de reservas del cliente */
-    public function index()
+    public function index(Property $property)
     {
         $reservations = Reservation::with(['property', 'invoice'])
             ->where('user_id', \Auth::id())
@@ -82,7 +82,7 @@ class ReservationController extends Controller
 
         $suggested = Property::select('id', 'slug', 'name')->first();
 
-        return view('customer.bookings.index', compact('reservations', 'suggested'));
+        return view('customer.bookings.index', compact('reservations', 'suggested', 'property'));
     }
 
 

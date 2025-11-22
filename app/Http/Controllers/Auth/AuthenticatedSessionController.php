@@ -28,9 +28,34 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = $request->user();
-        $target = $user->role === 'admin' ? route('admin.dashboard') : route('reservas.index');
+        
+        if ($user->role === 'admin') {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+        
+        // Para clientes, detectar propiedad desde el parámetro property
+        $propertySlug = $request->input('property');
+        
+        // Si no viene el parámetro, intentar extraer de la URL intended
+        if (!$propertySlug) {
+            $intendedUrl = $request->session()->get('url.intended', '');
+            if ($intendedUrl && preg_match('/\/propiedades\/([^\/]+)/', $intendedUrl, $matches)) {
+                $propertySlug = $matches[1];
+            }
+        }
+        
+        // Si no se detectó slug, usar la primera propiedad disponible
+        if (!$propertySlug) {
+            $property = \App\Models\Property::whereNull('deleted_at')->first();
+            $propertySlug = $property ? $property->slug : null;
+        }
+        
+        // Redirigir a mis-reservas de la propiedad detectada
+        $target = $propertySlug 
+            ? route('properties.reservas.index', $propertySlug)
+            : route('home');
 
-        return redirect()->intended($target);
+        return redirect($target);
     }
 
     /**

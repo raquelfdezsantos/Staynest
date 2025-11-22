@@ -176,9 +176,18 @@
                 <p style="color: var(--color-text-secondary); margin-bottom: 2rem; font-size: var(--text-base);">
                     No tienes reservas aún.
                 </p>
-                <a href="{{ route('reservar') }}" class="btn btn-primary">
-                    Hacer una reserva
-                </a>
+                @php
+                    $firstProperty = \App\Models\Property::first();
+                @endphp
+                @if($firstProperty)
+                    <a href="{{ route('properties.reservar', $firstProperty->slug) }}" class="btn btn-primary">
+                        Hacer una reserva
+                    </a>
+                @else
+                    <a href="{{ route('home') }}" class="btn btn-primary">
+                        Ver alojamientos
+                    </a>
+                @endif
             </div>
         @else
             {{-- Timeline de reservas moderno --}}

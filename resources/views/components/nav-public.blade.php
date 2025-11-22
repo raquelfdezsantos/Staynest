@@ -73,20 +73,26 @@
                                 Panel Admin
                             </a></li>
                         @else
-                            <li><a href="{{ route('reservas.index') }}" class="nav-dropdown-item">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="4" width="18" height="18" rx="2"/>
-                                    <path d="M8 2v4M16 2v4M3 10h18"/>
-                                </svg>
-                                Mis Reservas
-                            </a></li>
-                            <li><a href="{{ route('invoices.index') }}" class="nav-dropdown-item">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/>
-                                    <path d="M14 2v6h6M8 13h8M8 17h5"/>
-                                </svg>
-                                Mis Facturas
-                            </a></li>
+                            @php
+                                // Determinar la propiedad actual para las rutas de cliente
+                                $currentProperty = $property ?? \App\Models\Property::whereNull('deleted_at')->first();
+                            @endphp
+                            @if($currentProperty)
+                                <li><a href="{{ route('properties.reservas.index', $currentProperty->slug) }}" class="nav-dropdown-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                                        <path d="M8 2v4M16 2v4M3 10h18"/>
+                                    </svg>
+                                    Mis Reservas
+                                </a></li>
+                                <li><a href="{{ route('properties.invoices.index', $currentProperty->slug) }}" class="nav-dropdown-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/>
+                                        <path d="M14 2v6h6M8 13h8M8 17h5"/>
+                                    </svg>
+                                    Mis Facturas
+                                </a></li>
+                            @endif
                         @endif
                         <li><a href="{{ route('profile.edit') }}" class="nav-dropdown-item">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -114,7 +120,7 @@
             @endauth
             
             @guest
-                <a href="{{ route('login') }}"
+                <a href="{{ route('login') }}{{ $property ? '?property=' . $property->slug : '' }}"
                     class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}">Login</a>
             @endguest
             </div>{{-- fin nav-actions --}}

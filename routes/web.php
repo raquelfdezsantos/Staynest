@@ -48,6 +48,12 @@ Route::post('/propiedades/{property:slug}/contacto', [ContactController::class, 
     ->name('properties.contact.store');
 Route::get('/propiedades/{property:slug}/reservar', [PropertyController::class, 'reservar'])->name('properties.reservar');
 
+// Rutas de cliente anidadas por propiedad
+Route::middleware(['auth', 'role:customer'])->group(function () {
+    Route::get('/propiedades/{property:slug}/mis-reservas', [ReservationController::class, 'index'])->name('properties.reservas.index');
+    Route::get('/propiedades/{property:slug}/mis-facturas', [InvoiceController::class, 'index'])->name('properties.invoices.index');
+});
+
 // Lista de propiedades de un administrador (solo si tiene más de una)
 Route::get('/propiedades-de/{userId}', [PropertyController::class, 'byOwner'])->name('properties.byOwner');
 
@@ -133,14 +139,25 @@ Route::middleware(['auth', 'role:admin'])
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:customer'])->group(function () {
-    // Listado de reservas del cliente
-    Route::get('/mis-reservas', [ReservationController::class, 'index'])->name('reservas.index');
+    // Redirecciones de rutas legacy a rutas anidadas
+    Route::get('/mis-reservas', function() {
+        $property = \App\Models\Property::first();
+        if ($property) {
+            return redirect()->route('properties.reservas.index', $property->slug);
+        }
+        return redirect()->route('home');
+    })->name('reservas.index');
+
+    Route::get('/mis-facturas', function() {
+        $property = \App\Models\Property::first();
+        if ($property) {
+            return redirect()->route('properties.invoices.index', $property->slug);
+        }
+        return redirect()->route('home');
+    })->name('invoices.index');
 
     // Crear reserva (POST desde ficha)
     Route::post('/reservas', [ReservationController::class, 'store'])->name('reservas.store');
-
-    // Listado de facturas del cliente
-    Route::get('/mis-facturas', [InvoiceController::class, 'index'])->name('invoices.index');
 
     // Editar, actualizar y cancelar reserva
     Route::get('/reservar/{reservation}/editar', [ReservationController::class, 'edit'])->name('reservas.edit');

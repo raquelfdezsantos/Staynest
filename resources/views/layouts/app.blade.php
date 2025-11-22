@@ -42,7 +42,20 @@
     @if(request()->routeIs('admin.*'))
         <x-nav-admin />
     @else
-        <x-nav-public :transparent="request()->routeIs('home') || request()->routeIs('properties.show')" />
+        @php 
+            // Detectar la propiedad actual para la navegación
+            $navProperty = isset($property) ? $property : null;
+            
+            // Si no existe, intentar obtenerla desde el slug en la URL
+            if (!$navProperty && request()->route('property')) {
+                $navProperty = request()->route('property') instanceof \App\Models\Property 
+                    ? request()->route('property') 
+                    : \App\Models\Property::where('slug', request()->route('property'))->first();
+            }
+        @endphp
+        <x-nav-public 
+            :transparent="request()->routeIs('home') || request()->routeIs('properties.show')" 
+            :property="$navProperty" />
     @endif
 
     <!-- Page Content -->

@@ -3,20 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
+use App\Models\Property;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 
 class InvoiceController extends Controller
 {
-    public function index()
+    public function index(Property $property)
     {
         $invoices = Invoice::with(['reservation.property'])
             ->whereHas('reservation', fn($q) => $q->where('user_id', Auth::id()))
             ->latest('issued_at')
             ->paginate(10);
 
-        return view('customer.invoices.index', compact('invoices'));
+        return view('customer.invoices.index', compact('invoices', 'property'));
     }
 
     /**

@@ -379,7 +379,7 @@
                 </script>
             @else
                 {{-- ENLACE A INICIO DE SESIÓN --}}
-                <a href="{{ route('login') }}" class="text-indigo-600 underline">Inicia sesión para reservar</a>
+                <a href="{{ route('login', ['property' => $property->slug]) }}" class="text-indigo-600 underline">Inicia sesión para reservar</a>
             @endauth
         </div>
     </div>

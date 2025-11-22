@@ -19,6 +19,10 @@
 
     <form method="POST" action="{{ route('register.client') }}" style="margin-top: 1.5rem;" novalidate>
         @csrf
+        
+        @if(request('property'))
+            <input type="hidden" name="property" value="{{ request('property') }}">
+        @endif
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>

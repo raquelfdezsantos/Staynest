@@ -6,7 +6,7 @@
     <div class="register-choice">
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <a href="{{ route('register.client') }}" class="choice-card">
+            <a href="{{ route('register.client') }}{{ request('property') ? '?property=' . request('property') : '' }}" class="choice-card">
                 <div class="choice-icon">
                     <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-accent);">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
@@ -18,7 +18,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('register.admin') }}" class="choice-card">
+            <a href="{{ route('register.admin') }}{{ request('property') ? '?property=' . request('property') : '' }}" class="choice-card">
                 <div class="choice-icon">
                     <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--color-accent);">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -34,7 +34,7 @@
         <div class="text-center mt-8">
             <p style="color: var(--color-text-secondary);">
                 ¿Ya tienes cuenta?
-                <a href="{{ route('login') }}" style="color: var(--color-accent); text-decoration: none;" onmouseover="this.style.color='var(--color-accent-hover)'" onmouseout="this.style.color='var(--color-accent)'">Inicia sesión</a>
+                <a href="{{ route('login') }}{{ request('property') ? '?property=' . request('property') : '' }}" style="color: var(--color-accent); text-decoration: none;" onmouseover="this.style.color='var(--color-accent-hover)'" onmouseout="this.style.color='var(--color-accent)'">Inicia sesión</a>
             </p>
         </div>
     </div>

@@ -15,6 +15,10 @@
 
     <form method="POST" action="{{ route('login') }}" novalidate>
         @csrf
+        
+        @if(request('property'))
+            <input type="hidden" name="property" value="{{ request('property') }}">
+        @endif
 
         <!-- Correo electrónico -->
         <div>
@@ -50,7 +54,7 @@
             @endif
 
             <div class="flex space-x-3">
-                <a href="{{ route('register') }}" class="btn-action btn-action-secondary sn-sentence">
+                <a href="{{ route('register') }}{{ request('property') ? '?property=' . request('property') : '' }}" class="btn-action btn-action-secondary sn-sentence">
                     Registrarse
                 </a>
 

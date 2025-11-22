@@ -15,7 +15,7 @@
                 <p style="color: var(--color-text-secondary); margin-bottom: 2rem; font-size: var(--text-base);">
                     No tienes facturas aún.
                 </p>
-                <a href="{{ route('reservar') }}" class="btn btn-primary">
+                <a href="{{ route('properties.reservar', $property->slug) }}" class="btn btn-primary">
                     Hacer una reserva
                 </a>
             </div>
