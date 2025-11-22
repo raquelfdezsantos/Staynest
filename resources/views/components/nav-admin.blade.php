@@ -5,6 +5,12 @@
         @php
             // Obtener el parámetro de propiedad desde la ruta actual
             $currentProperty = request()->route('property');
+            // Si es un string (slug), buscar la propiedad
+            if (is_string($currentProperty)) {
+                $currentProperty = \App\Models\Property::where('slug', $currentProperty)
+                    ->where('user_id', auth()->id())
+                    ->first();
+            }
             // Si no hay propiedad en la ruta, obtener la primera propiedad del usuario
             if (!$currentProperty) {
                 $currentProperty = \App\Models\Property::where('user_id', auth()->id())->first();

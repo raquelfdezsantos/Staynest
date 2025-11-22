@@ -123,8 +123,8 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('propiedades/{property:slug}/admin')
     ->name('admin.property.')
     ->group(function () {
-        // Dashboard de la propiedad
-        Route::get('/', [AdminController::class, 'propertyDashboard'])->name('dashboard');
+        // Dashboard filtrado por propiedad específica
+        Route::get('/', [AdminController::class, 'propertyDashboardFiltered'])->name('dashboard');
         
         // Gestión de propiedad individual
         Route::get('/property', [AdminController::class, 'propertyEdit'])->name('edit');

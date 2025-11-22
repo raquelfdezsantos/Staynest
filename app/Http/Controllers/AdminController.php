@@ -99,6 +99,61 @@ class AdminController extends Controller
     }
 
     /**
+     * Dashboard filtrado por una propiedad específica
+     */
+    public function propertyDashboardFiltered(Request $request, Property $property)
+    {
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== auth()->id()) {
+            abort(403, 'No autorizado');
+        }
+
+        $query = Reservation::with(['user', 'property', 'invoice'])
+            ->where('property_id', $property->id)
+            ->latest();
+
+        if ($status = $request->string('status')->toString()) {
+            $query->where('status', $status);
+        }
+
+        if ($from = $request->date('from')) {
+            $query->whereDate('check_in', '>=', $from);
+        }
+        if ($to = $request->date('to')) {
+            $query->whereDate('check_out', '<=', $to);
+        }
+
+        $reservations = $query->paginate(10)->withQueryString();
+
+        // Estadísticas para el dashboard SOLO de esta propiedad
+        $stats = [
+            // Reservas activas (pending + paid)
+            'activeReservations' => Reservation::whereIn('status', ['pending', 'paid'])
+                ->where('property_id', $property->id)
+                ->count(),
+            
+            // Ingresos totales (solo reservas pagadas)
+            'totalRevenue' => Reservation::where('status', 'paid')
+                ->where('property_id', $property->id)
+                ->sum('total_price'),
+            
+            // Ocupación del mes actual (%)
+            'occupancyRate' => $this->calculateOccupancyRateForProperty($property->id),
+            
+            // Próximas 5 reservas
+            'upcomingReservations' => Reservation::with(['user', 'property'])
+                ->whereIn('status', ['pending', 'paid'])
+                ->where('property_id', $property->id)
+                ->where('check_in', '>=', now())
+                ->orderBy('check_in')
+                ->limit(5)
+                ->get(),
+        ];
+
+        return view('admin.dashboard', compact('reservations', 'stats', 'property'));
+    }
+
+    /**
      * Calcula el porcentaje de ocupación del mes actual.
      */
     private function calculateOccupancyRate(): float
@@ -113,6 +168,36 @@ class AdminController extends Controller
             ->whereHas('property', function($q) use ($adminId) {
                 $q->where('user_id', $adminId);
             })
+            ->where(function ($q) use ($startOfMonth, $endOfMonth) {
+                $q->whereBetween('check_in', [$startOfMonth, $endOfMonth])
+                  ->orWhereBetween('check_out', [$startOfMonth, $endOfMonth])
+                  ->orWhere(function ($q2) use ($startOfMonth, $endOfMonth) {
+                      $q2->where('check_in', '<=', $startOfMonth)
+                         ->where('check_out', '>=', $endOfMonth);
+                  });
+            })
+            ->get()
+            ->sum(function ($reservation) use ($startOfMonth, $endOfMonth) {
+                $checkIn = $reservation->check_in->max($startOfMonth);
+                $checkOut = $reservation->check_out->min($endOfMonth);
+                return $checkIn->diffInDays($checkOut);
+            });
+
+        return $daysInMonth > 0 ? round(($bookedNights / $daysInMonth) * 100, 1) : 0;
+    }
+
+    /**
+     * Calcula el porcentaje de ocupación del mes actual para una propiedad específica.
+     */
+    private function calculateOccupancyRateForProperty(int $propertyId): float
+    {
+        $startOfMonth = now()->startOfMonth();
+        $endOfMonth = now()->endOfMonth();
+        $daysInMonth = $startOfMonth->daysInMonth;
+
+        // Contar noches reservadas en el mes (status = paid o pending)
+        $bookedNights = Reservation::whereIn('status', ['pending', 'paid'])
+            ->where('property_id', $propertyId)
             ->where(function ($q) use ($startOfMonth, $endOfMonth) {
                 $q->whereBetween('check_in', [$startOfMonth, $endOfMonth])
                   ->orWhereBetween('check_out', [$startOfMonth, $endOfMonth])
