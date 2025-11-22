@@ -34,16 +34,14 @@ class ClientRegisterController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'phone' => ['nullable', 'string', 'max:20'],
-            'birth_date' => ['nullable', 'date', 'before:today'],
+            'birth_date' => ['required', 'date', 'before:today'],
         ]);
 
-        // Validar que no sea menor de edad si se proporciona fecha de nacimiento
-        if ($request->birth_date) {
-            $birthDate = \Carbon\Carbon::parse($request->birth_date);
-            $age = $birthDate->age;
-            if ($age < 18) {
-                return back()->withErrors(['birth_date' => 'Debes ser mayor de 18 años para registrarte.']);
-            }
+        // Validar que sea mayor de edad
+        $birthDate = \Carbon\Carbon::parse($request->birth_date);
+        $age = $birthDate->age;
+        if ($age < 18) {
+            return back()->withErrors(['birth_date' => 'Debes ser mayor de 18 años para registrarte.'])->withInput();
         }
 
         $user = User::create([
