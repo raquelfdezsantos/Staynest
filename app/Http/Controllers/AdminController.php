@@ -43,7 +43,13 @@ class AdminController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Reservation::with(['user', 'property', 'invoice'])->latest();
+        $adminId = auth()->id();
+        
+        $query = Reservation::with(['user', 'property', 'invoice'])
+            ->whereHas('property', function($q) use ($adminId) {
+                $q->where('user_id', $adminId);
+            })
+            ->latest();
 
         if ($status = $request->string('status')->toString()) {
             $query->where('status', $status);
@@ -61,10 +67,18 @@ class AdminController extends Controller
         // Estadísticas para el dashboard
         $stats = [
             // Reservas activas (pending + paid)
-            'activeReservations' => Reservation::whereIn('status', ['pending', 'paid'])->count(),
+            'activeReservations' => Reservation::whereIn('status', ['pending', 'paid'])
+                ->whereHas('property', function($q) use ($adminId) {
+                    $q->where('user_id', $adminId);
+                })
+                ->count(),
             
             // Ingresos totales (solo reservas pagadas)
-            'totalRevenue' => Reservation::where('status', 'paid')->sum('total_price'),
+            'totalRevenue' => Reservation::where('status', 'paid')
+                ->whereHas('property', function($q) use ($adminId) {
+                    $q->where('user_id', $adminId);
+                })
+                ->sum('total_price'),
             
             // Ocupación del mes actual (%)
             'occupancyRate' => $this->calculateOccupancyRate(),
@@ -72,6 +86,9 @@ class AdminController extends Controller
             // Próximas 5 reservas
             'upcomingReservations' => Reservation::with(['user', 'property'])
                 ->whereIn('status', ['pending', 'paid'])
+                ->whereHas('property', function($q) use ($adminId) {
+                    $q->where('user_id', $adminId);
+                })
                 ->where('check_in', '>=', now())
                 ->orderBy('check_in')
                 ->limit(5)
@@ -86,12 +103,16 @@ class AdminController extends Controller
      */
     private function calculateOccupancyRate(): float
     {
+        $adminId = auth()->id();
         $startOfMonth = now()->startOfMonth();
         $endOfMonth = now()->endOfMonth();
         $daysInMonth = $startOfMonth->daysInMonth;
 
         // Contar noches reservadas en el mes (status = paid o pending)
         $bookedNights = Reservation::whereIn('status', ['pending', 'paid'])
+            ->whereHas('property', function($q) use ($adminId) {
+                $q->where('user_id', $adminId);
+            })
             ->where(function ($q) use ($startOfMonth, $endOfMonth) {
                 $q->whereBetween('check_in', [$startOfMonth, $endOfMonth])
                   ->orWhereBetween('check_out', [$startOfMonth, $endOfMonth])
@@ -123,9 +144,14 @@ class AdminController extends Controller
      */
     public function cancel(int $reservationId)
     {
+        $adminId = auth()->id();
+        
         $reservation = Reservation::query()
             ->where('id', $reservationId)
             ->with('property')
+            ->whereHas('property', function($q) use ($adminId) {
+                $q->where('user_id', $adminId);
+            })
             ->firstOrFail();
 
         // Solo cancelamos si está pendiente
@@ -187,13 +213,26 @@ class AdminController extends Controller
     /** Form edición (admin) */
     public function edit(int $id)
     {
-        $reservation = Reservation::with('property', 'user')->findOrFail($id);
+        $adminId = auth()->id();
+        
+        $reservation = Reservation::with('property', 'user')
+            ->whereHas('property', function($q) use ($adminId) {
+                $q->where('user_id', $adminId);
+            })
+            ->findOrFail($id);
         return view('admin.reservations.edit', compact('reservation')); // crea vista simple
     }
 
     /** Vista de detalles (admin) */
     public function show(Reservation $reservation)
     {
+        $adminId = auth()->id();
+        
+        // Verificar que la reserva pertenece a una propiedad del admin
+        if ($reservation->property->user_id !== $adminId) {
+            abort(403, 'No autorizado');
+        }
+        
         $reservation->loadMissing('property', 'user');
         return view('admin.reservations.show', compact('reservation'));
     }
@@ -201,7 +240,13 @@ class AdminController extends Controller
     /** Update (admin) — permite pending/paid */
     public function update(Request $request, int $id)
     {
-        $reservation = Reservation::with('property')->findOrFail($id);
+        $adminId = auth()->id();
+        
+        $reservation = Reservation::with('property')
+            ->whereHas('property', function($q) use ($adminId) {
+                $q->where('user_id', $adminId);
+            })
+            ->findOrFail($id);
 
         $data = $request->validate([
             'check_in'  => ['required', 'date'],
@@ -305,7 +350,13 @@ class AdminController extends Controller
 
     public function refund(int $id)
     {
-        $reservation = Reservation::with('property')->findOrFail($id);
+        $adminId = auth()->id();
+        
+        $reservation = Reservation::with('property')
+            ->whereHas('property', function($q) use ($adminId) {
+                $q->where('user_id', $adminId);
+            })
+            ->findOrFail($id);
 
         if ($reservation->status !== 'paid') {
             return back()->with('error', 'Solo reservas pagadas pueden reembolsarse.');
@@ -355,13 +406,15 @@ class AdminController extends Controller
 
     public function blockDates(Request $request)
     {
+        $adminId = auth()->id();
+        
         $data = $request->validate([
             'property_id' => ['required', 'exists:properties,id'],
             'start'       => ['required', 'date'],
             'end'         => ['required', 'date', 'after_or_equal:start'], // end INCLUSIVO
         ]);
 
-        $prop   = Property::findOrFail($data['property_id']);
+        $prop = Property::where('user_id', $adminId)->findOrFail($data['property_id']);
         $start  = Carbon::parse($data['start'])->startOfDay();
         $end    = Carbon::parse($data['end'])->startOfDay(); // rango [start, end] INCLUSIVO
 
@@ -396,13 +449,15 @@ class AdminController extends Controller
 
     public function unblockDates(Request $request)
     {
+        $adminId = auth()->id();
+        
         $data = $request->validate([
             'property_id' => ['required', 'exists:properties,id'],
             'start'       => ['required', 'date'],
             'end'         => ['required', 'date', 'after_or_equal:start'], // end INCLUSIVO
         ]);
 
-        $prop  = Property::findOrFail($data['property_id']);
+        $prop = Property::where('user_id', $adminId)->findOrFail($data['property_id']);
         $start = Carbon::parse($data['start'])->startOfDay();
         $end   = Carbon::parse($data['end'])->startOfDay();
 
@@ -423,6 +478,11 @@ class AdminController extends Controller
      */
     public function destroyProperty(Property $property)
     {
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== auth()->id()) {
+            abort(403, 'No autorizado');
+        }
+        
         DB::beginTransaction();
 
         try {
@@ -513,11 +573,17 @@ class AdminController extends Controller
      */
     public function propertyEdit($propertyId = null)
     {
-        // Si no se proporciona ID, usar la primera propiedad (legacy)
+        $adminId = auth()->id();
+        
+        // Si no se proporciona ID, usar la primera propiedad del admin
         if ($propertyId) {
-            $property = Property::withTrashed()->findOrFail($propertyId);
+            $property = Property::withTrashed()
+                ->where('user_id', $adminId)
+                ->findOrFail($propertyId);
         } else {
-            $property = Property::withTrashed()->first();
+            $property = Property::withTrashed()
+                ->where('user_id', $adminId)
+                ->first();
         }
         
         if (!$property) {
@@ -539,6 +605,11 @@ class AdminController extends Controller
      */
     public function propertyUpdate(Request $request, Property $property)
     {
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== auth()->id()) {
+            abort(403, 'No autorizado');
+        }
+        
         $validated = $request->validate([
             'name' => 'required|string|max:150',
             'description' => 'nullable|string',
@@ -563,11 +634,17 @@ class AdminController extends Controller
      */
     public function photosIndex($propertyId = null)
     {
-        // Si no se proporciona ID, usar la primera propiedad (legacy)
+        $adminId = auth()->id();
+        
+        // Si no se proporciona ID, usar la primera propiedad del admin
         if ($propertyId) {
-            $property = Property::withTrashed()->findOrFail($propertyId);
+            $property = Property::withTrashed()
+                ->where('user_id', $adminId)
+                ->findOrFail($propertyId);
         } else {
-            $property = Property::withTrashed()->first();
+            $property = Property::withTrashed()
+                ->where('user_id', $adminId)
+                ->first();
         }
         
         if (!$property) {
@@ -586,13 +663,15 @@ class AdminController extends Controller
      */
     public function photosStore(Request $request)
     {
+        $adminId = auth()->id();
+        
         // Obtener property_id del request o de la URL
         $propertyId = $request->input('property_id') ?? $request->route('property');
         
         if ($propertyId) {
-            $property = Property::findOrFail($propertyId);
+            $property = Property::where('user_id', $adminId)->findOrFail($propertyId);
         } else {
-            $property = Property::first();
+            $property = Property::where('user_id', $adminId)->first();
         }
         
         if (!$property) {
@@ -628,7 +707,13 @@ class AdminController extends Controller
      */
     public function photosDestroy($photoId)
     {
-        $photo = \App\Models\Photo::findOrFail($photoId);
+        $adminId = auth()->id();
+        
+        $photo = \App\Models\Photo::with('property')
+            ->whereHas('property', function($q) use ($adminId) {
+                $q->where('user_id', $adminId);
+            })
+            ->findOrFail($photoId);
 
         // Eliminar archivo físico solo si es local (no URL externa)
         if (!str_starts_with($photo->url, 'http')) {
@@ -646,13 +731,19 @@ class AdminController extends Controller
      */
     public function photosReorder(Request $request)
     {
+        $adminId = auth()->id();
+        
         $request->validate([
             'order' => 'required|array',
             'order.*' => 'required|integer|exists:photos,id',
         ]);
 
         foreach ($request->order as $index => $photoId) {
-            \App\Models\Photo::where('id', $photoId)->update(['sort_order' => $index + 1]);
+            \App\Models\Photo::whereHas('property', function($q) use ($adminId) {
+                $q->where('user_id', $adminId);
+            })
+            ->where('id', $photoId)
+            ->update(['sort_order' => $index + 1]);
         }
 
         return response()->json(['success' => true]);
@@ -663,7 +754,13 @@ class AdminController extends Controller
      */
     public function photosSetCover($photoId)
     {
-        $photo = \App\Models\Photo::findOrFail($photoId);
+        $adminId = auth()->id();
+        
+        $photo = \App\Models\Photo::with('property')
+            ->whereHas('property', function($q) use ($adminId) {
+                $q->where('user_id', $adminId);
+            })
+            ->findOrFail($photoId);
         
         // Quitar is_cover de todas las fotos de la propiedad
         \App\Models\Photo::where('property_id', $photo->property_id)->update(['is_cover' => false]);
@@ -680,6 +777,7 @@ class AdminController extends Controller
     public function propertiesIndex()
     {
         $properties = Property::withTrashed()
+            ->where('user_id', auth()->id())
             ->with('photos')
             ->latest()
             ->get();
@@ -692,7 +790,11 @@ class AdminController extends Controller
      */
     public function propertyDashboard($propertyId)
     {
-        $property = Property::withTrashed()->findOrFail($propertyId);
+        $adminId = auth()->id();
+        
+        $property = Property::withTrashed()
+            ->where('user_id', $adminId)
+            ->findOrFail($propertyId);
         
         // Obtener reservas de esta propiedad
         $query = Reservation::with(['user', 'invoice'])
@@ -730,6 +832,7 @@ class AdminController extends Controller
             'rental_registration' => 'nullable|string|max:100',
         ]);
 
+        $validated['user_id'] = auth()->id();
         $property = Property::create($validated);
 
         return redirect()
@@ -742,7 +845,11 @@ class AdminController extends Controller
      */
     public function propertiesRestore($propertyId)
     {
-        $property = Property::withTrashed()->findOrFail($propertyId);
+        $adminId = auth()->id();
+        
+        $property = Property::withTrashed()
+            ->where('user_id', $adminId)
+            ->findOrFail($propertyId);
         
         if (!$property->trashed()) {
             return back()->with('error', 'La propiedad no está dada de baja.');
@@ -758,10 +865,12 @@ class AdminController extends Controller
      */
     public function calendarIndex(Request $request)
     {
-        // Si no hay property_id en query, usar la primera propiedad
+        $adminId = auth()->id();
+        
+        // Si no hay property_id en query, usar la primera propiedad del admin
         $selectedPropertyId = $request->query('property_id');
         if (!$selectedPropertyId) {
-            $selectedPropertyId = \App\Models\Property::first()?->id;
+            $selectedPropertyId = \App\Models\Property::where('user_id', $adminId)->first()?->id;
         }
         
         $blockedDates = [];
