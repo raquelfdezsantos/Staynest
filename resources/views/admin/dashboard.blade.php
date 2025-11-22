@@ -8,10 +8,12 @@
                 letter-spacing: 0;
                 font-weight: 600;
                 font-size: var(--text-sm);
-                line-height: 1.25rem;
-                padding: 0.5rem 1.25rem;
+                line-height: 1;
+                padding: 0.5rem 1rem;
                 border-radius: 2px;
                 color: #fff;
+                height: 36px;
+                box-sizing: border-box;
             }
             .admin-actions .btn-action.btn-action-secondary {
                 background: transparent;
@@ -121,7 +123,7 @@
                         <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">
                             Ocupación
                             @php
-                                $meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+                                $meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
                                 $mes = $meses[now()->format('n') - 1];
                             @endphp
                             {{ $mes }}
@@ -135,58 +137,54 @@
         {{-- Próximos check-in --}}
         @if($stats['upcomingReservations']->isNotEmpty())
             <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Próximos check-in</h2>
-            <div style="margin-bottom: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px);">
-                <div style="padding: 1.5rem;">
-                    <div style="display: flex; flex-direction: column; gap: 0;">
-                        @foreach($stats['upcomingReservations'] as $upcoming)
-                            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.875rem 0; border-bottom: 1px solid var(--color-border-light);">
-                                <div style="display: flex; align-items: center; gap: 0.875rem;">
-                                    <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                        <span style="color: var(--color-text-secondary); font-weight: 500; font-size: var(--text-sm);">{{ substr($upcoming->user->name ?? 'U', 0, 1) }}</span>
-                                    </div>
-                                    <div>
-                                        <p style="font-size: var(--text-base); font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.125rem;">
-                                            {{ $upcoming->user->name ?? 'Usuario' }} • {{ $upcoming->property->name ?? 'Propiedad' }}
-                                            @if($upcoming->status === 'pending')
-                                                <span class="badge badge-warning" style="font-size: var(--text-xs); margin-left: 0.5rem;">Pendiente</span>
-                                            @elseif($upcoming->status === 'paid')
-                                                <span class="badge badge-success" style="font-size: var(--text-xs); margin-left: 0.5rem;">Pagada</span>
-                                            @elseif($upcoming->status === 'cancelled')
-                                                <span class="badge badge-error" style="font-size: var(--text-xs); margin-left: 0.5rem;">Cancelada</span>
-                                            @else
-                                                <span class="badge badge-info" style="font-size: var(--text-xs); margin-left: 0.5rem;">{{ ucfirst($upcoming->status) }}</span>
-                                            @endif
-                                        </p>
-                                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
-                                            {{ $upcoming->check_in->format('d/m/Y') }} - {{ $upcoming->check_out->format('d/m/Y') }}
-                                            · 
-                                            @php
-                                                $parts = [];
-                                                $ad = (int) ($upcoming->adults ?? 0);
-                                                $ch = (int) ($upcoming->children ?? 0);
-                                                $pt = (int) ($upcoming->pets ?? 0);
-                                                if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
-                                                if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
-                                                if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
-                                            @endphp
-                                            @if(count($parts))
-                                                {{ implode(', ', $parts) }}
-                                            @else
-                                                {{ $upcoming->guests }} {{ $upcoming->guests === 1 ? 'persona' : 'personas' }}
-                                            @endif
-                                        </p>
-                                    </div>
+            <div style="margin-bottom: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 1rem;">
+                @foreach($stats['upcomingReservations'] as $upcoming)
+                    <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.875rem;">
+                                <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <span style="color: var(--color-text-secondary); font-weight: 500; font-size: var(--text-sm);">{{ substr($upcoming->user->name ?? 'U', 0, 1) }}</span>
                                 </div>
-                                <div style="text-align: right;">
-                                    <p style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.25rem;">{{ number_format($upcoming->total_price, 2, ',', '.') }} €</p>
-                                    <div style="margin-top: 0.5rem;">
-                                        <a href="{{ route('admin.reservations.show', $upcoming->id) }}" class="btn-action btn-action-primary" style="text-transform: none !important;">Ver Reserva</a>
-                                    </div>
+                                <div style="flex: 1;">
+                                    <p style="font-size: var(--text-base); font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.125rem;">
+                                        {{ $upcoming->user->name ?? 'Usuario' }} • {{ $upcoming->property->name ?? 'Propiedad' }}
+                                        @if($upcoming->status === 'pending')
+                                            <span class="badge badge-warning" style="font-size: var(--text-xs); margin-left: 0.5rem;">Pendiente</span>
+                                        @elseif($upcoming->status === 'paid')
+                                            <span class="badge badge-success" style="font-size: var(--text-xs); margin-left: 0.5rem;">Pagada</span>
+                                        @elseif($upcoming->status === 'cancelled')
+                                            <span class="badge badge-error" style="font-size: var(--text-xs); margin-left: 0.5rem;">Cancelada</span>
+                                        @else
+                                            <span class="badge badge-info" style="font-size: var(--text-xs); margin-left: 0.5rem;">{{ ucfirst($upcoming->status) }}</span>
+                                        @endif
+                                    </p>
+                                    <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+                                        {{ $upcoming->check_in->format('d/m/Y') }} - {{ $upcoming->check_out->format('d/m/Y') }}
+                                        · 
+                                        @php
+                                            $parts = [];
+                                            $ad = (int) ($upcoming->adults ?? 0);
+                                            $ch = (int) ($upcoming->children ?? 0);
+                                            $pt = (int) ($upcoming->pets ?? 0);
+                                            if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
+                                            if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
+                                            if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
+                                        @endphp
+                                        @if(count($parts))
+                                            {{ implode(', ', $parts) }}
+                                        @else
+                                            {{ $upcoming->guests }} {{ $upcoming->guests === 1 ? 'persona' : 'personas' }}
+                                        @endif
+                                    </p>
                                 </div>
                             </div>
-                        @endforeach
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem;">
+                                <p style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary);">{{ number_format($upcoming->total_price, 2, ',', '.') }} €</p>
+                                <a href="{{ route('admin.reservations.show', $upcoming->id) }}" class="btn-action btn-action-primary" style="text-transform: none !important;">Ver Reserva</a>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                @endforeach
             </div>
         @endif
 
