@@ -65,8 +65,7 @@
                         @php
                             // Determinar si el usuario es admin de la propiedad actual
                             $isPropertyOwner = auth()->user()->role === 'admin' 
-                                && $property 
-                                && $property->user_id === auth()->id();
+                                && (!$property || $property->user_id === auth()->id());
                         @endphp
                         
                         @if(auth()->user()->role === 'admin' && $isPropertyOwner)
