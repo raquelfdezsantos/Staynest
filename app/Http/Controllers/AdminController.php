@@ -901,7 +901,54 @@ class AdminController extends Controller
             sort($blockedDates);
         }
         
-        return view('admin.calendar.index', compact('selectedPropertyId', 'blockedDates'));
+        // Obtener la propiedad actual para mostrar en los formularios
+        $property = $selectedPropertyId ? \App\Models\Property::find($selectedPropertyId) : null;
+        
+        return view('admin.calendar.index', compact('selectedPropertyId', 'blockedDates', 'property'));
+    }
+
+    /**
+     * Establece el precio por noche para un rango de fechas.
+     */
+    public function setPrice(Request $request)
+    {
+        $request->validate([
+            'property_id' => 'required|exists:properties,id',
+            'price' => 'required|numeric|min:0',
+            'start' => 'required|date',
+            'end' => 'required|date|after_or_equal:start',
+        ]);
+
+        $propertyId = $request->input('property_id');
+        $price = $request->input('price');
+        $start = \Carbon\Carbon::parse($request->input('start'));
+        $end = \Carbon\Carbon::parse($request->input('end'));
+
+        // Verificar que la propiedad pertenece al admin
+        $adminId = \Illuminate\Support\Facades\Auth::id();
+        $property = Property::where('id', $propertyId)
+            ->where('user_id', $adminId)
+            ->firstOrFail();
+
+        $datesUpdated = 0;
+        $current = $start->copy();
+
+        while ($current->lte($end)) {
+            \App\Models\RateCalendar::updateOrCreate(
+                [
+                    'property_id' => $propertyId,
+                    'date' => $current->format('Y-m-d'),
+                ],
+                [
+                    'price' => $price,
+                    'is_available' => true,
+                ]
+            );
+            $datesUpdated++;
+            $current->addDay();
+        }
+
+        return back()->with('success', "Precio actualizado para {$datesUpdated} noche(s): {$price}€/noche.");
     }
 }
 

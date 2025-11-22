@@ -115,6 +115,7 @@ Route::middleware(['auth', 'role:admin'])
 
         // Calendario
         Route::get('/calendar', [AdminController::class, 'calendarIndex'])->name('calendar.index');
+        Route::post('/calendar/set-price', [AdminController::class, 'setPrice'])->name('calendar.set-price');
         Route::post('/calendar/block',   [AdminController::class, 'blockDates'])->name('calendar.block');
         Route::post('/calendar/unblock', [AdminController::class, 'unblockDates'])->name('calendar.unblock');
 

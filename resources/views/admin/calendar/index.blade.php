@@ -1,11 +1,11 @@
 <x-app-layout>
   <x-slot name="header">
-    <h2 class="font-semibold text-xl leading-tight" style="font-family: var(--font-sans); color: var(--color-text-primary);">Calendario (bloquear/desbloquear)</h2>
+    <h2 class="font-semibold text-xl leading-tight" style="font-family: var(--font-sans); color: var(--color-text-primary);">Calendario y Precios</h2>
   </x-slot>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-  <div class="admin-calendar-page max-w-4xl mx-auto px-4 py-12">
+  <div class="admin-calendar-page max-w-6xl mx-auto px-4 py-12">
     {{-- Mensajes --}}
     @if (session('success'))
       <div class="alert alert-success mb-6">{{ session('success') }}</div>
@@ -14,84 +14,136 @@
       <div class="alert alert-error mb-6">{{ session('error') }}</div>
     @endif
 
-    {{-- Formulario de bloqueo --}}
-    <div class="calendar-card mb-8">
-      <div class="p-6">
-        <form method="POST" action="{{ route('admin.calendar.block') }}" class="space-y-4">
-          @csrf
-          <x-validation-errors class="mb-4" />
-          
-          <h3 class="calendar-section-title">Bloquear noches</h3>
-          
-          <div class="calendar-info-box">
-            <strong>Ejemplo:</strong> Para bloquear las noches del 14, 15 y 16 de noviembre:<br>
-            → Desde: <code class="calendar-code">2025-11-14</code> | Hasta: <code class="calendar-code">2025-11-16</code><br>
-            <span class="text-xs">Esto bloqueará esas 3 noches. Nadie podrá hacer check-in el 14, 15 o 16. El primer check-in disponible sería el 17.</span>
-          </div>
-
-          <div>
-            <x-input-label for="property_block" value="Alojamiento" />
-            <select name="property_id" id="property_block" class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]">
-              @foreach(\App\Models\Property::select(['id','name'])->get() as $p)
-                <option value="{{ $p->id }}" {{ (isset($selectedPropertyId) && $selectedPropertyId == $p->id) ? 'selected' : '' }}>
-                  {{ $p->name }}
-                </option>
-              @endforeach
-            </select>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <x-input-label for="start_block" value="Desde (primera noche bloqueada)" />
-              <input type="date" name="start" id="start_block" class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]" required>
+    {{-- Grid de 3 columnas --}}
+    <div class="calendar-grid">
+      {{-- Columna 1: Gestión de Precios --}}
+      <div class="calendar-card">
+        <div class="calendar-card-header">
+          <h3 class="calendar-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Precios
+          </h3>
+        </div>
+        <div class="calendar-card-body">
+          <form method="POST" action="{{ route('admin.calendar.set-price') }}" class="space-y-4">
+            @csrf
+            <x-validation-errors class="mb-4" />
+            
+            @if($property)
+            <input type="hidden" name="property_id" value="{{ $property->id }}">
+            <div class="calendar-info-box" style="margin-bottom: 1rem;">
+              <strong>Alojamiento:</strong> {{ $property->name }}
             </div>
-            <div>
-              <x-input-label for="end_block" value="Hasta (última noche bloqueada, INCLUSIVO)" />
-              <input type="date" name="end" id="end_block" class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]" required>
-            </div>
-          </div>
+            @endif
 
-          <div style="align-self:flex-start;">
-            <x-primary-button>Bloquear</x-primary-button>
-          </div>
-        </form>
+            <div>
+              <label for="price" class="calendar-label">Precio por noche (€)</label>
+              <input type="number" name="price" id="price" step="0.01" min="0" class="calendar-input" placeholder="ej. 85.00" required>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label for="start_price" class="calendar-label">Desde</label>
+                <input type="date" name="start" id="start_price" class="calendar-input" required>
+              </div>
+              <div>
+                <label for="end_price" class="calendar-label">Hasta</label>
+                <input type="date" name="end" id="end_price" class="calendar-input" required>
+              </div>
+            </div>
+
+            <button type="submit" class="calendar-btn calendar-btn-primary">
+              Establecer precio
+            </button>
+          </form>
+        </div>
       </div>
-    </div>
 
-    {{-- Formulario de desbloqueo --}}
-    <div class="calendar-card">
-      <div class="p-6">
-        <form method="POST" action="{{ route('admin.calendar.unblock') }}" class="space-y-4">
-          @csrf
-          
-          <h3 class="calendar-section-title">Desbloquear noches</h3>
-
-          <div>
-            <x-input-label for="property_unblock" value="Alojamiento" />
-            <select name="property_id" id="property_unblock" class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]">
-              @foreach(App\Models\Property::select(['id','name'])->get() as $p)
-                <option value="{{ $p->id }}" {{ (isset($selectedPropertyId) && $selectedPropertyId == $p->id) ? 'selected' : '' }}>
-                  {{ $p->name }}
-                </option>
-              @endforeach
-            </select>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <x-input-label for="start_unblock" value="Desde (primera noche desbloqueada)" />
-              <input type="date" name="start" id="start_unblock" class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]" required>
+      {{-- Columna 2: Bloquear fechas --}}
+      <div class="calendar-card">
+        <div class="calendar-card-header">
+          <h3 class="calendar-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;"><rect x="5" y="11" width="14" height="10" rx="2" ry="2"/><path d="M12 17a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            Bloquear
+          </h3>
+        </div>
+        <div class="calendar-card-body">
+          <form method="POST" action="{{ route('admin.calendar.block') }}" class="space-y-4">
+            @csrf
+            <x-validation-errors class="mb-4" />
+            
+            @if($property)
+            <input type="hidden" name="property_id" value="{{ $property->id }}">
+            <div class="calendar-info-box" style="margin-bottom: 1.5rem;">
+              <strong>Alojamiento:</strong> {{ $property->name }}
             </div>
-            <div>
-              <x-input-label for="end_unblock" value="Hasta (última noche desbloqueada, INCLUSIVO)" />
-              <input type="date" name="end" id="end_unblock" class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-1 focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]" required>
-            </div>
-          </div>
+            @endif
+            
+            <div style="margin-top: 1rem;">
+              <div class="calendar-info-box">
+                Las noches bloqueadas no estarán disponibles para reservar.
+              </div>
 
-          <div style="align-self:flex-start;">
-            <x-primary-button>Desbloquear</x-primary-button>
-          </div>
-        </form>
+              <div class="grid grid-cols-2 gap-3" style="margin-top: 1rem;">
+                <div>
+                  <label for="start_block" class="calendar-label">Desde</label>
+                  <input type="date" name="start" id="start_block" class="calendar-input" required>
+                </div>
+                <div>
+                  <label for="end_block" class="calendar-label">Hasta</label>
+                  <input type="date" name="end" id="end_block" class="calendar-input" required>
+                </div>
+              </div>
+
+              <button type="submit" class="calendar-btn calendar-btn-danger" style="margin-top: 1rem;">
+                Bloquear noches
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {{-- Columna 3: Desbloquear fechas --}}
+      <div class="calendar-card">
+        <div class="calendar-card-header">
+          <h3 class="calendar-section-title">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;"><rect x="5" y="11" width="14" height="10" rx="2" ry="2"/><path d="M12 17a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/><path d="M8 11V7a4 4 0 0 1 4 0 4 4 0 0 1 4 0v4"/></svg>
+            Desbloquear
+          </h3>
+        </div>
+        <div class="calendar-card-body">
+          <form method="POST" action="{{ route('admin.calendar.unblock') }}" class="space-y-4">
+            @csrf
+            
+            @if($property)
+            <input type="hidden" name="property_id" value="{{ $property->id }}">
+            <div class="calendar-info-box" style="margin-bottom: 1.5rem;">
+              <strong>Alojamiento:</strong> {{ $property->name }}
+            </div>
+            @endif
+            
+            <div style="margin-top: 1.5rem;">
+              <div class="calendar-info-box">
+                Desbloquea fechas previamente bloqueadas.
+              </div>
+
+              <div class="grid grid-cols-2 gap-3" style="margin-top: 1rem;">
+                <div>
+                  <label for="start_unblock" class="calendar-label">Desde</label>
+                  <input type="date" name="start" id="start_unblock" class="calendar-input" required>
+                </div>
+                <div>
+                  <label for="end_unblock" class="calendar-label">Hasta</label>
+                  <input type="date" name="end" id="end_unblock" class="calendar-input" required>
+                </div>
+              </div>
+
+              <button type="submit" class="calendar-btn calendar-btn-success" style="margin-top: 1rem;">
+                Desbloquear noches
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </div>
@@ -231,51 +283,152 @@
       font-family: var(--font-sans);
     }
 
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
     .calendar-card {
       background: var(--color-bg-card);
       border: 1px solid var(--color-border-light);
       border-radius: 2px;
       overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .calendar-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--color-border-light);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .calendar-card-body {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .calendar-card-body form {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .calendar-card-body form .space-y-4 {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .calendar-card-body form .space-y-4 > :last-child {
+      margin-top: auto;
     }
 
     .calendar-section-title {
-      font-size: var(--text-lg);
-      font-weight: 600;
+      font-size: var(--text-base);
+      font-weight: 700;
       color: var(--color-text-primary);
-      margin-bottom: 1rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .calendar-label {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .calendar-input {
+      width: 100%;
+      background-color: var(--color-bg-secondary);
+      border: 1px solid var(--color-border-light);
+      border-radius: 2px;
+      padding: 0.625rem 0.875rem;
+      color: var(--color-text-primary);
+      font-size: var(--text-sm);
+      font-family: var(--font-sans);
+      transition: border-color 0.2s ease;
+    }
+
+    .calendar-input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+    }
+
+    .calendar-input::placeholder {
+      color: var(--color-text-tertiary);
     }
 
     .calendar-info-box {
-      background: rgba(77, 141, 148, 0.1);
-      border: 1px solid rgba(77, 141, 148, 0.3);
+      background: rgba(77, 141, 148, 0.08);
+      border: 1px solid rgba(77, 141, 148, 0.2);
       border-radius: 2px;
       padding: 0.75rem;
       font-size: var(--text-sm);
       color: var(--color-text-secondary);
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
-    .calendar-code {
-      background: rgba(0, 0, 0, 0.2);
-      padding: 2px 6px;
+    .calendar-btn {
+      width: 100%;
+      padding: 0.625rem 1.25rem;
       border-radius: 2px;
-      font-family: monospace;
-      font-size: 0.9em;
-      color: var(--color-accent);
+      border: none;
+      font-size: var(--text-sm);
+      font-weight: 600;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .calendar-btn:hover {
+      opacity: 0.9;
+    }
+
+    .calendar-btn-primary {
+      background-color: var(--color-accent);
+      color: #fff;
+    }
+
+    .calendar-btn-danger {
+      background-color: var(--color-error);
+      color: #fff;
+    }
+
+    .calendar-btn-success {
+      background-color: var(--color-success);
+      color: #fff;
     }
 
     /* Light mode overrides */
-    html[data-theme="light"] .admin-calendar-page .calendar-card {
+    html[data-theme="light"] .calendar-card {
       background-color: #fff;
     }
 
-    html[data-theme="light"] .admin-calendar-page .calendar-info-box {
-      background: rgba(77, 141, 148, 0.08);
-      border-color: rgba(77, 141, 148, 0.25);
+    html[data-theme="light"] .calendar-card-header {
+      background: rgba(0, 0, 0, 0.02);
     }
 
-    html[data-theme="light"] .admin-calendar-page .calendar-code {
-      background: rgba(0, 0, 0, 0.05);
+    html[data-theme="light"] .calendar-input {
+      background-color: #f9fafb;
+    }
+
+    html[data-theme="light"] .calendar-info-box {
+      background: rgba(77, 141, 148, 0.06);
+      border-color: rgba(77, 141, 148, 0.15);
     }
   </style>
 
