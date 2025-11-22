@@ -12,6 +12,11 @@ class InvoiceController extends Controller
 {
     public function index(Property $property)
     {
+        // Si es admin y es dueño de la propiedad, redirigir al panel admin
+        if (Auth::user()->role === 'admin' && $property->user_id === Auth::id()) {
+            return redirect()->route('admin.dashboard');
+        }
+        
         $invoices = Invoice::with(['reservation.property'])
             ->whereHas('reservation', fn($q) => $q->where('user_id', Auth::id()))
             ->latest('issued_at')

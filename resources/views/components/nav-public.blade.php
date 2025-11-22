@@ -62,7 +62,14 @@
                         </svg>
                     </button>
                     <ul class="nav-dropdown-menu">
-                        @if(auth()->user()->role === 'admin')
+                        @php
+                            // Determinar si el usuario es admin de la propiedad actual
+                            $isPropertyOwner = auth()->user()->role === 'admin' 
+                                && $property 
+                                && $property->user_id === auth()->id();
+                        @endphp
+                        
+                        @if(auth()->user()->role === 'admin' && $isPropertyOwner)
                             <li><a href="{{ route('admin.properties.index') }}" class="nav-dropdown-item">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <rect x="3" y="3" width="7" height="7" rx="1"/>
@@ -72,6 +79,8 @@
                                 </svg>
                                 Panel Admin
                             </a></li>
+                        @elseif(auth()->user()->role === 'admin' && !$isPropertyOwner)
+                            {{-- Admin viendo propiedad ajena: mostrar opciones de cliente --}}
                         @else
                             @php
                                 // Determinar la propiedad actual para las rutas de cliente

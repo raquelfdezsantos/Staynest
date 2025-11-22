@@ -48,8 +48,8 @@ Route::post('/propiedades/{property:slug}/contacto', [ContactController::class, 
     ->name('properties.contact.store');
 Route::get('/propiedades/{property:slug}/reservar', [PropertyController::class, 'reservar'])->name('properties.reservar');
 
-// Rutas de cliente anidadas por propiedad
-Route::middleware(['auth', 'role:customer'])->group(function () {
+// Rutas de cliente anidadas por propiedad (accesibles para customers y admins de otras propiedades)
+Route::middleware(['auth'])->group(function () {
     Route::get('/propiedades/{property:slug}/mis-reservas', [ReservationController::class, 'index'])->name('properties.reservas.index');
     Route::get('/propiedades/{property:slug}/mis-facturas', [InvoiceController::class, 'index'])->name('properties.invoices.index');
 });

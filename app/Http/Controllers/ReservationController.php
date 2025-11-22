@@ -75,6 +75,11 @@ class ReservationController extends Controller
     /** Listado de reservas del cliente */
     public function index(Property $property)
     {
+        // Si es admin y es dueño de la propiedad, redirigir al panel admin
+        if (\Auth::user()->role === 'admin' && $property->user_id === \Auth::id()) {
+            return redirect()->route('admin.dashboard');
+        }
+        
         $reservations = Reservation::with(['property', 'invoice'])
             ->where('user_id', \Auth::id())
             ->latest('check_in')

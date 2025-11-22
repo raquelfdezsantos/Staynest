@@ -29,11 +29,7 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
         
-        if ($user->role === 'admin') {
-            return redirect()->intended(route('admin.dashboard'));
-        }
-        
-        // Para clientes, detectar propiedad desde el parámetro property
+        // Detectar propiedad desde el parámetro property
         $propertySlug = $request->input('property');
         
         // Si no viene el parámetro, intentar extraer de la URL intended
@@ -44,6 +40,26 @@ class AuthenticatedSessionController extends Controller
             }
         }
         
+        // Para admin: verificar si es su propiedad o no
+        if ($user->role === 'admin') {
+            // Si viene desde una propiedad específica, verificar ownership
+            if ($propertySlug) {
+                $property = \App\Models\Property::where('slug', $propertySlug)->whereNull('deleted_at')->first();
+                
+                // Si es su propiedad, ir al panel admin
+                if ($property && $property->user_id === $user->id) {
+                    return redirect()->intended(route('admin.dashboard'));
+                }
+                
+                // Si no es su propiedad, tratarlo como cliente y redirigir a mis-reservas de esa propiedad
+                return redirect(route('properties.reservas.index', $propertySlug));
+            }
+            
+            // Si no viene desde una propiedad, ir al panel admin
+            return redirect()->intended(route('admin.dashboard'));
+        }
+        
+        // Para clientes
         // Si no se detectó slug, usar la primera propiedad disponible
         if (!$propertySlug) {
             $property = \App\Models\Property::whereNull('deleted_at')->first();
