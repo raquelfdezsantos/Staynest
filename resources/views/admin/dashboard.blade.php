@@ -136,7 +136,7 @@
 
         {{-- Próximos check-in --}}
         @if($stats['upcomingReservations']->isNotEmpty())
-            <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Próximos check-in</h2>
+            <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem; margin-top: 4rem;">Próximos check-in</h2>
             <div style="margin-bottom: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 1rem;">
                 @foreach($stats['upcomingReservations'] as $upcoming)
                     <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
@@ -188,7 +188,7 @@
             </div>
         @endif
 
-        <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Todas las reservas</h2>
+        <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem; margin-top: 4rem;">Todas las reservas</h2>
         <div style="overflow: hidden; background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px);">
             
             <div style="overflow-x: auto;">
