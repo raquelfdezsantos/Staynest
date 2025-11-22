@@ -10,26 +10,18 @@
                         En cumplimiento del artículo 10 de la Ley 34/2002, de 11 de julio, de Servicios de la Sociedad de la Información y Comercio Electrónico, se informa que:
                     </p>
                     <ul>
-                        @php
-                            $property = \App\Models\Property::first();
-                        @endphp
-                        <li><strong>Titular:</strong> {{ $property->name ?? 'Apartamento Nordeste' }}</li>
+                        <li><strong>Titular:</strong> Staynest</li>
                         <li><strong>CIF/NIF:</strong> [Número de identificación fiscal]</li>
-                        <li><strong>Domicilio:</strong> {{ $property->address ?? '[Dirección completa]' }}</li>
-                        <li><strong>Email:</strong> [Correo de contacto]</li>
-                        <li><strong>Teléfono:</strong> [Número de teléfono]</li>
-                        @if($property && $property->tourism_license)
-                            <li><strong>Licencia Turística:</strong> {{ $property->tourism_license }}</li>
-                        @endif
-                        @if($property && $property->rental_registration)
-                            <li><strong>Registro de Alquiler:</strong> {{ $property->rental_registration }}</li>
-                        @endif
+                        <li><strong>Domicilio:</strong> [Dirección de la empresa Staynest]</li>
+                        <li><strong>Email:</strong> info@staynest.com</li>
+                        <li><strong>Teléfono:</strong> [Número de teléfono de Staynest]</li>
+                        <li><strong>Plataforma:</strong> Sistema de gestión de alojamientos turísticos</li>
                     </ul>
 
                     <hr style="border:0; border-top:1px solid var(--color-border-light); margin: var(--spacing-lg) 0;" />
                     <h2>2. Objeto</h2>
                     <p>
-                        El presente aviso legal regula el uso del sitio web {{ config('app.url') }} (en adelante, el "Sitio Web"), del que es titular {{ $property->name ?? 'Apartamento Nordeste' }}.
+                        El presente aviso legal regula el uso del sitio web {{ config('app.url') }} (en adelante, el "Sitio Web"), del que es titular Staynest, plataforma desarrollada por Raquel Fernández Santos.
                     </p>
                     <p>
                         La navegación por el Sitio Web atribuye la condición de usuario del mismo e implica la aceptación plena y sin reservas de todas y cada una de las disposiciones incluidas en este Aviso Legal.
@@ -52,13 +44,13 @@
                     <hr style="border:0; border-top:1px solid var(--color-border-light); margin: var(--spacing-lg) 0;" />
                     <h2>4. Propiedad intelectual e industrial</h2>
                     <p>
-                        Todos los contenidos del Sitio Web, incluyendo, sin carácter limitativo, textos, fotografías, gráficos, imágenes, iconos, tecnología, software, así como su diseño gráfico y códigos fuente, constituyen una obra cuya propiedad pertenece a {{ $property->name ?? 'Apartamento Nordeste' }}, sin que puedan entenderse cedidos al usuario ninguno de los derechos de explotación sobre los mismos más allá de lo estrictamente necesario para el correcto uso del Sitio Web.
+                        Todos los contenidos del Sitio Web, incluyendo, sin carácter limitativo, textos, fotografías, gráficos, imágenes, iconos, tecnología, software, así como su diseño gráfico y códigos fuente, constituyen una obra cuya propiedad pertenece a Staynest (Raquel Fernández Santos), sin que puedan entenderse cedidos al usuario ninguno de los derechos de explotación sobre los mismos más allá de lo estrictamente necesario para el correcto uso del Sitio Web.
                     </p>
 
                     <hr style="border:0; border-top:1px solid var(--color-border-light); margin: var(--spacing-lg) 0;" />
                     <h2>5. Responsabilidad</h2>
                     <p>
-                        {{ $property->name ?? 'Apartamento Nordeste' }} no se hace responsable de:
+                        Staynest no se hace responsable de:
                     </p>
                     <ul>
                         <li>Los daños y perjuicios de toda naturaleza que pudieran derivarse de la falta de disponibilidad o de continuidad del funcionamiento del Sitio Web.</li>
@@ -69,7 +61,7 @@
                     <hr style="border:0; border-top:1px solid var(--color-border-light); margin: var(--spacing-lg) 0;" />
                     <h2>6. Enlaces</h2>
                     <p>
-                        En el caso de que en el Sitio Web se dispusiesen enlaces o hipervínculos hacia otros sitios de Internet, {{ $property->name ?? 'Apartamento Nordeste' }} no ejercerá ningún tipo de control sobre dichos sitios y contenidos.
+                        En el caso de que en el Sitio Web se dispusiesen enlaces o hipervínculos hacia otros sitios de Internet, Staynest no ejercerá ningún tipo de control sobre dichos sitios y contenidos.
                     </p>
 
                     <hr style="border:0; border-top:1px solid var(--color-border-light); margin: var(--spacing-lg) 0;" />

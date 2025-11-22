@@ -6,11 +6,8 @@
     <h1 style="font-family: var(--font-serif); font-size: var(--text-3xl); margin-bottom: var(--spacing-lg); color: var(--color-text-primary);">Política de Privacidad</h1>
     <div class="sn-legal" style="color: var(--color-text-secondary); line-height: 1.8; font-size: var(--text-sm);">
                     <h2>1. Información al usuario</h2>
-                    @php
-                        $property = \App\Models\Property::first();
-                    @endphp
                     <p>
-                        {{ $property->name ?? 'Apartamento Nordeste' }}, como Responsable del Tratamiento, le informa que, según lo dispuesto en el Reglamento (UE) 2016/679, de 27 de abril (RGPD), y en la L.O. 3/2018, de 5 de diciembre, de protección de datos y garantía de los derechos digitales (LOPDGDD), trataremos su datos tal y como reflejamos en la presente Política de Privacidad.
+                        Staynest, como plataforma de gestión de alojamientos turísticos y Responsable del Tratamiento, le informa que, según lo dispuesto en el Reglamento (UE) 2016/679, de 27 de abril (RGPD), y en la L.O. 3/2018, de 5 de diciembre, de protección de datos y garantía de los derechos digitales (LOPDGDD), trataremos sus datos tal y como reflejamos en la presente Política de Privacidad.
                     </p>
 
                     <hr style="border:0; border-top:1px solid var(--color-border-light); margin: var(--spacing-lg) 0;" />
