@@ -223,10 +223,9 @@
                             class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]"
                         >
                             @php($ad = old('adults', $prefill['adults'] ?? 2))
-                            <option value="1" @selected($ad==1)>1</option>
-                            <option value="2" @selected($ad==2)>2</option>
-                            <option value="3" @selected($ad==3)>3</option>
-                            <option value="4" @selected($ad==4)>4</option>
+                            @for($i = 1; $i <= $property->capacity; $i++)
+                                <option value="{{ $i }}" @selected($ad==$i)>{{ $i }}</option>
+                            @endfor
                         </select>
                     </div>
                     <div>
@@ -237,9 +236,9 @@
                             class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]"
                         >
                             @php($ch = old('children', $prefill['children'] ?? 0))
-                            <option value="0" @selected($ch==0)>0</option>
-                            <option value="1" @selected($ch==1)>1</option>
-                            <option value="2" @selected($ch==2)>2</option>
+                            @for($i = 0; $i <= $property->capacity; $i++)
+                                <option value="{{ $i }}" @selected($ch==$i)>{{ $i }}</option>
+                            @endfor
                         </select>
                     </div>
                     <div>
