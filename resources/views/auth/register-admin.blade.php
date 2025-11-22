@@ -14,6 +14,17 @@
         <form method="POST" action="{{ route('register.admin') }}" novalidate>
         @csrf
 
+        @if ($errors->any())
+            <div class="alert alert-error mb-6">
+                <strong>Revisa los siguientes campos:</strong>
+                <ul style="margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- Datos Personales -->
         <div class="mb-16">
             <h3 class="text-xl font-semibold mb-4">Datos Personales</h3>
@@ -141,17 +152,6 @@
                 </div>
             </div>
         </div>
-
-        @if ($errors->any())
-            <div class="alert alert-error">
-                <strong>Revisa los siguientes campos:</strong>
-                <ul style="margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc;">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
 
         <div class="flex items-center justify-between pt-3">
             <a href="{{ route('register') }}" class="text-sm" style="color: var(--color-text-secondary);" onmouseover="this.style.color='var(--color-accent)';" onmouseout="this.style.color='var(--color-text-secondary);';">
