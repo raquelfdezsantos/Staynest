@@ -9,9 +9,9 @@
   <form @submit.prevent="go()">
     {{-- propiedad --}}
     <label class="block text-sm mb-1">Alojamiento</label>
-    <select x-model="property_id" class="w-full mb-4 bg-[#111] border border-sn-accent/40 rounded-xl px-4 py-2.5">
+    <select x-model="property_id" @change="updateMaxGuests()" class="w-full mb-4 bg-[#111] border border-sn-accent/40 rounded-xl px-4 py-2.5">
       @foreach(\App\Models\Property::orderBy('name')->get() as $p)
-        <option value="{{ $p->id }}" @selected($loop->first)>{{ $p->name }}</option>
+        <option value="{{ $p->id }}" data-capacity="{{ $p->capacity }}" @selected($loop->first)>{{ $p->name }}</option>
       @endforeach
     </select>
 
@@ -26,7 +26,11 @@
       </div>
       <div>
         <label class="block text-sm mb-1">Huéspedes</label>
-        <input type="number" min="1" x-model.number="guests" @input.debounce.300ms="quote()" class="w-full bg-[#111] border border-sn-accent/40 rounded-xl px-4 py-2.5"/>
+        <select x-model.number="guests" @change="quote()" class="w-full bg-[#111] border border-sn-accent/40 rounded-xl px-4 py-2.5">
+          <template x-for="i in maxGuests" :key="i">
+            <option :value="i" x-text="i + (i === 1 ? ' huésped' : ' huéspedes')"></option>
+          </template>
+        </select>
       </div>
     </div>
 
@@ -58,7 +62,20 @@
   window.booking = () => ({
     property_id: document.querySelector('select')?.value ?? null,
     check_in: '', check_out: '', guests: 1,
+    maxGuests: 1,
     nights: null, total: null, loading: false, warn: false,
+    init() {
+      this.updateMaxGuests();
+    },
+    updateMaxGuests() {
+      const select = document.querySelector('select[x-model="property_id"]');
+      const selectedOption = select?.options[select.selectedIndex];
+      this.maxGuests = parseInt(selectedOption?.dataset.capacity || 1);
+      // Si guests actual excede el máximo, ajustar
+      if (this.guests > this.maxGuests) {
+        this.guests = this.maxGuests;
+      }
+    },
     canBook(){ return this.property_id && this.check_in && this.check_out && this.guests>0 && this.total },
     async quote(){
       if(!this.property_id || !this.check_in || !this.check_out || !this.guests) return;

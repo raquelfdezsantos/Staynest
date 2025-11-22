@@ -205,8 +205,13 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Huéspedes</label>
-                            <input type="number" name="guests" min="1" max="{{ $property->capacity }}"
-                                value="{{ old('guests', 2) }}" class="mt-1 w-full border rounded p-2">
+                            <select name="guests" class="mt-1 w-full border rounded p-2">
+                                @for($i = 1; $i <= $property->capacity; $i++)
+                                    <option value="{{ $i }}" {{ old('guests', 2) == $i ? 'selected' : '' }}>
+                                        {{ $i }} {{ $i == 1 ? 'huésped' : 'huéspedes' }}
+                                    </option>
+                                @endfor
+                            </select>
                         </div>
                     </div>
 
