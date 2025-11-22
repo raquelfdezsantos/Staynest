@@ -79,9 +79,8 @@
                                 </svg>
                                 Panel Admin
                             </a></li>
-                        @elseif(auth()->user()->role === 'admin' && !$isPropertyOwner)
-                            {{-- Admin viendo propiedad ajena: mostrar opciones de cliente --}}
                         @else
+                            {{-- Mostrar opciones de cliente (para customers o admins en propiedades ajenas) --}}
                             @php
                                 // Determinar la propiedad actual para las rutas de cliente
                                 $currentProperty = $property ?? \App\Models\Property::whereNull('deleted_at')->first();
