@@ -183,6 +183,9 @@
             background-color: rgba(77, 141, 148, 0.10) !important;
             border-color: transparent !important;
         }
+        html[data-theme="light"] .register-actions .btn-action-secondary {
+            color: #000 !important;
+        }
 
         /* Calendario Flatpickr - Modo Oscuro */
         html[data-theme="dark"] .flatpickr-calendar {
