@@ -1,41 +1,37 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl);">
+    <div class="sn-reservar max-w-5xl mx-auto px-4 py-10 admin-slim-badges">
         
-        {{-- Header simple --}}
-        <header style="margin-bottom: 2rem;">
-            <h1 style="font-family: var(--font-serif); font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
-                Gestión de Propiedades
-            </h1>
-            <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">
-                Administra todas las propiedades, fotos, calendario y reservas.
-            </p>
+        {{-- Header centrado como en Dashboard --}}
+        <header class="mb-16 text-center">
+            <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Mis propiedades</h1>
+            <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Gestiona tus alojamientos, fotos, disponibilidad y reservas.</p>
         </header>
 
         {{-- Mensajes --}}
         @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
+            <div class="alert alert-success" style="margin-bottom: 1.5rem;">{{ session('success') }}</div>
         @endif
         @if (session('error'))
-            <div class="alert alert-error">{{ session('error') }}</div>
+            <div class="alert alert-error" style="margin-bottom: 1.5rem;">{{ session('error') }}</div>
         @endif
 
         {{-- Botón crear nueva propiedad --}}
-        <div style="margin-bottom: 3rem;">
+        <div style="margin-bottom: 2rem;">
             <a href="{{ route('admin.properties.create') }}" 
                class="btn-action btn-action-primary">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                Crear Nueva Propiedad
+                <span class="sn-sentence">Crear nueva propiedad</span>
             </a>
         </div>
 
-            {{-- Grid de propiedades - estilo minimalista --}}
-            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem;">
-                @forelse($properties as $property)
-                    <div style="border: 1px solid var(--color-border-light); border-radius: var(--radius-base); overflow: hidden; transition: all var(--transition-fast); {{ $property->trashed() ? 'opacity: 0.6;' : '' }}">
-                        {{-- Foto de portada --}}
-                        <div style="position: relative;">
+        {{-- Grid de propiedades --}}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+            @forelse($properties as $property)
+                <div style="border: 1px solid var(--color-border-light); border-radius: 2px; overflow: hidden; transition: border-color var(--transition-fast); background-color: var(--color-bg-primary);" class="property-card-hover">
+                    {{-- Foto de portada --}}
+                    <div style="position: relative; width: 100%; height: 200px; {{ $property->trashed() ? 'opacity: 0.6;' : '' }}">
                             @php
                                 $coverPhoto = $property->photos->where('is_cover', true)->first() ?? $property->photos->first();
                             @endphp
@@ -44,72 +40,102 @@
                                 <img 
                                     src="{{ str_starts_with($coverPhoto->url, 'http') ? $coverPhoto->url : asset('storage/' . $coverPhoto->url) }}" 
                                     alt="{{ $property->name }}"
-                                    style="width: 100%; height: 200px; object-fit: cover;"
+                                    style="width: 100%; height: 100%; object-fit: cover;"
                                 >
                             @else
-                                <div style="width: 100%; height: 200px; background-color: var(--color-bg-secondary); display: flex; align-items: center; justify-content: center;">
-                                    <svg style="width: 3rem; height: 3rem; color: var(--color-text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div style="width: 100%; height: 100%; background-color: var(--color-bg-secondary); display: flex; align-items: center; justify-content: center; color: var(--color-text-muted);">
+                                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
                                 </div>
                             @endif
 
-                            {{-- Badge estado --}}
-                            @if($property->trashed())
-                                <div class="badge badge-error" style="position: absolute; top: 0.75rem; right: 0.75rem;">
-                                    DADA DE BAJA
-                                </div>
-                            @else
-                                <div class="badge badge-success" style="position: absolute; top: 0.75rem; right: 0.75rem;">
-                                    ACTIVA
-                                </div>
+                        {{-- Badge estado --}}
+                        @if($property->trashed())
+                            <div class="badge badge-error" style="position: absolute; top: 0.75rem; right: 0.75rem;">
+                                <span class="sn-sentence">Dada de baja</span>
+                            </div>
+                        @else
+                            <div class="badge badge-success" style="position: absolute; top: 0.75rem; right: 0.75rem;">
+                                <span class="sn-sentence">Activa</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    {{-- Información --}}
+                    <div style="padding: 1.25rem 1.25rem 0; {{ $property->trashed() ? 'opacity: 0.6;' : '' }}">
+                        <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin: 0 0 1rem 0;">
+                            {{ $property->name }}
+                        </h3>
+                        <div style="font-size: var(--text-sm); color: var(--color-text-secondary); display: flex; flex-wrap: wrap; gap: 0.375rem; align-items: center;">
+                            <span>{{ $property->capacity }} personas</span>
+                            <span>•</span>
+                            <span>{{ $property->photos->count() }} fotos</span>
+                            @if($property->city)
+                                <br>
+                                <span>{{ $property->city }}</span>
                             @endif
                         </div>
+                    </div>
 
-                        {{-- Información --}}
-                        <div style="padding: 1.25rem;">
-                            <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
-                                {{ $property->name }}
-                            </h3>
-                            <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 1rem;">
-                                {{ $property->capacity }} personas • {{ $property->photos->count() }} fotos
-                                @if($property->city)
-                                    <br>{{ $property->city }}
-                                @endif
-                            </p>
-
-                            {{-- Botones de acción --}}
-                            <div style="display: flex; flex-direction: column; gap: 0.625rem;">
-                                @if(!$property->trashed())
-                                    <a href="{{ route('admin.properties.dashboard', $property->id) }}" 
-                                       class="btn-action btn-action-primary" style="text-align: center; width: 100%;">
-                                        Gestionar
-                                    </a>
-                                @else
-                                    <form method="POST" action="{{ route('admin.properties.restore', $property->id) }}">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" 
-                                                class="btn-action btn-action-success" 
-                                                style="width: 100%;"
-                                                onclick="return confirm('¿Restaurar esta propiedad?')">
-                                            RESTAURAR PROPIEDAD
-                                        </button>
-                                    </form>
-                                @endif
-                            </div>
+                    {{-- Botones de acción --}}
+                    @if(!$property->trashed())
+                        <div style="padding: 1rem 1.25rem 1.25rem;">
+                            <a href="{{ route('admin.properties.dashboard', $property->id) }}" 
+                               class="btn-action btn-action-primary" style="width: 100%; text-align: center;">
+                                <span class="sn-sentence">Gestionar</span>
+                            </a>
                         </div>
-                    </div>
-                @empty
-                    <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem;">
-                        <svg style="margin: 0 auto; width: 4rem; height: 4rem; color: var(--color-text-muted); margin-bottom: 1.5rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                        </svg>
-                        <h3 style="margin-bottom: 0.5rem; font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary);">No hay propiedades</h3>
-                        <p style="color: var(--color-text-secondary); font-size: var(--text-sm);">Comienza creando una nueva propiedad.</p>
-                    </div>
-                @endforelse
-            </div>
+                    @else
+                        <div style="padding: 1rem 1.25rem 1.25rem;">
+                            <form method="POST" action="{{ route('admin.properties.restore', $property->id) }}">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" 
+                                        class="btn-action btn-action-success" 
+                                        style="width: 100%;"
+                                        onclick="return confirm('¿Restaurar esta propiedad?')">
+                                    <span class="sn-sentence">Restaurar propiedad</span>
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 2rem; color: var(--color-text-muted);">
+                    <svg style="margin: 0 auto 1.5rem;" width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    </svg>
+                    <h3 style="margin-bottom: 0.5rem; font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary);">No hay propiedades</h3>
+                    <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin: 0;">Comienza creando una nueva propiedad.</p>
+                </div>
+            @endforelse
         </div>
     </div>
+
+    <style>
+        /* Badges compactos para admin */
+        .admin-slim-badges .badge {
+            font-size: 0.6875rem;
+            padding: 0.25rem 0.5rem;
+            letter-spacing: 0.05em;
+        }
+        .admin-slim-badges .badge-success,
+        .admin-slim-badges .badge-warning,
+        .admin-slim-badges .badge-error,
+        .admin-slim-badges .badge-info {
+            background: transparent !important;
+            border: 1px solid var(--color-accent);
+        }
+        
+        /* Quitar movimiento del botón success al hover */
+        .btn-action-success:hover {
+            transform: none !important;
+        }
+        
+        /* Hover simple para property cards */
+        .property-card-hover:hover {
+            border-color: var(--color-accent) !important;
+        }
+    </style>
 </x-app-layout>
