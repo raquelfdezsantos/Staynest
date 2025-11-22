@@ -1,13 +1,13 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl leading-tight" style="font-family: var(--font-sans); color: var(--color-text-primary);">
-            {{ __('Gestión de Fotos') }}
-        </h2>
-    </x-slot>
+    <div class="sn-reservar max-w-5xl mx-auto px-4 py-10 admin-slim-badges">
+        
+        {{-- Header centrado como en Dashboard --}}
+        <header class="mb-16 text-center">
+            <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Galería de fotos</h1>
+            <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Gestiona las imágenes de tu propiedad, marca la portada y organízalas.</p>
+        </header>
 
-    <div class="admin-photos-page py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Mensajes --}}
+        {{-- Mensajes --}}
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif

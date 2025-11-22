@@ -1,11 +1,14 @@
 <x-app-layout>
-  <x-slot name="header">
-    <h2 class="font-semibold text-xl leading-tight" style="font-family: var(--font-sans); color: var(--color-text-primary);">Calendario y Precios</h2>
-  </x-slot>
-
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-  <div class="admin-calendar-page max-w-6xl mx-auto px-4 py-12">
+  <div class="sn-reservar max-w-6xl mx-auto px-4 py-10 admin-slim-badges">
+    
+    {{-- Header centrado como en Dashboard --}}
+    <header class="mb-16 text-center">
+      <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Calendario y precios</h1>
+      <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Gestiona los precios por noche, bloquea fechas no disponibles y controla tu calendario.</p>
+    </header>
+
     {{-- Mensajes --}}
     @if (session('success'))
       <div class="alert alert-success mb-6">{{ session('success') }}</div>
