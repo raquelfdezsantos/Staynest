@@ -10,14 +10,12 @@ use App\Models\Property;
 
 class ContactController extends Controller
 {
-    public function create()
+    public function create(Property $property)
     {
-        // Pasar la primera propiedad disponible para mostrar dirección y coordenadas
-        $property = Property::first();
         return view('contact.form', compact('property'));
     }
 
-    public function store(Request $request)
+    public function store(Property $property, Request $request)
     {
         $data = $request->validate([
             'name'    => ['required', 'string', 'max:100'],

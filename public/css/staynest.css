@@ -1904,6 +1904,13 @@ footer { flex-shrink: 0; }
     gap: var(--spacing-md);
 }
 
+/* Enlaces de logos */
+.nav-logo-hero a,
+.nav-logo-wrapper a {
+    display: inline-block;
+    line-height: 0;
+}
+
 /* Logo grande del hero (fuera del nav-container) */
 .nav-logo-hero {
     position: absolute;

@@ -34,7 +34,7 @@
                 @endif
 
                 <form method="POST"
-                      action="{{ route('contact.store') }}"
+                      action="{{ route('properties.contact.store', $property) }}"
                       class="space-y-4"
                       style="display:flex;flex-direction:column;"
                       novalidate>

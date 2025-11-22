@@ -118,14 +118,25 @@ class PropertyController extends Controller
     }
 
     /**
-     * Muestra la página de reservar con la primera propiedad disponible.
+     * Muestra la página de entorno de una propiedad específica.
      *
+     * @param \App\Models\Property $property
      * @return \Illuminate\Contracts\View\View
      */
-    public function reservar()
+    public function entorno(Property $property)
     {
-        // si es una única propiedad demo:
-        $property = Property::with('photos')->firstOrFail();
+        return view('entorno.index', compact('property'));
+    }
+
+    /**
+     * Muestra la página de reservar de una propiedad específica.
+     *
+     * @param \App\Models\Property $property
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function reservar(Property $property)
+    {
+        $property->load('photos');
 
         // Fechas bloqueadas desde tu RateCalendar
         $blockedDates = RateCalendar::query()

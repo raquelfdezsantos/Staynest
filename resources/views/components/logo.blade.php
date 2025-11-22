@@ -1,29 +1,22 @@
 @props(['class' => ''])
 
-<a href="{{ route('home') }}" class="nav-logo-link">
-    {{-- Logo para modo oscuro (por defecto) --}}
-    <img 
-        src="{{ asset('images/logos/logo-dark.png') }}" 
-        alt="Staynest" 
-        class="nav-logo {{ $class }} dark-mode-logo"
-        id="logo-dark"
-    >
-    
-    {{-- Logo para modo claro (oculto por defecto) --}}
-    <img 
-        src="{{ asset('images/logos/logo-light.png') }}" 
-        alt="Staynest" 
-        class="nav-logo {{ $class }} light-mode-logo hidden"
-        id="logo-light"
-    >
-</a>
+{{-- Logo para modo oscuro (por defecto) --}}
+<img 
+    src="{{ asset('images/logos/logo-dark.png') }}" 
+    alt="Staynest" 
+    class="nav-logo {{ $class }} dark-mode-logo"
+    id="logo-dark"
+>
+
+{{-- Logo para modo claro (oculto por defecto) --}}
+<img 
+    src="{{ asset('images/logos/logo-light.png') }}" 
+    alt="Staynest" 
+    class="nav-logo {{ $class }} light-mode-logo hidden"
+    id="logo-light"
+>
 
 <style>
-    .nav-logo-link {
-        display: inline-block;
-        line-height: 0;
-    }
-    
     .nav-logo {
         height: 48px;
         width: auto;

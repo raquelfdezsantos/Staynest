@@ -25,12 +25,8 @@ class AppServiceProvider extends ServiceProvider
             if ($view->offsetExists('property')) {
                 $property = $view->offsetGet('property');
             } 
-            // Si no existe, intentar obtener la propiedad por defecto (home)
-            else if (request()->routeIs('home')) {
-                $property = \App\Models\Property::with('user')->where('slug', 'piso-turistico-centro')->first();
-            }
-            // Si estamos en la ruta de una propiedad específica
-            else if (request()->routeIs('properties.show')) {
+            // Si estamos en cualquier ruta de propiedad, obtener desde la ruta
+            else if (request()->route('property')) {
                 $property = request()->route('property');
             }
             

@@ -22,43 +22,37 @@ use App\Http\Controllers\QuoteController;
 |--------------------------------------------------------------------------
 */
 
+// Redirigir home a la primera propiedad disponible
 Route::get('/', function () {
-    // Home: muestra la propiedad principal (piso-turistico-centro del seeder)
-    $property = Property::with('photos')->where('slug', 'piso-turistico-centro')->first();
+    $property = Property::where('slug', 'piso-turistico-centro')->first();
     
-    // Si no existe esa propiedad, mostrar la primera disponible
     if (!$property) {
-        $property = Property::with('photos')->whereNull('deleted_at')->first();
+        $property = Property::whereNull('deleted_at')->first();
     }
     
-    // Si no hay propiedades, mostrar página de bienvenida
     if (!$property) {
         return view('welcome');
     }
     
-    return view('home-single', compact('property'));
+    return redirect()->route('properties.show', $property);
 })->name('home');
 
-// Ruta individual para cada propiedad
+// Ruta individual para cada propiedad (Inicio)
 Route::get('/propiedades/{property:slug}', [PropertyController::class, 'show'])->name('properties.show');
+
+// Rutas anidadas por propiedad
+Route::get('/propiedades/{property:slug}/entorno', [PropertyController::class, 'entorno'])->name('properties.entorno');
+Route::get('/propiedades/{property:slug}/contacto', [ContactController::class, 'create'])->name('properties.contact.create');
+Route::post('/propiedades/{property:slug}/contacto', [ContactController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('properties.contact.store');
+Route::get('/propiedades/{property:slug}/reservar', [PropertyController::class, 'reservar'])->name('properties.reservar');
 
 // Lista de propiedades de un administrador (solo si tiene más de una)
 Route::get('/propiedades-de/{userId}', [PropertyController::class, 'byOwner'])->name('properties.byOwner');
 
 // Página institucional: Descubre Staynest (muestra todas las propiedades)
 Route::get('/descubre-staynest', [PropertyController::class, 'discover'])->name('discover');
-
-// Contacto (único formulario + mapa)
-Route::get('/contacto', [ContactController::class, 'create'])->name('contact.create');
-Route::post('/contacto', [ContactController::class, 'store'])
-    ->middleware('throttle:5,1')
-    ->name('contact.store');
-Route::get('/contact', fn() => redirect()->route('contact.create'));
-
-// Entorno y Reservar (páginas públicas)
-Route::view('/entorno', 'entorno.index')->name('entorno');
-// Formulario de reserva debe ser público
-Route::get('/reservar', [PropertyController::class, 'reservar'])->name('reservar');
 // Páginas legales
 Route::get('/aviso-legal', fn() => view('legal.aviso-legal'))->name('legal.aviso');
 Route::get('/politica-privacidad', fn() => view('legal.politica-privacidad'))->name('legal.privacidad');

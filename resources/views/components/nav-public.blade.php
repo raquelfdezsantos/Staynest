@@ -5,28 +5,38 @@
 
     {{-- Logo grande en hero (solo visible en modo transparente) --}}
     <div class="nav-logo-hero">
-        <x-logo />
+        <a href="{{ $property ? route('properties.show', $property) : route('home') }}">
+            <x-logo />
+        </a>
     </div>
 
     <nav class="nav-container">
         <div class="nav-logo-wrapper">
-            <x-logo />
+            <a href="{{ $property ? route('properties.show', $property) : route('home') }}">
+                <x-logo />
+            </a>
         </div>
 
         {{-- Grupo: Menú + Acciones (juntos a la derecha) --}}
         <div class="nav-right-group">
             <ul class="nav-menu">
-                <li><a href="{{ route('home') }}"
-                        class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Inicio</a></li>
-                <li><a href="{{ route('entorno') }}"
-                        class="nav-link {{ request()->routeIs('entorno') ? 'active' : '' }}">Entorno</a></li>
-                <li><a href="{{ route('contact.create') }}"
-                        class="nav-link {{ request()->routeIs('contact.*') ? 'active' : '' }}">Contacto</a></li>
-                <li><a href="{{ route('reservar') }}"
-                        class="nav-link {{ request()->routeIs('reservar') ? 'active' : '' }}">Reservar</a></li>
-                @if($property && $property->user && $property->user->properties()->whereNull('deleted_at')->count() > 1)
-                    <li><a href="{{ route('properties.byOwner', $property->user_id) }}"
-                            class="nav-link {{ request()->routeIs('properties.byOwner') ? 'active' : '' }}">Propiedades</a></li>
+                @if($property)
+                    <li><a href="{{ route('properties.show', $property) }}"
+                            class="nav-link {{ request()->routeIs('properties.show') ? 'active' : '' }}">Inicio</a></li>
+                    <li><a href="{{ route('properties.entorno', $property) }}"
+                            class="nav-link {{ request()->routeIs('properties.entorno') ? 'active' : '' }}">Entorno</a></li>
+                    <li><a href="{{ route('properties.contact.create', $property) }}"
+                            class="nav-link {{ request()->routeIs('properties.contact.*') ? 'active' : '' }}">Contacto</a></li>
+                    <li><a href="{{ route('properties.reservar', $property) }}"
+                            class="nav-link {{ request()->routeIs('properties.reservar') ? 'active' : '' }}">Reservar</a></li>
+                    @if($property->user && $property->user->properties()->whereNull('deleted_at')->count() > 1)
+                        <li><a href="{{ route('properties.byOwner', $property->user_id) }}"
+                                class="nav-link {{ request()->routeIs('properties.byOwner') ? 'active' : '' }}">Propiedades</a></li>
+                    @endif
+                @else
+                    {{-- Fallback para páginas sin propiedad (institucionales) --}}
+                    <li><a href="{{ route('home') }}"
+                            class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Inicio</a></li>
                 @endif
             </ul>
 

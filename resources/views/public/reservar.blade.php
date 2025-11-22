@@ -42,7 +42,7 @@
 
     <div class="mt-6 flex gap-3">
       <button type="submit" class="px-5 py-3 rounded-full bg-sn-accent hover:opacity-90" :disabled="!canBook()">Reservar</button>
-      <a href="{{ route('home') }}" class="px-5 py-3 rounded-full border border-sn-accent hover:bg-sn-accent/10">Volver</a>
+      <a href="{{ route('properties.show', $property) }}" class="px-5 py-3 rounded-full border border-sn-accent hover:bg-sn-accent/10">Volver</a>
     </div>
 
     {{-- Toast login requerido --}}
