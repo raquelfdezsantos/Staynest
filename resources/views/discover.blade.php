@@ -113,7 +113,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach($properties as $property)
                     <a href="{{ route('properties.show', $property->slug) }}" class="group">
-                        <div class="bg-neutral-800 overflow-hidden transition-all duration-300 hover:shadow-lg h-full flex flex-col" style="border-radius: var(--radius-base); border: 1px solid transparent;" onmouseenter="this.style.borderColor='var(--color-accent)'" onmouseleave="this.style.borderColor='transparent'">
+                        <div class="bg-neutral-800 overflow-hidden transition-all duration-300 h-full flex flex-col" style="border-radius: var(--radius-base); border: 1px solid transparent;" onmouseenter="this.style.borderColor='var(--color-accent)'" onmouseleave="this.style.borderColor='transparent'">
                             @if($property->photos->isNotEmpty())
                                 <div class="aspect-video relative overflow-hidden">
                                     <img src="{{ $property->photos->first()->url }}" 

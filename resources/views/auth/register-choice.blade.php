@@ -60,7 +60,6 @@
 
         .choice-card:hover {
             border-color: var(--color-accent);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
         }
 
         .choice-icon {

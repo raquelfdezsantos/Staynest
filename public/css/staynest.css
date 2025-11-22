@@ -388,6 +388,11 @@ html[data-theme="light"] .sn-auth label {
     color: var(--color-text-secondary) !important;
 }
 
+/* Choice cards del registro en modo claro */
+html[data-theme="light"] .choice-card {
+    background-color: var(--color-bg-secondary) !important;
+}
+
 /* Inputs globales con .sn-input en modo claro (formularios de contacto, perfil, etc.) */
 html[data-theme="light"] .sn-input,
 html[data-theme="light"] input.bg-neutral-800,
