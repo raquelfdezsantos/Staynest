@@ -34,13 +34,13 @@
                 <!-- Nombre -->
                 <div>
                     <x-input-label for="name" value="Nombre completo *" />
-                    <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus />
+                    <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
                 </div>
 
                 <!-- Correo electrónico -->
                 <div>
                     <x-input-label for="email" value="Correo electrónico *" />
-                    <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required />
+                    <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
                 </div>
 
                 <!-- Contraseña -->
@@ -64,20 +64,20 @@
                 <!-- Teléfono -->
                 <div>
                     <x-input-label for="phone" value="Teléfono *" />
-                    <x-text-input id="phone" class="block mt-1 w-full" type="tel" name="phone" :value="old('phone')" required placeholder="+34 600 000 000" />
+                    <x-text-input id="phone" class="block mt-1 w-full" type="tel" name="phone" :value="old('phone')" required placeholder="+34 600 000 000" autocomplete="tel" />
                 </div>
 
                 <!-- Fecha de nacimiento -->
                 <div>
                     <x-input-label for="birth_date" value="Fecha de nacimiento *" />
-                    <x-text-input id="birth_date" class="block mt-1 w-full" type="text" name="birth_date" :value="old('birth_date')" required placeholder="Selecciona tu fecha de nacimiento" />
+                    <x-text-input id="birth_date" class="block mt-1 w-full" type="text" name="birth_date" :value="old('birth_date')" required placeholder="Selecciona tu fecha de nacimiento" autocomplete="bday" />
                     <p class="text-xs text-neutral-400 mt-1">Debes ser mayor de 18 años.</p>
                 </div>
 
                 <!-- Dirección -->
                 <div class="md:col-span-2">
                     <x-input-label for="address" value="Dirección completa *" />
-                    <x-text-input id="address" class="block mt-1 w-full" type="text" name="address" :value="old('address')" required />
+                    <x-text-input id="address" class="block mt-1 w-full" type="text" name="address" :value="old('address')" required autocomplete="street-address" />
                 </div>
 
                 <!-- DNI -->
