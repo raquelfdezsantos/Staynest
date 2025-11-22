@@ -11,23 +11,24 @@
                     ->where('user_id', auth()->id())
                     ->first();
             }
-            // Si no hay propiedad en la ruta, obtener la primera propiedad del usuario
-            if (!$currentProperty) {
-                $currentProperty = \App\Models\Property::where('user_id', auth()->id())->first();
-            }
+            // NO tomar una propiedad por defecto - solo si está en la URL
         @endphp
 
         <ul class="nav-menu">
-            <li><a href="{{ route('admin.dashboard') }}"
-                    class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
-            
             @if($currentProperty)
+                {{-- Si hay propiedad en contexto, Dashboard apunta al dashboard de esa propiedad --}}
+                <li><a href="{{ route('admin.property.dashboard', $currentProperty->slug) }}"
+                        class="nav-link {{ request()->routeIs('admin.property.dashboard') ? 'active' : '' }}">Dashboard</a></li>
                 <li><a href="{{ route('admin.property.edit', $currentProperty->slug) }}"
                         class="nav-link {{ request()->routeIs('admin.property.edit') ? 'active' : '' }}">Propiedad</a></li>
                 <li><a href="{{ route('admin.property.photos.index', $currentProperty->slug) }}"
                         class="nav-link {{ request()->routeIs('admin.property.photos.*') ? 'active' : '' }}">Fotos</a></li>
                 <li><a href="{{ route('admin.property.calendar.index', $currentProperty->slug) }}"
                         class="nav-link {{ request()->routeIs('admin.property.calendar.*') ? 'active' : '' }}">Calendario</a></li>
+            @else
+                {{-- Si NO hay propiedad, Dashboard apunta al dashboard general --}}
+                <li><a href="{{ route('admin.dashboard') }}"
+                        class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
             @endif
             
             <li><a href="{{ route('admin.properties.index') }}"
@@ -53,11 +54,8 @@
                         </svg>
                     </button>
                     <ul class="nav-dropdown-menu">
-                        @php
-                            $adminProperty = \App\Models\Property::where('user_id', auth()->id())->first();
-                        @endphp
-                        @if($adminProperty)
-                            <li><a href="{{ route('properties.show', $adminProperty->slug) }}" class="nav-dropdown-item">
+                        @if($currentProperty)
+                            <li><a href="{{ route('properties.show', $currentProperty->slug) }}" class="nav-dropdown-item">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                                     <path d="M9 22V12h6v10"/>
