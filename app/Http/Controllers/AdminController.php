@@ -406,15 +406,23 @@ class AdminController extends Controller
 
     public function blockDates(Request $request)
     {
-        $adminId = auth()->id();
-        
         $data = $request->validate([
-            'property_id' => ['required', 'exists:properties,id'],
             'start'       => ['required', 'date'],
             'end'         => ['required', 'date', 'after_or_equal:start'], // end INCLUSIVO
         ]);
 
-        $prop = Property::where('user_id', $adminId)->findOrFail($data['property_id']);
+        // Obtener property desde ruta o request
+        $prop = $request->route('property');
+        if (!$prop) {
+            // Fallback para rutas antiguas
+            $request->validate(['property_id' => ['required', 'exists:properties,id']]);
+            $prop = Property::where('user_id', auth()->id())->findOrFail($request->input('property_id'));
+        } else {
+            // Verificar que la propiedad pertenece al admin
+            if ($prop->user_id !== auth()->id()) {
+                abort(403, 'No autorizado');
+            }
+        }
         $start  = Carbon::parse($data['start'])->startOfDay();
         $end    = Carbon::parse($data['end'])->startOfDay(); // rango [start, end] INCLUSIVO
 
@@ -449,15 +457,23 @@ class AdminController extends Controller
 
     public function unblockDates(Request $request)
     {
-        $adminId = auth()->id();
-        
         $data = $request->validate([
-            'property_id' => ['required', 'exists:properties,id'],
             'start'       => ['required', 'date'],
             'end'         => ['required', 'date', 'after_or_equal:start'], // end INCLUSIVO
         ]);
 
-        $prop = Property::where('user_id', $adminId)->findOrFail($data['property_id']);
+        // Obtener property desde ruta o request
+        $prop = $request->route('property');
+        if (!$prop) {
+            // Fallback para rutas antiguas
+            $request->validate(['property_id' => ['required', 'exists:properties,id']]);
+            $prop = Property::where('user_id', auth()->id())->findOrFail($request->input('property_id'));
+        } else {
+            // Verificar que la propiedad pertenece al admin
+            if ($prop->user_id !== auth()->id()) {
+                abort(403, 'No autorizado');
+            }
+        }
         $start = Carbon::parse($data['start'])->startOfDay();
         $end   = Carbon::parse($data['end'])->startOfDay();
 
@@ -571,24 +587,11 @@ class AdminController extends Controller
     /**
      * Muestra el formulario de edición de la propiedad.
      */
-    public function propertyEdit($propertyId = null)
+    public function propertyEdit(Property $property)
     {
-        $adminId = auth()->id();
-        
-        // Si no se proporciona ID, usar la primera propiedad del admin
-        if ($propertyId) {
-            $property = Property::withTrashed()
-                ->where('user_id', $adminId)
-                ->findOrFail($propertyId);
-        } else {
-            $property = Property::withTrashed()
-                ->where('user_id', $adminId)
-                ->first();
-        }
-        
-        if (!$property) {
-            return redirect()->route('admin.properties.index')
-                ->with('error', 'No hay ninguna propiedad en el sistema.');
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== auth()->id()) {
+            abort(403, 'No autorizado');
         }
 
         // Contar reservas futuras activas
@@ -632,24 +635,11 @@ class AdminController extends Controller
     /**
      * Lista las fotos de la propiedad y permite gestionarlas.
      */
-    public function photosIndex($propertyId = null)
+    public function photosIndex(Property $property)
     {
-        $adminId = auth()->id();
-        
-        // Si no se proporciona ID, usar la primera propiedad del admin
-        if ($propertyId) {
-            $property = Property::withTrashed()
-                ->where('user_id', $adminId)
-                ->findOrFail($propertyId);
-        } else {
-            $property = Property::withTrashed()
-                ->where('user_id', $adminId)
-                ->first();
-        }
-        
-        if (!$property) {
-            return redirect()->route('admin.properties.index')
-                ->with('error', 'No hay ninguna propiedad en el sistema.');
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== auth()->id()) {
+            abort(403, 'No autorizado');
         }
 
         // Cargar fotos ordenadas por sort_order
@@ -665,8 +655,9 @@ class AdminController extends Controller
     {
         $adminId = auth()->id();
         
-        // Obtener property_id del request o de la URL
-        $propertyId = $request->input('property_id') ?? $request->route('property');
+        // Obtener property desde route binding o request
+        $property = $request->route('property');
+        $propertyId = $property ? $property->id : $request->input('property_id');
         
         if ($propertyId) {
             $property = Property::where('user_id', $adminId)->findOrFail($propertyId);
@@ -788,17 +779,16 @@ class AdminController extends Controller
     /**
      * Muestra el dashboard de una propiedad específica con sus reservas.
      */
-    public function propertyDashboard($propertyId)
+    public function propertyDashboard(Property $property)
     {
-        $adminId = auth()->id();
-        
-        $property = Property::withTrashed()
-            ->where('user_id', $adminId)
-            ->findOrFail($propertyId);
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== auth()->id()) {
+            abort(403, 'No autorizado');
+        }
         
         // Obtener reservas de esta propiedad
         $query = Reservation::with(['user', 'invoice'])
-            ->where('property_id', $propertyId)
+            ->where('property_id', $property->id)
             ->latest();
 
         $reservations = $query->paginate(10);
@@ -863,46 +853,39 @@ class AdminController extends Controller
     /**
      * Muestra el calendario con la propiedad pre-seleccionada si se pasa property_id.
      */
-    public function calendarIndex(Request $request)
+    public function calendarIndex(Property $property)
     {
-        $adminId = auth()->id();
-        
-        // Si no hay property_id en query, usar la primera propiedad del admin
-        $selectedPropertyId = $request->query('property_id');
-        if (!$selectedPropertyId) {
-            $selectedPropertyId = \App\Models\Property::where('user_id', $adminId)->first()?->id;
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== auth()->id()) {
+            abort(403, 'No autorizado');
         }
         
+        $selectedPropertyId = $property->id;
         $blockedDates = [];
         
-        if ($selectedPropertyId) {
-            // 1. Fechas bloqueadas manualmente
-            $manuallyBlocked = \App\Models\RateCalendar::where('property_id', $selectedPropertyId)
-                ->where('is_available', false)
-                ->pluck('date')
-                ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
-                ->toArray();
+        // 1. Fechas bloqueadas manualmente
+        $manuallyBlocked = \App\Models\RateCalendar::where('property_id', $selectedPropertyId)
+            ->where('is_available', false)
+            ->pluck('date')
+            ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
 
-            // 2. Fechas ocupadas por reservas activas
-            $occupiedDates = \App\Models\Reservation::where('property_id', $selectedPropertyId)
-                ->whereIn('status', ['pending', 'paid'])
-                ->get()
-                ->flatMap(function ($reservation) {
-                    $dates = [];
-                    for ($d = $reservation->check_in->copy(); $d->lt($reservation->check_out); $d->addDay()) {
-                        $dates[] = $d->format('Y-m-d');
-                    }
-                    return $dates;
-                })
-                ->toArray();
+        // 2. Fechas ocupadas por reservas activas
+        $occupiedDates = \App\Models\Reservation::where('property_id', $selectedPropertyId)
+            ->whereIn('status', ['pending', 'paid'])
+            ->get()
+            ->flatMap(function ($reservation) {
+                $dates = [];
+                for ($d = $reservation->check_in->copy(); $d->lt($reservation->check_out); $d->addDay()) {
+                    $dates[] = $d->format('Y-m-d');
+                }
+                return $dates;
+            })
+            ->toArray();
 
-            // 3. Combinar y eliminar duplicados
-            $blockedDates = array_values(array_unique(array_merge($manuallyBlocked, $occupiedDates)));
-            sort($blockedDates);
-        }
-        
-        // Obtener la propiedad actual para mostrar en los formularios
-        $property = $selectedPropertyId ? \App\Models\Property::find($selectedPropertyId) : null;
+        // 3. Combinar y eliminar duplicados
+        $blockedDates = array_values(array_unique(array_merge($manuallyBlocked, $occupiedDates)));
+        sort($blockedDates);
         
         return view('admin.calendar.index', compact('selectedPropertyId', 'blockedDates', 'property'));
     }
@@ -913,22 +896,30 @@ class AdminController extends Controller
     public function setPrice(Request $request)
     {
         $request->validate([
-            'property_id' => 'required|exists:properties,id',
             'price' => 'required|numeric|min:0',
             'start' => 'required|date',
             'end' => 'required|date|after_or_equal:start',
         ]);
 
-        $propertyId = $request->input('property_id');
+        // Obtener property desde ruta o request
+        $property = $request->route('property');
+        if (!$property) {
+            // Fallback para rutas antiguas que usan property_id
+            $propertyId = $request->input('property_id');
+            $property = Property::where('id', $propertyId)
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
+        } else {
+            // Verificar que la propiedad pertenece al admin
+            if ($property->user_id !== auth()->id()) {
+                abort(403, 'No autorizado');
+            }
+        }
+
+        $propertyId = $property->id;
         $price = $request->input('price');
         $start = \Carbon\Carbon::parse($request->input('start'));
         $end = \Carbon\Carbon::parse($request->input('end'));
-
-        // Verificar que la propiedad pertenece al admin
-        $adminId = \Illuminate\Support\Facades\Auth::id();
-        $property = Property::where('id', $propertyId)
-            ->where('user_id', $adminId)
-            ->firstOrFail();
 
         $datesUpdated = 0;
         $current = $start->copy();

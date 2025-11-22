@@ -94,32 +94,13 @@ Route::middleware(['auth', 'role:admin'])
         // Dashboard principal con estadísticas
         Route::get('/', [AdminController::class, 'index'])->name('dashboard');
 
-        // Gestión de PROPIEDADES (nuevo sistema)
+        // Gestión de PROPIEDADES (listado general y crear)
         Route::get('/properties', [AdminController::class, 'propertiesIndex'])->name('properties.index');
         Route::get('/properties/create', [AdminController::class, 'propertiesCreate'])->name('properties.create');
         Route::post('/properties', [AdminController::class, 'propertiesStore'])->name('properties.store');
-        Route::get('/properties/{property}', [AdminController::class, 'propertyDashboard'])->name('properties.dashboard');
         Route::patch('/properties/{property}/restore', [AdminController::class, 'propertiesRestore'])->name('properties.restore');
 
-        // Gestión de propiedad individual (legacy - ahora necesita property_id)
-        Route::get('/property/{property?}', [AdminController::class, 'propertyEdit'])->name('property.index');
-        Route::put('/property/{property}', [AdminController::class, 'propertyUpdate'])->name('property.update');
-        Route::delete('/property/{property}', [AdminController::class, 'destroyProperty'])->name('property.destroy');
-
-        // Gestión de fotos
-        Route::get('/photos/{property?}', [AdminController::class, 'photosIndex'])->name('photos.index');
-        Route::post('/photos', [AdminController::class, 'photosStore'])->name('photos.store');
-        Route::delete('/photos/{photo}', [AdminController::class, 'photosDestroy'])->name('photos.destroy');
-        Route::post('/photos/reorder', [AdminController::class, 'photosReorder'])->name('photos.reorder');
-        Route::post('/photos/{photo}/set-cover', [AdminController::class, 'photosSetCover'])->name('photos.set-cover');
-
-        // Calendario
-        Route::get('/calendar', [AdminController::class, 'calendarIndex'])->name('calendar.index');
-        Route::post('/calendar/set-price', [AdminController::class, 'setPrice'])->name('calendar.set-price');
-        Route::post('/calendar/block',   [AdminController::class, 'blockDates'])->name('calendar.block');
-        Route::post('/calendar/unblock', [AdminController::class, 'unblockDates'])->name('calendar.unblock');
-
-        // Reservas
+        // Reservas (gestión general)
         Route::post('/reservations/{id}/cancel', [AdminController::class, 'cancel'])->name('reservations.cancel');
         Route::get('/reservations/{reservation}', [AdminController::class, 'show'])->name('reservations.show');
         Route::get('/reservations/{id}/edit', [AdminController::class, 'edit'])->name('reservations.edit');
@@ -131,6 +112,37 @@ Route::middleware(['auth', 'role:admin'])
             ->name('invoices.index');
         Route::get('/invoices/{number}', [InvoiceController::class, 'show'])
             ->name('invoices.show');
+    });
+
+/*
+|--------------------------------------------------------------------------
+| Área ADMIN - Gestión por propiedad (con slug en URL)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:admin'])
+    ->prefix('propiedades/{property:slug}/admin')
+    ->name('admin.property.')
+    ->group(function () {
+        // Dashboard de la propiedad
+        Route::get('/', [AdminController::class, 'propertyDashboard'])->name('dashboard');
+        
+        // Gestión de propiedad individual
+        Route::get('/property', [AdminController::class, 'propertyEdit'])->name('edit');
+        Route::put('/property', [AdminController::class, 'propertyUpdate'])->name('update');
+        Route::delete('/property', [AdminController::class, 'destroyProperty'])->name('destroy');
+
+        // Gestión de fotos
+        Route::get('/photos', [AdminController::class, 'photosIndex'])->name('photos.index');
+        Route::post('/photos', [AdminController::class, 'photosStore'])->name('photos.store');
+        Route::delete('/photos/{photo}', [AdminController::class, 'photosDestroy'])->name('photos.destroy');
+        Route::post('/photos/reorder', [AdminController::class, 'photosReorder'])->name('photos.reorder');
+        Route::post('/photos/{photo}/set-cover', [AdminController::class, 'photosSetCover'])->name('photos.set-cover');
+
+        // Calendario y precios
+        Route::get('/calendar', [AdminController::class, 'calendarIndex'])->name('calendar.index');
+        Route::post('/calendar/set-price', [AdminController::class, 'setPrice'])->name('calendar.set-price');
+        Route::post('/calendar/block', [AdminController::class, 'blockDates'])->name('calendar.block');
+        Route::post('/calendar/unblock', [AdminController::class, 'unblockDates'])->name('calendar.unblock');
     });
 
 

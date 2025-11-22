@@ -20,9 +20,8 @@
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4" style="font-family: var(--font-sans); color: var(--color-text-primary);">Subir nuevas fotos</h3>
                     
-                    <form method="POST" action="{{ route('admin.photos.store') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('admin.property.photos.store', $property->slug) }}" enctype="multipart/form-data">
                         @csrf
-                        <input type="hidden" name="property_id" value="{{ $property->id }}">
                         
                         <div class="mb-4">
                             <label for="photos" class="block text-sm font-medium mb-2" style="color: var(--color-text-secondary);">
@@ -87,7 +86,7 @@
                                     <div class="photo-actions">
                                         {{-- Botón marcar como portada --}}
                                         @if(!$photo->is_cover)
-                                            <form method="POST" action="{{ route('admin.photos.set-cover', $photo->id) }}" class="inline-block">
+                                            <form method="POST" action="{{ route('admin.property.photos.set-cover', [$property->slug, $photo->id]) }}" class="inline-block">
                                                 @csrf
                                                 <button 
                                                     type="submit"
@@ -100,7 +99,7 @@
                                         @endif
 
                                         {{-- Botón eliminar --}}
-                                        <form method="POST" action="{{ route('admin.photos.destroy', $photo->id) }}" class="inline-block" onsubmit="return confirm('¿Eliminar esta foto?')">
+                                        <form method="POST" action="{{ route('admin.property.photos.destroy', [$property->slug, $photo->id]) }}" class="inline-block" onsubmit="return confirm('¿Eliminar esta foto?')">
                                             @csrf
                                             @method('DELETE')
                                             <button 
@@ -391,7 +390,7 @@
                     console.log('New order:', newOrder);
                     
                     // Enviar al servidor
-                    fetch('{{ route("admin.photos.reorder") }}', {
+                    fetch('{{ route("admin.property.photos.reorder", $property->slug) }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

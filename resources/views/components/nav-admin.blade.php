@@ -2,15 +2,28 @@
     <nav class="nav-container">
         <x-logo />
 
+        @php
+            // Obtener el parámetro de propiedad desde la ruta actual
+            $currentProperty = request()->route('property');
+            // Si no hay propiedad en la ruta, obtener la primera propiedad del usuario
+            if (!$currentProperty) {
+                $currentProperty = \App\Models\Property::where('user_id', auth()->id())->first();
+            }
+        @endphp
+
         <ul class="nav-menu">
             <li><a href="{{ route('admin.dashboard') }}"
                     class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
-            <li><a href="{{ route('admin.property.index') }}"
-                    class="nav-link {{ request()->routeIs('admin.property.*') ? 'active' : '' }}">Propiedad</a></li>
-            <li><a href="{{ route('admin.photos.index') }}"
-                    class="nav-link {{ request()->routeIs('admin.photos.*') ? 'active' : '' }}">Fotos</a></li>
-            <li><a href="{{ route('admin.calendar.index') }}"
-                    class="nav-link {{ request()->routeIs('admin.calendar.*') ? 'active' : '' }}">Calendario</a></li>
+            
+            @if($currentProperty)
+                <li><a href="{{ route('admin.property.edit', $currentProperty->slug) }}"
+                        class="nav-link {{ request()->routeIs('admin.property.edit') ? 'active' : '' }}">Propiedad</a></li>
+                <li><a href="{{ route('admin.property.photos.index', $currentProperty->slug) }}"
+                        class="nav-link {{ request()->routeIs('admin.property.photos.*') ? 'active' : '' }}">Fotos</a></li>
+                <li><a href="{{ route('admin.property.calendar.index', $currentProperty->slug) }}"
+                        class="nav-link {{ request()->routeIs('admin.property.calendar.*') ? 'active' : '' }}">Calendario</a></li>
+            @endif
+            
             <li><a href="{{ route('admin.properties.index') }}"
                     class="nav-link {{ request()->routeIs('admin.properties.*') || request()->routeIs('admin.reservations.*') || request()->routeIs('admin.invoices.*') ? 'active' : '' }}">Panel</a></li>
             

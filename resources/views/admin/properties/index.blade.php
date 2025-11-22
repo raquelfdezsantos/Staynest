@@ -81,7 +81,7 @@
                     {{-- Botones de acción --}}
                     @if(!$property->trashed())
                         <div style="padding: 1rem 1.25rem 1.25rem;">
-                            <a href="{{ route('admin.properties.dashboard', $property->id) }}" 
+                            <a href="{{ route('admin.property.dashboard', $property->slug) }}" 
                                class="btn-action btn-action-primary" style="width: 100%; text-align: center;">
                                 <span class="sn-sentence">Gestionar</span>
                             </a>

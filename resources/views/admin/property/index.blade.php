@@ -125,7 +125,7 @@
         <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem; margin-bottom: 2rem;">
             <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1.5rem;">Editar Propiedad</h3>
 
-            <form method="POST" action="{{ route('admin.property.update', $property->id) }}" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <form method="POST" action="{{ route('admin.property.update', $property->slug) }}" style="display: flex; flex-direction: column; gap: 1.5rem;">
                 @csrf
                 @method('PUT')
 
@@ -376,7 +376,7 @@
 
             <form 
                 method="POST" 
-                action="{{ route('admin.property.destroy', $property->id) }}"
+                action="{{ route('admin.property.destroy', $property->slug) }}"
                 onsubmit="return confirmDelete(event, {{ $futureReservationsCount }})"
             >
                 @csrf

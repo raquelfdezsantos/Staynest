@@ -28,7 +28,7 @@
           </h3>
         </div>
         <div class="calendar-card-body">
-          <form method="POST" action="{{ route('admin.calendar.set-price') }}" class="space-y-4">
+          <form method="POST" action="{{ route('admin.property.calendar.set-price', $property->slug) }}" class="space-y-4">
             @csrf
             <x-validation-errors class="mb-4" />
             
@@ -71,7 +71,7 @@
           </h3>
         </div>
         <div class="calendar-card-body">
-          <form method="POST" action="{{ route('admin.calendar.block') }}" class="space-y-4">
+          <form method="POST" action="{{ route('admin.property.calendar.block', $property->slug) }}" class="space-y-4">
             @csrf
             <x-validation-errors class="mb-4" />
             
@@ -115,7 +115,7 @@
           </h3>
         </div>
         <div class="calendar-card-body">
-          <form method="POST" action="{{ route('admin.calendar.unblock') }}" class="space-y-4">
+          <form method="POST" action="{{ route('admin.property.calendar.unblock', $property->slug) }}" class="space-y-4">
             @csrf
             
             @if($property)
@@ -497,7 +497,10 @@
         select.addEventListener('change', function() {
           const propertyId = this.value;
           if (propertyId) {
-            window.location.href = '{{ route("admin.calendar.index") }}?property_id=' + propertyId;
+            const property = properties.find(p => p.id == propertyId);
+            if (property) {
+                window.location.href = '/propiedades/' + property.slug + '/admin/calendar';
+            }
           }
         });
       });

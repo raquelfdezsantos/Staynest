@@ -10,9 +10,9 @@
             {{-- Navegación --}}
             <div class="mb-4 flex gap-2">
                 <a href="{{ route('admin.properties.index') }}" class="px-3 py-1 rounded bg-gray-100 border text-sm hover:bg-gray-200">← Volver al listado</a>
-                <a href="{{ route('admin.property.index', $property->id) }}" class="px-3 py-1 rounded bg-gray-100 border text-sm hover:bg-gray-200">Editar Propiedad</a>
-                <a href="{{ route('admin.photos.index', $property->id) }}" class="px-3 py-1 rounded bg-gray-100 border text-sm hover:bg-gray-200">Gestión de Fotos</a>
-                <a href="{{ route('admin.calendar.index') }}?property_id={{ $property->id }}" class="px-3 py-1 rounded bg-gray-100 border text-sm hover:bg-gray-200">Calendario</a>
+                <a href="{{ route('admin.property.edit', $property->slug) }}" class="px-3 py-1 rounded bg-gray-100 border text-sm hover:bg-gray-200">Editar Propiedad</a>
+                <a href="{{ route('admin.property.photos.index', $property->slug) }}" class="px-3 py-1 rounded bg-gray-100 border text-sm hover:bg-gray-200">Gestión de Fotos</a>
+                <a href="{{ route('admin.property.calendar.index', $property->slug) }}" class="px-3 py-1 rounded bg-gray-100 border text-sm hover:bg-gray-200">Calendario</a>
             </div>
 
             {{-- Info de la propiedad --}}
