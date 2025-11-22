@@ -61,40 +61,45 @@
             <p class="mb-3 text-gray-700">{{ $property->description }}</p>
 
             {{-- SERVICIOS --}}
-            @if($property->services)
-                @php
-                    $services = $property->services;
-                    $serviceLabels = [
-                        'wifi' => 'WiFi',
-                        'parking' => 'Parking',
-                        'pool' => 'Piscina',
-                        'washer' => 'Lavadora',
-                        'dishwasher' => 'Lavavajillas',
-                        'heating' => 'Calefacción',
-                        'air_conditioning' => 'Aire acondicionado',
-                        'hairdryer' => 'Secador',
-                        'first_aid_kit' => 'Botiquín',
-                        'pets_allowed' => 'Mascotas permitidas',
-                        'smoking_allowed' => 'Permitido fumar',
-                    ];
-                @endphp
-                @if(count($services) > 0)
-                    <div class="mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Servicios</h3>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            @foreach($services as $service)
-                                @if(isset($serviceLabels[$service]))
-                                    <div class="flex items-center text-sm text-gray-600">
-                                        <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                        {{ $serviceLabels[$service] }}
-                                    </div>
-                                @endif
-                            @endforeach
-                        </div>
+            @php
+                $services = $property->services ?? [];
+                $serviceLabels = [
+                    'wifi' => 'WiFi',
+                    'parking' => 'Parking',
+                    'pool' => 'Piscina',
+                    'washer' => 'Lavadora',
+                    'dishwasher' => 'Lavavajillas',
+                    'heating' => 'Calefacción',
+                    'air_conditioning' => 'Aire acondicionado',
+                    'hairdryer' => 'Secador',
+                    'first_aid_kit' => 'Botiquín',
+                    'pets_allowed' => 'Mascotas permitidas',
+                    'smoking_allowed' => 'Permitido fumar',
+                    'tv' => 'TV / Smart TV',
+                    'kitchen' => 'Cocina equipada',
+                    'towels' => 'Toallas incluidas',
+                    'bed_linen' => 'Ropa de cama incluida',
+                    'terrace' => 'Terraza / Balcón',
+                    'elevator' => 'Ascensor',
+                    'crib' => 'Cuna disponible',
+                ];
+            @endphp
+            @if(is_array($services) && count($services) > 0)
+                <div class="mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Servicios</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        @foreach($services as $service)
+                            @if(isset($serviceLabels[$service]))
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    {{ $serviceLabels[$service] }}
+                                </div>
+                            @endif
+                        @endforeach
                     </div>
-                @endif
+                </div>
             @endif
 
             <div class="text-sm text-gray-500 mb-4">

@@ -478,6 +478,25 @@ html[data-theme="dark"] .sn-auth input[type="checkbox"]:focus {
     border-color: var(--color-accent) !important;
 }
 
+/* Checkboxes globales (fuera de .sn-auth) */
+input[type="checkbox"]:not(.sn-auth input[type="checkbox"]) {
+    accent-color: var(--color-accent);
+    outline-color: var(--color-accent) !important;
+}
+
+input[type="checkbox"]:not(.sn-auth input[type="checkbox"]):focus {
+    outline: none !important;
+    outline-color: var(--color-accent) !important;
+    box-shadow: none !important;
+    border-color: var(--color-accent) !important;
+}
+
+input[type="checkbox"]:not(.sn-auth input[type="checkbox"]):hover {
+    outline: none !important;
+    outline-color: var(--color-accent) !important;
+    border-color: var(--color-accent) !important;
+}
+
 /* Enlaces discretos reutilizables */
 .sn-link {
     color: var(--color-text-secondary);
