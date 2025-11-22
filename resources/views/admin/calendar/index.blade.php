@@ -122,7 +122,7 @@
             </div>
             @endif
             
-            <div style="margin-top: 1.5rem;">
+            <div style="margin-top: 1rem;">
               <div class="calendar-info-box">
                 Desbloquea fechas previamente bloqueadas.
               </div>
@@ -438,9 +438,9 @@
     document.addEventListener('DOMContentLoaded', function() {
       const blockedDates = @json($blockedDates ?? []);
       
-      const dateInputs = document.querySelectorAll('input[type="date"]');
-      
-      dateInputs.forEach(input => {
+      // Inputs para precios y bloquear (SÍ deshabilitar fechas bloqueadas)
+      const blockInputs = document.querySelectorAll('#start_price, #end_price, #start_block, #end_block');
+      blockInputs.forEach(input => {
         flatpickr(input, {
           minDate: 'today',
           dateFormat: 'Y-m-d',
@@ -453,12 +453,36 @@
             const day = String(date.getDate()).padStart(2, '0');
             const dateStr = `${year}-${month}-${day}`;
             
-            // Marcar fechas bloqueadas/ocupadas (solo fondo rojo)
+            // Marcar y deshabilitar fechas bloqueadas
             if (blockedDates.includes(dateStr)) {
               dayElem.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
               dayElem.style.cursor = 'not-allowed';
               dayElem.title = 'Noche bloqueada u ocupada';
-              dayElem.classList.add('unavailable'); // para desactivar hover visual
+              dayElem.classList.add('unavailable');
+            }
+          }
+        });
+      });
+
+      // Inputs para desbloquear (PERMITIR seleccionar fechas bloqueadas)
+      const unblockInputs = document.querySelectorAll('#start_unblock, #end_unblock');
+      unblockInputs.forEach(input => {
+        flatpickr(input, {
+          minDate: 'today',
+          dateFormat: 'Y-m-d',
+          locale: 'es',
+          disableMobile: true,
+          onDayCreate: function(dObj, dStr, fp, dayElem) {
+            const date = dayElem.dateObj;
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const dateStr = `${year}-${month}-${day}`;
+            
+            // Solo marcar visualmente (sin deshabilitar)
+            if (blockedDates.includes(dateStr)) {
+              dayElem.style.backgroundColor = 'rgba(239, 68, 68, 0.15)';
+              dayElem.title = 'Noche bloqueada - haz clic para desbloquear';
             }
           }
         });
