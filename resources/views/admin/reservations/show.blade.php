@@ -1,5 +1,33 @@
 <x-app-layout>
-    <div class="sn-reservar max-w-4xl mx-auto px-4 py-10">
+    <div class="sn-reservar max-w-4xl mx-auto px-4 py-10 admin-slim-badges">
+        <style>
+            /* Admin: badges discretos, monocromos y accesibles */
+            .admin-slim-badges .badge {
+                text-transform: none;
+                letter-spacing: 0;
+                font-size: 0.6875rem; /* 11px */
+                padding: 0.25rem 0.5rem;
+                border-radius: 2px;
+                font-weight: 600;
+                color: var(--color-text-primary);
+                background: transparent !important;
+                border: 1px solid var(--color-accent);
+            }
+            .admin-slim-badges .badge-success,
+            .admin-slim-badges .badge-warning,
+            .admin-slim-badges .badge-error,
+            .admin-slim-badges .badge-info {
+                color: var(--color-text-primary);
+            }
+            /* Botón consistente con dashboard */
+            .btn-action {
+                padding: 0.5rem 1rem;
+                min-height: 36px;
+                line-height: 1;
+                font-size: var(--text-sm);
+                font-weight: 600;
+            }
+        </style>
         {{-- Header centrado --}}
         <header class="mb-16 text-center">
             <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Reserva #{{ $reservation->code ?? $reservation->id }}</h1>
