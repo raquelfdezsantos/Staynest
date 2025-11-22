@@ -34,10 +34,14 @@
         <div class="text-center mt-8">
             <p style="color: var(--color-text-secondary);">
                 ¿Ya tienes cuenta?
-                <a href="{{ route('login') }}" style="color: var(--color-accent);" class="hover:underline">Inicia sesión</a>
+                <a href="{{ route('login') }}" style="color: var(--color-accent); text-decoration: none;" onmouseover="this.style.color='var(--color-accent-hover)'" onmouseout="this.style.color='var(--color-accent)'">Inicia sesión</a>
             </p>
         </div>
     </div>
+
+    <footer style="margin-top: var(--spacing-lg); text-align:center; font-size: var(--text-xs); color: var(--color-text-muted); padding-top: var(--spacing-lg);">
+        &copy; {{ date('Y') }} {{ config('app.name') }} · Acceso seguro · <a href="{{ route('legal.cookies') }}" class="sn-link" style="font-size: var(--text-xs);">Cookies</a>
+    </footer>
 
     <style>
         .choice-card {

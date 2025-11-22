@@ -13,7 +13,7 @@
     
     <main class="container mt-xl">
         @if(request()->routeIs('register'))
-        <div class="sn-reservar" style="max-width: 80rem; margin: 0 auto; padding: 2.5rem 1rem;">
+        <div class="sn-reservar" style="max-width: 64rem; margin: 0 auto; padding: 2.5rem 1rem;">
             {{ $slot }}
         </div>
         @else
