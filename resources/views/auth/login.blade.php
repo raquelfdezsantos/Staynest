@@ -46,7 +46,7 @@
                 </a>
             @endif
             <div class="flex items-center gap-3">
-                <a href="{{ route('register') }}{{ request('property') ? '?property=' . request('property') : '' }}" class="btn-action btn-action-secondary sn-sentence">
+                <a href="{{ route('register') }}{{ request('property') ? '?property=' . request('property') : '' }}" class="btn-action btn-action-secondary sn-sentence" style="height:36px; display:inline-flex; align-items:center; padding:0 1.25rem; line-height:34px;">
                     Registrarse
                 </a>
                 <x-primary-button class="sn-sentence py-2 px-6">Iniciar sesión</x-primary-button>

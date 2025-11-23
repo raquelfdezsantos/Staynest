@@ -155,7 +155,7 @@
         </div>
 
         <div class="flex items-center justify-between pt-3 register-actions">
-            <a href="{{ route('register') }}" class="btn-action btn-action-secondary">Volver</a>
+            <a href="{{ route('register') }}" class="btn-action btn-action-secondary" style="height:36px; display:inline-flex; align-items:center; padding:0 1.25rem; line-height:34px;">Volver</a>
 
             <x-primary-button>
                 Crear cuenta

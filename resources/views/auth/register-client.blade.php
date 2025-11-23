@@ -59,7 +59,7 @@
         </div>
 
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 0.5rem;">
-            <a href="{{ route('register') }}" class="btn-action btn-action-secondary sn-sentence">
+            <a href="{{ route('register') }}" class="btn-action btn-action-secondary sn-sentence" style="height:36px; display:inline-flex; align-items:center; padding:0 1.25rem; line-height:34px;">
                 Volver
             </a>
             <x-primary-button class="sn-sentence py-2 px-5">Crear cuenta</x-primary-button>
