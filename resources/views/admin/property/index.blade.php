@@ -32,8 +32,8 @@
                 accent-color: var(--color-accent);
             }
             .sn-checkbox:checked {
-                background-color: var(--color-accent);
-                border-color: var(--color-accent);
+                background-color: var(--color-accent) !important;
+                border-color: var(--color-accent) !important;
             }
             .sn-checkbox:hover {
                 border-color: var(--color-accent);
@@ -167,92 +167,92 @@
                         @endphp
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="wifi" {{ in_array('wifi', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="wifi" {{ in_array('wifi', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">WiFi</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="parking" {{ in_array('parking', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="parking" {{ in_array('parking', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Parking</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="pool" {{ in_array('pool', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="pool" {{ in_array('pool', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Piscina</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="washer" {{ in_array('washer', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="washer" {{ in_array('washer', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Lavadora</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="dishwasher" {{ in_array('dishwasher', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="dishwasher" {{ in_array('dishwasher', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Lavavajillas</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="heating" {{ in_array('heating', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="heating" {{ in_array('heating', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Calefacción</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="air_conditioning" {{ in_array('air_conditioning', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="air_conditioning" {{ in_array('air_conditioning', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Aire acondicionado</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="hairdryer" {{ in_array('hairdryer', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="hairdryer" {{ in_array('hairdryer', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Secador</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="first_aid_kit" {{ in_array('first_aid_kit', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="first_aid_kit" {{ in_array('first_aid_kit', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Botiquín</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="pets_allowed" {{ in_array('pets_allowed', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="pets_allowed" {{ in_array('pets_allowed', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Mascotas permitidas</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="smoking_allowed" {{ in_array('smoking_allowed', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="smoking_allowed" {{ in_array('smoking_allowed', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Permitido fumar</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="tv" {{ in_array('tv', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="tv" {{ in_array('tv', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">TV / Smart TV</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="kitchen" {{ in_array('kitchen', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="kitchen" {{ in_array('kitchen', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Cocina equipada</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="towels" {{ in_array('towels', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="towels" {{ in_array('towels', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Toallas incluidas</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="bed_linen" {{ in_array('bed_linen', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="bed_linen" {{ in_array('bed_linen', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Ropa de cama incluida</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="terrace" {{ in_array('terrace', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="terrace" {{ in_array('terrace', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Terraza / Balcón</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="elevator" {{ in_array('elevator', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="elevator" {{ in_array('elevator', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Ascensor</span>
                         </label>
                         
                         <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
-                            <input type="checkbox" name="services[]" value="crib" {{ in_array('crib', $services) ? 'checked' : '' }} class="rounded border-neutral-700 bg-neutral-800 text-[color:var(--color-accent)] focus:outline-none focus:ring-0 focus:ring-offset-0 focus:border-[color:var(--color-accent)]" style="accent-color: var(--color-accent);">
+                            <input type="checkbox" name="services[]" value="crib" {{ in_array('crib', $services) ? 'checked' : '' }} class="sn-checkbox">
                             <span style="font-size: var(--text-sm); color: var(--color-text-primary);">Cuna disponible</span>
                         </label>
                     </div>
