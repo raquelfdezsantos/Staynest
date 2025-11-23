@@ -390,15 +390,11 @@
       font-weight: 600;
       font-family: var(--font-sans);
       cursor: pointer;
-      transition: opacity 0.2s ease;
+      transition: background-color var(--transition-fast);
       height: 36px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .calendar-btn:hover {
-      opacity: 0.9;
     }
 
     .calendar-btn-primary {
@@ -406,14 +402,26 @@
       color: #fff;
     }
 
+    .calendar-btn-primary:hover {
+      background-color: var(--color-accent-hover);
+    }
+
     .calendar-btn-danger {
-      background-color: var(--color-error);
+      background-color: var(--color-btn-error);
       color: #fff;
     }
 
+    .calendar-btn-danger:hover {
+      background-color: #B84E4B;
+    }
+
     .calendar-btn-success {
-      background-color: var(--color-success);
+      background-color: var(--color-btn-success);
       color: #fff;
+    }
+
+    .calendar-btn-success:hover {
+      background-color: #5F7A67;
     }
 
     /* Light mode overrides */

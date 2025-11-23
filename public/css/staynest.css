@@ -98,6 +98,14 @@
     --color-info: #6789c0;
     /* Azul info */
 
+    /* Botones específicos */
+    --color-btn-success: #719179;
+    /* Verde para botones de éxito */
+    --color-btn-warning: #E8CB74;
+    /* Amarillo para botones de aviso */
+    --color-btn-error: #CC5956;
+    /* Rojo para botones de error */
+
     /* Tipografía */
     --font-serif: 'Source Serif 4', serif;
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -184,6 +192,14 @@
     /* Rojo oscuro para light */
     --color-warning: #F9A825;
     /* Amarillo/naranja oscuro para light */
+
+    /* Botones específicos (mismos en light y dark) */
+    --color-btn-success: #719179;
+    /* Verde para botones de éxito */
+    --color-btn-warning: #E8CB74;
+    /* Amarillo para botones de aviso */
+    --color-btn-error: #CC5956;
+    /* Rojo para botones de error */
 
     /* Sombras más visibles en modo claro */
     --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
