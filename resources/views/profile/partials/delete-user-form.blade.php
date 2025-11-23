@@ -1,7 +1,6 @@
-@if(auth()->user()->role !== 'admin')
-    <p style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-text-secondary);">
-        Una vez eliminada tu cuenta, todos tus datos se borrarán permanentemente. Antes de eliminarla, descarga cualquier información que desees conservar.
-    </p>
+<p style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+    Una vez eliminada tu cuenta, todos tus datos se borrarán permanentemente. Antes de eliminarla, descarga cualquier información que desees conservar.
+</p>
 
     <button type="button"
             x-data=""
@@ -58,4 +57,3 @@
             </form>
         </div>
     </x-modal>
-@endif

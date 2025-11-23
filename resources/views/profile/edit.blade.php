@@ -1,4 +1,13 @@
 <x-app-layout>
+    <style>
+        html[data-theme="dark"] .profile-card {
+            background: rgba(51, 51, 51, 0.2) !important;
+        }
+        html[data-theme="light"] .profile-card {
+            background: #e3e3e3 !important;
+        }
+    </style>
+    
     <div class="max-w-5xl mx-auto px-4 py-10">
         {{-- Header centrado --}}
         <header class="mb-16 text-center">
