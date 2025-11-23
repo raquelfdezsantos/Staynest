@@ -27,7 +27,11 @@
             /* Botón consistente con dashboard */
             .btn-action {
                 padding: 0.5rem 1rem;
+                height: 36px;
                 min-height: 36px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
                 line-height: 1;
                 font-size: var(--text-sm);
                 font-weight: 600;

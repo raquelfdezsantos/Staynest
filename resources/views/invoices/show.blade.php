@@ -127,6 +127,12 @@
             }
             .invoice-actions .btn-action {
                 text-transform: none !important;
+                height: 36px;
+                min-height: 36px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0 1rem;
             }
             .invoice-actions .btn-action::first-letter {
                 text-transform: uppercase !important;

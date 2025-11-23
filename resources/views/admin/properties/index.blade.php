@@ -187,5 +187,15 @@
         .property-card-hover:hover {
             border-color: var(--color-accent) !important;
         }
+
+        /* Altura consistente para botones genéricos en esta vista */
+        .btn-action {
+            height: 36px;
+            min-height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
     </style>
 </x-app-layout>

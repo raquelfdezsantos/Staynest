@@ -5,7 +5,8 @@
     <button type="button"
             x-data=""
             x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
-            class="btn-action btn-action-danger sn-sentence py-2 px-5">
+            class="btn-action btn-action-danger sn-sentence py-2 px-5"
+            style="height:36px; display:inline-flex; align-items:center;">
         Eliminar cuenta
     </button>
 
@@ -38,17 +39,17 @@
                 </div>
 
                 <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-                    <button type="button"
+                        <button type="button"
                             @click="$dispatch('close-modal', 'confirm-user-deletion')"
                             class="btn-action btn-action-secondary sn-sentence py-2 px-5"
-                            style="background-color: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-accent); border-radius: var(--radius-base); transition: all 0.3s ease; font-size: 14px;"
+                            style="height:36px; display:inline-flex; align-items:center; background-color: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-accent); border-radius: var(--radius-base); transition: all 0.3s ease; font-size: 14px;"
                             onmouseover="this.style.color = 'var(--color-accent)'; this.style.backgroundColor = 'rgba(77, 141, 148, 0.10)'; this.style.border = 'none';"
                             onmouseout="this.style.backgroundColor = 'var(--color-bg-secondary)'; this.style.color = 'var(--color-text-primary)'; this.style.border = '1px solid var(--color-accent)';">
                         Cancelar
                     </button>
 
-                    <button type="submit" class="btn-action btn-action-danger sn-sentence py-2 px-5"
-                            style="background-color: var(--color-error); color: #fff; border: 1px solid var(--color-error); border-radius: var(--radius-base); transition: all 0.3s ease; font-size: 14px;"
+                        <button type="submit" class="btn-action btn-action-danger sn-sentence py-2 px-5"
+                            style="height:36px; display:inline-flex; align-items:center; background-color: var(--color-error); color: #fff; border: 1px solid var(--color-error); border-radius: var(--radius-base); transition: all 0.3s ease; font-size: 14px;"
                             onmouseover="this.style.color = 'var(--color-error)'; this.style.backgroundColor = 'rgba(204, 89, 86, 0.10)'; this.style.borderColor = 'transparent';"
                             onmouseout="this.style.backgroundColor = 'var(--color-error)'; this.style.color = '#fff'; this.style.borderColor = 'var(--color-error)';">
                         Eliminar cuenta
