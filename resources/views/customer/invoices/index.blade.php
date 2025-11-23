@@ -23,22 +23,22 @@
             {{-- Tabla de facturas con glassmorphism --}}
             <div style="overflow: hidden; margin-top: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px);">
                 <div style="overflow-x: auto;">
-                    <table style="width: 100%; border-collapse: collapse; font-size: var(--text-sm); background: transparent;">
-                        <thead style="border-bottom: 1px solid var(--color-border-light); background: transparent;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: var(--text-base); background: transparent;">
+                        <thead style="border-bottom: 2px solid var(--color-border-light); background: transparent;">
                             <tr>
-                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Nº Factura</th>
-                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Fecha</th>
-                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Alojamiento</th>
-                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Estancia</th>
-                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Importe</th>
-                                <th style="padding: 1rem; text-align: center; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Acciones</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Nº Factura</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Fecha</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Alojamiento</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Estancia</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Importe</th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);"></th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($invoices as $inv)
-                                <tr style="transition: all 0.3s ease;" onmouseover="this.style.backgroundColor = 'rgba(var(--color-bg-card-rgb), 0.9)';" onmouseout="this.style.backgroundColor = 'transparent';">
-                                    <td style="padding: 1rem; color: var(--color-text-primary); font-family: monospace; font-weight: 600;">
-                                        {{ $inv->number }}
+                                <tr style="border-bottom: none;">
+                                    <td style="padding: 1rem;">
+                                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin: 0; font-family: monospace; font-weight: 600;">{{ $inv->number }}</p>
                                     </td>
                                     <td style="padding: 1rem; color: var(--color-text-secondary);">
                                         {{ optional($inv->issued_at)->format('d/m/Y') }}
@@ -46,17 +46,21 @@
                                     <td style="padding: 1rem; color: var(--color-text-primary); font-weight: 500;">
                                         {{ $inv->reservation->property->name ?? '—' }}
                                     </td>
-                                    <td style="padding: 1rem; color: #333333; font-size: var(--text-xs);" class="invoice-stay-dates">
-                                        {{ $inv->reservation->check_in->format('d/m/Y') }}<br>
-                                        → {{ $inv->reservation->check_out->format('d/m/Y') }}
+                                    <td style="padding: 1rem; color: var(--color-text-secondary); font-size: var(--text-sm);">
+                                        {{ $inv->reservation->check_in->format('d/m/Y') }} → {{ $inv->reservation->check_out->format('d/m/Y') }}
                                     </td>
-                                    <td style="padding: 1rem; text-align: right; color: var(--color-text-primary); font-weight: 600; font-size: var(--text-base);">
+                                    <td style="padding: 1rem; color: var(--color-text-primary); font-weight: 600; font-size: var(--text-lg);">
                                         {{ number_format($inv->amount, 2, ',', '.') }} €
                                     </td>
-                                    <td style="padding: 0rem 1rem;">
-                                        <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
-                                            <a href="{{ route('invoices.show', $inv->number) }}" class="btn-action btn-action-secondary"><span class="sn-sentence">Ver</span></a>
-                                            <a href="{{ route('invoices.show', $inv->number) }}?download=1" class="btn-action btn-action-primary"><span class="sn-uppercase">PDF</span></a>
+                                    <td style="padding: 1rem;"></td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid var(--color-border-light);">
+                                    <td colspan="6" style="padding: 0;">
+                                        <div style="border-top: 1px solid var(--color-border-light); margin: 0 2rem; padding: 1rem 0 2rem 0;">
+                                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; justify-content: center;">
+                                                <a href="{{ route('invoices.show', $inv->number) }}" class="btn-action btn-action-secondary"><span class="sn-sentence">Ver</span></a>
+                                                <a href="{{ route('invoices.show', $inv->number) }}?download=1" class="btn-action btn-action-primary"><span class="sn-uppercase">PDF</span></a>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -76,11 +80,12 @@
     </div>
 
     <style>
-        html[data-theme="light"] .invoice-stay-dates {
-            color: #333333 !important;
-        }
-        html[data-theme="dark"] .invoice-stay-dates {
-            color: #999999 !important;
+        .btn-action {
+            height: 36px;
+            min-height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </x-app-layout>
