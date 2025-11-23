@@ -115,11 +115,13 @@
       <div>Emitida: {{ optional($invoice->issued_at)->format('d/m/Y') }}</div>
       @php($status = strtolower($invoice->reservation->status ?? ''))
       @if($status === 'paid')
-        <div class="pill" style="border-color:#719179; color:#719179;">Pagada</div>
+        <div class="pill" style="border-color:#8FBC8F; color:#000000;">Pagada</div>
       @elseif($status === 'pending')
-        <div class="pill" style="border-color:#E8CB74; color:#E8CB74;">Pendiente</div>
+        <div class="pill" style="border-color:#FFD54F; color:#000000;">Pendiente</div>
       @elseif($status === 'cancelled')
-        <div class="pill" style="border-color:#CC5956; color:#CC5956;">Cancelada</div>
+        <div class="pill" style="border-color:#E57373; color:#000000;">Cancelada</div>
+      @else
+        <div class="pill" style="border-color:#4D8D94; color:#000000;">{{ ucfirst($status) }}</div>
       @endif
     </div>
   </div>

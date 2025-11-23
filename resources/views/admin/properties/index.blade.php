@@ -161,9 +161,18 @@
             padding: 0.25rem 0.5rem;
             letter-spacing: 0.05em;
         }
-        .admin-slim-badges .badge-success,
-        .admin-slim-badges .badge-warning,
-        .admin-slim-badges .badge-error,
+        .admin-slim-badges .badge-success {
+            background: transparent !important;
+            border: 1px solid var(--color-success);
+        }
+        .admin-slim-badges .badge-warning {
+            background: transparent !important;
+            border: 1px solid var(--color-warning);
+        }
+        .admin-slim-badges .badge-error {
+            background: transparent !important;
+            border: 1px solid var(--color-error);
+        }
         .admin-slim-badges .badge-info {
             background: transparent !important;
             border: 1px solid var(--color-accent);

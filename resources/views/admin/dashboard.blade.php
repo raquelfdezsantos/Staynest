@@ -38,9 +38,9 @@
                 background: transparent !important;
                 border: 1px solid var(--color-accent);
             }
-            .admin-slim-badges .badge-success { border-color: var(--color-accent); }
-            .admin-slim-badges .badge-warning { border-color: var(--color-accent); }
-            .admin-slim-badges .badge-error { border-color: var(--color-accent); }
+            .admin-slim-badges .badge-success { border-color: var(--color-success); }
+            .admin-slim-badges .badge-warning { border-color: var(--color-warning); }
+            .admin-slim-badges .badge-error { border-color: var(--color-error); }
             .admin-slim-badges .badge-info { border-color: var(--color-accent); }
             .admin-actions .btn-action.btn-action-secondary:hover {
                 background-color: rgba(77, 141, 148, 0.10);
@@ -60,10 +60,21 @@
                 font-weight: 600;
                 color: var(--color-text-primary); /* alto contraste */
                 letter-spacing: 0.05em;
+                height: 25.64px;
+                box-sizing: border-box;
             }
-            .admin-slim-badges .badge-success,
-            .admin-slim-badges .badge-warning,
-            .admin-slim-badges .badge-error,
+            .admin-slim-badges .badge-success {
+                background: transparent !important;
+                border: 1px solid var(--color-success);
+            }
+            .admin-slim-badges .badge-warning {
+                background: transparent !important;
+                border: 1px solid var(--color-warning);
+            }
+            .admin-slim-badges .badge-error {
+                background: transparent !important;
+                border: 1px solid var(--color-error);
+            }
             .admin-slim-badges .badge-info {
                 background: transparent !important;
                 border: 1px solid var(--color-accent);
@@ -152,13 +163,13 @@
                                     <p style="font-size: var(--text-base); font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.125rem;">
                                         {{ $upcoming->user->name ?? 'Usuario' }} • {{ $upcoming->property->name ?? 'Propiedad' }}
                                         @if($upcoming->status === 'pending')
-                                            <span class="badge badge-warning" style="font-size: var(--text-xs); margin-left: 0.5rem;">Pendiente</span>
+                                            <span class="badge badge-warning">Pendiente</span>
                                         @elseif($upcoming->status === 'paid')
-                                            <span class="badge badge-success" style="font-size: var(--text-xs); margin-left: 0.5rem;">Pagada</span>
+                                            <span class="badge badge-success">Pagada</span>
                                         @elseif($upcoming->status === 'cancelled')
-                                            <span class="badge badge-error" style="font-size: var(--text-xs); margin-left: 0.5rem;">Cancelada</span>
+                                            <span class="badge badge-error">Cancelada</span>
                                         @else
-                                            <span class="badge badge-info" style="font-size: var(--text-xs); margin-left: 0.5rem;">{{ ucfirst($upcoming->status) }}</span>
+                                            <span class="badge badge-info">{{ ucfirst($upcoming->status) }}</span>
                                         @endif
                                     </p>
                                     <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
