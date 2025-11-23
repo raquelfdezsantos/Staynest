@@ -2,6 +2,13 @@
     <div class="sn-reservar max-w-5xl mx-auto px-4 py-10">
         <style>
             .btn-nowrap { white-space: nowrap; }
+            .btn-action {
+                height: 36px;
+                min-height: 36px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
             .booking-timeline {
                 position: relative;
             }
@@ -86,17 +93,17 @@
             .booking-status.pending {
                 background: transparent;
                 color: var(--color-text-primary);
-                border-color: var(--color-accent);
+                border-color: var(--color-warning);
             }
             .booking-status.paid {
                 background: transparent;
                 color: var(--color-text-primary);
-                border-color: var(--color-accent);
+                border-color: var(--color-success);
             }
             .booking-status.cancelled {
                 background: transparent;
                 color: var(--color-text-primary);
-                border-color: var(--color-accent);
+                border-color: var(--color-error);
             }
             .booking-grid {
                 display: grid;
