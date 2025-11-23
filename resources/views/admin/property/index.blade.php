@@ -24,7 +24,8 @@
                 color: var(--color-text-muted);
             }
             
-            /* Checkboxes personalizados */
+            /* Checkboxes usan estilo global .sn-checkbox definido en staynest.css */
+            /* Checkboxes personalizados (administración) */
             .sn-checkbox {
                 width: 1rem;
                 height: 1rem;
@@ -38,9 +39,7 @@
                 background-color: var(--color-accent) !important;
                 border-color: var(--color-accent) !important;
             }
-            .sn-checkbox:hover {
-                border-color: var(--color-accent);
-            }
+            .sn-checkbox:hover { border-color: var(--color-accent); }
             .sn-checkbox:focus {
                 outline: none;
                 ring: 0;
