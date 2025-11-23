@@ -60,15 +60,12 @@ class ClientRegisterController extends Controller
         // Detectar propiedad desde el parámetro property
         $propertySlug = $request->input('property');
         
-        if (!$propertySlug) {
-            $property = \App\Models\Property::whereNull('deleted_at')->first();
-            $propertySlug = $property ? $property->slug : null;
+        // Si viene desde una propiedad específica, redirigir a mis-reservas de esa propiedad
+        if ($propertySlug) {
+            return redirect(route('properties.reservas.index', $propertySlug));
         }
         
-        $target = $propertySlug 
-            ? route('properties.reservas.index', $propertySlug)
-            : route('home');
-
-        return redirect($target);
+        // Si no hay propiedad detectada, ir a home
+        return redirect(route('home'));
     }
 }

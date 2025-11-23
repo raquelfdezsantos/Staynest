@@ -14,6 +14,9 @@
         @if (session('error'))
             <div class="alert alert-error" style="margin-bottom: 1.5rem;">{{ session('error') }}</div>
         @endif
+        @if (session('info'))
+            <div class="alert alert-info" style="margin-bottom: 1.5rem;">{{ session('info') }}</div>
+        @endif
 
         {{-- Botón crear nueva propiedad --}}
         <div style="margin-bottom: 2rem;">

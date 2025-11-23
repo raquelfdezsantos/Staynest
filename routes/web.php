@@ -24,6 +24,7 @@ use App\Http\Controllers\QuoteController;
 
 // Redirigir home a la primera propiedad disponible
 Route::get('/', function () {
+    // Buscar la propiedad por defecto
     $property = Property::where('slug', 'piso-turistico-centro')->first();
     
     if (!$property) {

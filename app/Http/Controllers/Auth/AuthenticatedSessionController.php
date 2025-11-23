@@ -60,18 +60,19 @@ class AuthenticatedSessionController extends Controller
         }
         
         // Para clientes
-        // Si no se detectó slug, usar la primera propiedad disponible
-        if (!$propertySlug) {
-            $property = \App\Models\Property::whereNull('deleted_at')->first();
-            $propertySlug = $property ? $property->slug : null;
+        // Redirigir a mis-reservas de la propiedad detectada
+        if ($propertySlug) {
+            // Verificar si hay una URL intended que sea de esta misma propiedad
+            $intendedUrl = $request->session()->get('url.intended', '');
+            if ($intendedUrl && str_contains($intendedUrl, "/propiedades/{$propertySlug}")) {
+                return redirect($intendedUrl);
+            }
+            // Si no hay intended o no es de esta propiedad, ir a mis-reservas
+            return redirect(route('properties.reservas.index', $propertySlug));
         }
         
-        // Redirigir a mis-reservas de la propiedad detectada
-        $target = $propertySlug 
-            ? route('properties.reservas.index', $propertySlug)
-            : route('home');
-
-        return redirect($target);
+        // Si no hay propiedad detectada, ir a la URL intended o home
+        return redirect()->intended(route('home'));
     }
 
     /**
