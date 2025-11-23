@@ -1,6 +1,9 @@
 <x-app-layout>
     <div class="sn-reservar max-w-4xl mx-auto px-4 py-10 admin-slim-badges">
         <style>
+            /* Alpine.js x-cloak */
+            [x-cloak] { display: none !important; }
+            
             /* Admin: badges discretos, monocromos y accesibles */
             .admin-slim-badges .badge {
                 text-transform: none;
@@ -72,6 +75,9 @@
                 font-weight: 600;
                 color: var(--color-text-primary);
                 margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
             }
             .danger-text {
                 font-size: var(--text-sm);
@@ -122,7 +128,7 @@
         @endif
 
         {{-- Formulario de edición --}}
-        <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem; margin-bottom: 2rem;">
+        <div style="background: var(--color-bg-secondary); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); padding: 1.5rem; margin-bottom: 2rem;">
             <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1.5rem;">Editar Propiedad</h3>
 
             <form method="POST" action="{{ route('admin.property.update', $property->slug) }}" style="display: flex; flex-direction: column; gap: 1.5rem;">
@@ -360,7 +366,12 @@
 
         {{-- Zona de peligro: Dar de baja propiedad --}}
         <div class="danger-zone">
-            <h3 class="danger-title">⚠️ Zona de peligro</h3>
+            <h3 class="danger-title">
+                <svg style="width: 20px; height: 20px; flex-shrink: 0;" fill="none" stroke="var(--color-error)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+                Zona de peligro
+            </h3>
             
             <p class="danger-text">
                 Una vez que des de baja la propiedad, se cancelarán todas las reservas futuras activas 
@@ -374,38 +385,57 @@
                 </div>
             @endif
 
-            <form 
-                method="POST" 
-                action="{{ route('admin.property.destroy', $property->slug) }}"
-                onsubmit="return confirmDelete(event, {{ $futureReservationsCount }})"
+            <button 
+                type="button"
+                class="btn-danger"
+                x-data=""
+                x-on:click.prevent="$dispatch('open-modal', 'confirm-delete-property')"
             >
-                @csrf
-                @method('DELETE')
-
-                <button type="submit" class="btn-danger">
-                    Dar de baja propiedad
-                </button>
-            </form>
+                Dar de baja propiedad
+            </button>
+            <x-modal name="confirm-delete-property" focusable>
+                <div style="padding: 2rem; border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.9); backdrop-filter: blur(10px);">
+                    <form method="POST" action="{{ route('admin.property.destroy', $property->slug) }}">
+                        @csrf
+                        @method('DELETE')
+                        <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem;">
+                            <svg style="width: 24px; height: 24px; flex-shrink: 0; margin-top: 0.125rem;" fill="none" stroke="var(--color-error)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <div style="flex: 1;">
+                                <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
+                                    ¿Dar de baja esta propiedad?
+                                </h2>
+                            </div>
+                        </div>
+                        <p style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+                            @if($futureReservationsCount > 0)
+                                <strong>ATENCIÓN:</strong> Hay {{ $futureReservationsCount }} reserva(s) activa(s).<br><br>
+                                Se cancelarán TODAS las reservas futuras y se procesarán reembolsos automáticamente.
+                            @else
+                                Se dará de baja la propiedad. Esta acción es reversible desde la base de datos.
+                            @endif
+                        </p>
+                        <p style="margin-bottom: 1.5rem; font-size: var(--text-sm); color: var(--color-text-secondary);">
+                            ¿Estás SEGURO de que quieres continuar?
+                        </p>
+                        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                            <button type="button"
+                                    x-on:click="$dispatch('close-modal', 'confirm-delete-property')"
+                                    class="btn-action btn-action-secondary sn-sentence"
+                                    style="height: 36px; padding: 0 1.25rem;">
+                                No, volver
+                            </button>
+                            <button type="submit" 
+                                    style="height: 36px; padding: 0 1.25rem; font-size: var(--text-sm); font-weight: 600; color: white; background-color: var(--color-error); border: none; border-radius: 2px; cursor: pointer; transition: background-color var(--transition-fast);"
+                                    onmouseover="this.style.backgroundColor='#d87876'"
+                                    onmouseout="this.style.backgroundColor='var(--color-error)'">
+                                Sí, dar de baja
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </x-modal>
         </div>
     </div>
-
-    <script>
-        function confirmDelete(event, reservationsCount) {
-            event.preventDefault();
-            
-            let message = reservationsCount > 0 
-                ? `⚠️ ATENCIÓN: Hay ${reservationsCount} reserva(s) activa(s).\n\nSe cancelarán TODAS las reservas futuras y se procesarán reembolsos automáticamente.\n\n¿Estás SEGURO de que quieres dar de baja esta propiedad?`
-                : '¿Estás seguro de que quieres dar de baja esta propiedad?';
-            
-            const firstConfirm = confirm(message);
-            if (!firstConfirm) return false;
-            
-            const secondConfirm = confirm('Esta acción es reversible desde la base de datos.\n\n¿Confirmas que deseas continuar?');
-            if (secondConfirm) {
-                event.target.submit();
-            }
-            
-            return false;
-        }
-    </script>
 </x-app-layout>

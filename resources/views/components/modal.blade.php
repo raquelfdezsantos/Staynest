@@ -53,7 +53,7 @@ $maxWidth = [
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     class="modal-overlay fixed inset-0"
-    style="z-index: 99999; background-color: rgba(0, 0, 0, 0.5);"
+    style="display: none; z-index: 99999; background-color: rgba(0, 0, 0, 0.5);"
     @click="show = false"
 >
     <div
