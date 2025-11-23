@@ -443,6 +443,15 @@ html[data-theme="light"] .sn-auth .auth-meta {
     color: var(--color-text-muted);
 }
 
+/* Placeholder de imagen sin foto en modo claro (usa bg-card, más claro que bg-secondary) */
+html[data-theme="light"] .bg-neutral-700 {
+    background-color: var(--color-bg-card) !important;
+}
+
+html[data-theme="light"] .text-neutral-500 {
+    color: #999999 !important;
+}
+
 /* Modales en modo oscuro con colores específicos */
 html[data-theme="dark"] [x-data*="show"] > div:last-child {
     background-color: #181818 !important;

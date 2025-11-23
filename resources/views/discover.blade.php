@@ -157,7 +157,7 @@
                                 @if($property->user)
                                     <div class="mt-auto pt-4 border-t border-neutral-700">
                                         <p class="text-xs text-neutral-400">
-                                            Gestionado por <span class="text-neutral-200">{{ $property->user->name }}</span>
+                                            Gestionado por <span style="color: var(--color-text-primary);">{{ $property->user->name }}</span>
                                         </p>
                                     </div>
                                 @endif

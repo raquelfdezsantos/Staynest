@@ -46,7 +46,7 @@
                                     style="width: 100%; height: 100%; object-fit: cover;"
                                 >
                             @else
-                                <div style="width: 100%; height: 100%; background-color: var(--color-bg-secondary); display: flex; align-items: center; justify-content: center; color: var(--color-text-muted);">
+                                <div class="bg-neutral-700 text-neutral-500" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;">
                                     <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
@@ -66,7 +66,7 @@
                     </div>
 
                     {{-- Información --}}
-                    <div style="padding: 1.25rem 1.25rem 0; {{ $property->trashed() ? 'opacity: 0.6;' : '' }}">
+                    <div style="padding: 1.25rem 1.25rem 0; background-color: var(--color-bg-secondary); {{ $property->trashed() ? 'opacity: 0.6;' : '' }}">
                         <h3 style="font-family: var(--font-serif); font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin: 0 0 1rem 0;">
                             {{ $property->name }}
                         </h3>
@@ -83,14 +83,14 @@
 
                     {{-- Botones de acción --}}
                     @if(!$property->trashed())
-                        <div style="padding: 1rem 1.25rem 1.25rem;">
+                        <div style="padding: 1rem 1.25rem 1.25rem; background-color: var(--color-bg-secondary);">
                             <a href="{{ route('admin.property.dashboard', $property->slug) }}" 
                                class="btn-action btn-action-primary" style="width: 100%; text-align: center;">
                                 <span class="sn-sentence">Gestionar</span>
                             </a>
                         </div>
                     @else
-                        <div style="padding: 1rem 1.25rem 1.25rem;">
+                        <div style="padding: 1rem 1.25rem 1.25rem; background-color: var(--color-bg-secondary);">
                             <button type="button"
                                     x-data=""
                                     x-on:click.prevent="$dispatch('open-modal', 'confirm-restore-{{ $property->id }}')"

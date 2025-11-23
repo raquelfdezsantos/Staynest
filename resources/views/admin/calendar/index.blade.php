@@ -426,20 +426,33 @@
 
     /* Light mode overrides */
     html[data-theme="light"] .calendar-card {
-      background-color: #fff;
+      background-color: var(--color-bg-card);
+      border-color: var(--color-border-light);
     }
 
     html[data-theme="light"] .calendar-card-header {
       background: rgba(0, 0, 0, 0.02);
+      border-bottom-color: var(--color-border-light);
     }
 
     html[data-theme="light"] .calendar-input {
-      background-color: #f9fafb;
+      background-color: var(--color-bg-secondary);
+      border-color: var(--color-border-light);
+      color: var(--color-text-primary);
+    }
+
+    html[data-theme="light"] .calendar-label {
+      color: var(--color-text-secondary);
+    }
+
+    html[data-theme="light"] .calendar-section-title {
+      color: var(--color-text-primary);
     }
 
     html[data-theme="light"] .calendar-info-box {
       background: rgba(77, 141, 148, 0.06);
       border-color: rgba(77, 141, 148, 0.15);
+      color: var(--color-text-secondary);
     }
   </style>
 

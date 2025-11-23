@@ -128,7 +128,19 @@
         @endif
 
         {{-- Formulario de edición --}}
-        <div style="background: var(--color-bg-secondary); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); padding: 1.5rem; margin-bottom: 2rem;">
+        <div class="admin-form-card" style="border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); padding: 1.5rem; margin-bottom: 2rem;">
+            <style>
+                .admin-form-card {
+                    background: #333333 !important;
+                }
+                html[data-theme="light"] .admin-form-card {
+                    background: #E3E3E3 !important;
+                }
+                /* Textarea en modo oscuro */
+                html[data-theme="dark"] .admin-textarea {
+                    background: #222222 !important;
+                }
+            </style>
             <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1.5rem;">Editar Propiedad</h3>
 
             <form method="POST" action="{{ route('admin.property.update', $property->slug) }}" style="display: flex; flex-direction: column; gap: 1.5rem;">
@@ -155,7 +167,7 @@
                         name="description" 
                         id="description"
                         rows="6"
-                        class="sn-input"
+                        class="sn-input admin-textarea"
                         style="width: 100%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; padding: 0.75rem; color: var(--color-text-primary); font-size: var(--text-base);"
                         placeholder="Describe tu alojamiento de forma detallada..."
                     >{{ old('description', $property->description) }}</textarea>
