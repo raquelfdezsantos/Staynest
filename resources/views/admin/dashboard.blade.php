@@ -11,9 +11,12 @@
                 line-height: 1;
                 padding: 0.5rem 1rem;
                 border-radius: 2px;
-                color: #fff;
+                color: var(--color-text-primary);
                 height: 36px;
                 box-sizing: border-box;
+            }
+            .admin-actions .btn-action.btn-action-primary {
+                color: #fff !important;
             }
             .admin-actions .btn-action.btn-action-secondary {
                 background: transparent;
@@ -249,12 +252,41 @@
                                             <a href="{{ route('admin.reservations.show', $r->id) }}" class="btn-action btn-action-secondary">Ver</a>
 
                                             @if ($r->status === 'pending')
-                                                <form method="POST" action="{{ route('reservations.pay', $r->id) }}" style="display: inline;">
-                                                    @csrf
-                                                    <button type="submit" class="btn-action btn-action-primary" onclick="return confirm('¿Marcar como pagada y generar factura?')">
-                                                        Marcar pagada
-                                                    </button>
-                                                </form>
+                                                <button type="button"
+                                                        x-data=""
+                                                        x-on:click.prevent="$dispatch('open-modal', 'confirm-mark-paid-{{ $r->id }}')"
+                                                        class="btn-action btn-action-primary">
+                                                    Marcar pagada
+                                                </button>
+
+                                                <x-modal name="confirm-mark-paid-{{ $r->id }}" focusable>
+                                                    <div style="padding: 2rem; border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.9); backdrop-filter: blur(10px);">
+                                                        <form method="POST" action="{{ route('reservations.pay', $r->id) }}">
+                                                            @csrf
+
+                                                            <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
+                                                                ¿Marcar como pagada?
+                                                            </h2>
+
+                                                            <p style="margin-bottom: 1.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+                                                                Se generará automáticamente una factura para esta reserva.
+                                                            </p>
+
+                                                            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                                                <button type="button"
+                                                                        @click="$dispatch('close-modal', 'confirm-mark-paid-{{ $r->id }}')"
+                                                                        class="btn-action btn-action-secondary sn-sentence py-2 px-5">
+                                                                    Cancelar
+                                                                </button>
+
+                                                                <button type="submit" 
+                                                                        class="btn-action btn-action-primary sn-sentence py-2 px-5">
+                                                                    Confirmar
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </x-modal>
 
                                                 <form method="POST" action="{{ route('admin.reservations.cancel', $r->id) }}" style="display: inline;">
                                                     @csrf
