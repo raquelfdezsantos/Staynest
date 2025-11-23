@@ -89,12 +89,12 @@
     --color-border-rgb: 255, 255, 255;
 
     /* Estados */
-    --color-success: #719179;
-    /* Verde éxito */
-    --color-error: #CC5956;
-    /* Rojo error */
-    --color-warning: #E8CB74;
-    /* Naranja advertencia */
+    --color-success: #8FBC8F;
+    /* Verde éxito - más claro y visible */
+    --color-error: #E57373;
+    /* Rojo error - más brillante */
+    --color-warning: #FFD54F;
+    /* Amarillo advertencia - más vibrante */
     --color-info: #6789c0;
     /* Azul info */
 
@@ -176,6 +176,14 @@
     --color-border: #E0E0E0;
     --color-border-light: #BABABA;
     --color-border-rgb: 0, 0, 0;
+
+    /* Estados para modo claro - colores más oscuros y saturados */
+    --color-success: #2E7D32;
+    /* Verde oscuro para light */
+    --color-error: #C62828;
+    /* Rojo oscuro para light */
+    --color-warning: #F9A825;
+    /* Amarillo/naranja oscuro para light */
 
     /* Sombras más visibles en modo claro */
     --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
@@ -1155,9 +1163,21 @@ html[data-theme="light"] .nav-header--transparent {
 }
 
 /* Estilo más sobrio dentro de las cards de reservas */
-.reservation-card .badge-success,
-.reservation-card .badge-error,
-.reservation-card .badge-warning,
+.reservation-card .badge-success {
+    background: transparent;
+    border: 1px solid var(--color-success);
+}
+
+.reservation-card .badge-error {
+    background: transparent;
+    border: 1px solid var(--color-error);
+}
+
+.reservation-card .badge-warning {
+    background: transparent;
+    border: 1px solid var(--color-warning);
+}
+
 .reservation-card .badge-info {
     background: transparent;
     border: 1px solid var(--color-accent);
@@ -1278,11 +1298,21 @@ html[data-theme="light"] .nav-header--transparent {
 .badge-success {
     background: transparent;
     color: var(--color-text-primary);
-    border-color: var(--color-accent);
+    border-color: var(--color-success);
 }
 
-.badge-error,
-.badge-warning,
+.badge-error {
+    background: transparent;
+    color: var(--color-text-primary);
+    border-color: var(--color-error);
+}
+
+.badge-warning {
+    background: transparent;
+    color: var(--color-text-primary);
+    border-color: var(--color-warning);
+}
+
 .badge-info {
     background: transparent;
     color: var(--color-text-primary);
