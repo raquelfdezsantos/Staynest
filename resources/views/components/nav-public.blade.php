@@ -29,7 +29,10 @@
                             class="nav-link {{ request()->routeIs('properties.contact.*') ? 'active' : '' }}">Contacto</a></li>
                     <li><a href="{{ route('properties.reservar', $property) }}"
                             class="nav-link {{ request()->routeIs('properties.reservar') ? 'active' : '' }}">Reservar</a></li>
-                    @if($property->user && $property->user->properties()->whereNull('deleted_at')->count() > 1)
+                    @php
+                        $ownerHasMultiple = $property->user && $property->user->properties()->whereNull('deleted_at')->count() > 1;
+                    @endphp
+                    @if($ownerHasMultiple)
                         <li><a href="{{ route('properties.byOwner', $property->user_id) }}"
                                 class="nav-link {{ request()->routeIs('properties.byOwner') ? 'active' : '' }}">Propiedades</a></li>
                     @endif
@@ -81,8 +84,16 @@
                         @else
                             {{-- Mostrar opciones de cliente (para customers o admins en propiedades ajenas) --}}
                             @php
-                                // Determinar la propiedad actual para las rutas de cliente
-                                $currentProperty = $property ?? \App\Models\Property::whereNull('deleted_at')->first();
+                                // Usar contexto de sesión si existe para no saltar a otra propiedad
+                                $currentProperty = $property;
+                                if (session('current_property_slug')) {
+                                    $sessionProp = \App\Models\Property::where('slug', session('current_property_slug'))
+                                        ->whereNull('deleted_at')
+                                        ->first();
+                                    if ($sessionProp) {
+                                        $currentProperty = $sessionProp;
+                                    }
+                                }
                             @endphp
                             @if($currentProperty)
                                 <li><a href="{{ route('properties.reservas.index', $currentProperty->slug) }}" class="nav-dropdown-item">

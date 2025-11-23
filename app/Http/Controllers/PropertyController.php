@@ -76,6 +76,8 @@ class PropertyController extends Controller
      */
     public function show(Property $property)
     {
+        // Guardar la propiedad actual en sesión
+        session(['current_property_slug' => $property->slug]);
         $property->load([
             'photos',
             'rateCalendar' => function ($q) {
@@ -125,6 +127,8 @@ class PropertyController extends Controller
      */
     public function entorno(Property $property)
     {
+        // Fijar contexto al acceder directamente sin pasar por show
+        session(['current_property_slug' => $property->slug]);
         return view('entorno.index', compact('property'));
     }
 
@@ -136,6 +140,8 @@ class PropertyController extends Controller
      */
     public function reservar(Property $property)
     {
+        // Fijar contexto al acceder directamente sin pasar por show
+        session(['current_property_slug' => $property->slug]);
         $property->load('photos');
 
         // Fechas bloqueadas desde tu RateCalendar
@@ -216,13 +222,22 @@ class PropertyController extends Controller
      *
      * @return \Illuminate\Contracts\View\View
      */
-    public function discover()
+    public function discover(Request $request)
     {
         $properties = Property::with(['photos', 'user'])
             ->whereNull('deleted_at')
             ->latest()
             ->get();
 
-        return view('discover', compact('properties'));
+        // Intentar obtener la propiedad desde la sesión o query string
+        $property = null;
+        
+        if ($request->has('property')) {
+            $property = Property::where('slug', $request->input('property'))->first();
+        } elseif (session('current_property_slug')) {
+            $property = Property::where('slug', session('current_property_slug'))->first();
+        }
+
+        return view('discover', compact('properties', 'property'));
     }
 }

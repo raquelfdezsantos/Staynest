@@ -1,18 +1,42 @@
 <header class="nav-header nav-header--solid" style="border-bottom: 1px solid var(--color-border-light);">
     <nav class="nav-container">
-        <x-logo />
-
         @php
-            // Obtener el parámetro de propiedad desde la ruta actual
+            // Determinar propiedad en contexto admin:
+            // 1. Ruta con {property:slug}
+            // 2. Sesión current_property_slug (si pertenece al admin)
+            // 3. Si solo tiene una propiedad, usarla como contexto implícito
             $currentProperty = request()->route('property');
-            // Si es un string (slug), buscar la propiedad
             if (is_string($currentProperty)) {
                 $currentProperty = \App\Models\Property::where('slug', $currentProperty)
                     ->where('user_id', auth()->id())
+                    ->whereNull('deleted_at')
                     ->first();
             }
-            // NO tomar una propiedad por defecto - solo si está en la URL
+            if (!$currentProperty && session('current_property_slug')) {
+                $sessionProp = \App\Models\Property::where('slug', session('current_property_slug'))
+                    ->where('user_id', auth()->id())
+                    ->whereNull('deleted_at')
+                    ->first();
+                if ($sessionProp) { $currentProperty = $sessionProp; }
+            }
+            if (!$currentProperty) {
+                $countOwn = \App\Models\Property::where('user_id', auth()->id())
+                    ->whereNull('deleted_at')
+                    ->count();
+                if ($countOwn === 1) {
+                    $currentProperty = \App\Models\Property::where('user_id', auth()->id())
+                        ->whereNull('deleted_at')
+                        ->first();
+                }
+            }
+            // Definir destino del logo
+            $logoHref = $currentProperty
+                ? route('properties.show', $currentProperty->slug)
+                : route('admin.dashboard');
         @endphp
+        <a href="{{ $logoHref }}" aria-label="Ir al inicio de la propiedad" class="nav-logo-link">
+            <x-logo />
+        </a>
 
         <ul class="nav-menu">
             @if($currentProperty)

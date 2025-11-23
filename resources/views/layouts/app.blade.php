@@ -52,6 +52,21 @@
                     ? request()->route('property') 
                     : \App\Models\Property::where('slug', request()->route('property'))->first();
             }
+            
+            // Preferir siempre la sesión si existe (contexto persistente)
+            if (session('current_property_slug')) {
+                $sessionProp = \App\Models\Property::where('slug', session('current_property_slug'))
+                    ->whereNull('deleted_at')
+                    ->first();
+                if ($sessionProp) {
+                    $navProperty = $sessionProp;
+                }
+            }
+
+            // NO forzar cambio a primera propiedad si ya hay contexto; solo si absolutamente no hay ninguna disponible
+            if (!$navProperty) {
+                $navProperty = \App\Models\Property::whereNull('deleted_at')->first();
+            }
         @endphp
         <x-nav-public 
             :transparent="request()->routeIs('home') || request()->routeIs('properties.show')" 
@@ -136,6 +151,9 @@
                     <ul style="list-style:none; padding:0;">
                         <li style="margin-bottom:var(--spacing-xs);">
                             <a href="{{ route('discover') }}" class="sn-link">Descubre Staynest</a>
+                        </li>
+                        <li style="margin-bottom:var(--spacing-xs);">
+                            <a href="{{ route('soporte.index') }}" class="sn-link">Soporte</a>
                         </li>
                     </ul>
                     @if(isset($footerProperty) && $footerProperty)

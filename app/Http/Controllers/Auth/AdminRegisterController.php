@@ -95,6 +95,15 @@ class AdminRegisterController extends Controller
             Auth::login($user);
         });
 
-        return redirect(route('admin.dashboard', absolute: false));
+        // Tras registro crear propiedad -> fijar contexto explícito y enviar al dashboard de esa nueva propiedad
+        $property = \App\Models\Property::where('user_id', Auth::id())
+            ->whereNull('deleted_at')
+            ->latest('id')
+            ->first();
+        if ($property) {
+            session(['current_property_slug' => $property->slug]);
+            return redirect()->route('admin.property.dashboard', $property->slug);
+        }
+        return redirect()->route('home');
     }
 }

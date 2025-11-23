@@ -1,19 +1,27 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.app')
 
-    @if ($errors->any())
-        <div class="alert alert-error mb-4">
-            <strong>Revisa los siguientes campos:</strong>
-            <ul style="margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc;">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
+@section('title', 'Iniciar sesión')
 
-    <form method="POST" action="{{ route('login') }}" novalidate>
+@section('content')
+<div class="max-w-md mx-auto px-4 py-10">
+    <div class="sn-auth" style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 2rem;">
+        <h1 class="text-2xl font-serif mb-6 text-center">Iniciar sesión</h1>
+        
+        <!-- Session Status -->
+        <x-auth-session-status class="mb-4" :status="session('status')" />
+
+        @if ($errors->any())
+            <div class="alert alert-error mb-4">
+                <strong>Revisa los siguientes campos:</strong>
+                <ul style="margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('login') }}" novalidate>
         @csrf
         
         @if(request('property'))
@@ -63,5 +71,7 @@
                 </x-primary-button>
             </div>
         </div>
-    </form>
-</x-guest-layout>
+        </form>
+    </div>
+</div>
+@endsection

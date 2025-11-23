@@ -27,7 +27,7 @@ class InitialDataSeeder extends Seeder
     {
         // Creación de administrador
         $admin = User::updateOrCreate(
-            ['email' => 'admin@vut.test'],
+            ['email' => 'admin@staynest.com'],
             [
                 'name' => 'Admin',
                 'password' => Hash::make('password123'),
@@ -38,7 +38,7 @@ class InitialDataSeeder extends Seeder
 
         // Creación de usuario cliente
         User::updateOrCreate(
-            ['email' => 'cliente@vut.test'],
+            ['email' => 'cliente@staynest.com'],
             [
                 'name' => 'Cliente Demo',
                 'password' => Hash::make('password123'),

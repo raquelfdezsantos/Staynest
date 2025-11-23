@@ -58,8 +58,18 @@ Route::middleware(['auth'])->group(function () {
 // Lista de propiedades de un administrador (solo si tiene más de una)
 Route::get('/propiedades-de/{userId}', [PropertyController::class, 'byOwner'])->name('properties.byOwner');
 
+// Dashboard específico por propiedad (admin) - necesita slug
+Route::middleware(['auth','role:admin'])->get('/propiedades/{property:slug}/admin', [AdminController::class, 'propertyDashboardFiltered'])->name('admin.property.dashboard');
+
 // Página institucional: Descubre Staynest (muestra todas las propiedades)
 Route::get('/descubre-staynest', [PropertyController::class, 'discover'])->name('discover');
+
+// Soporte
+Route::get('/soporte', [App\Http\Controllers\SupportController::class, 'index'])->name('soporte.index');
+Route::post('/soporte', [App\Http\Controllers\SupportController::class, 'store'])
+    ->middleware('throttle:5,1')
+    ->name('soporte.store');
+
 // Páginas legales
 Route::get('/aviso-legal', fn() => view('legal.aviso-legal'))->name('legal.aviso');
 Route::get('/politica-privacidad', fn() => view('legal.politica-privacidad'))->name('legal.privacidad');

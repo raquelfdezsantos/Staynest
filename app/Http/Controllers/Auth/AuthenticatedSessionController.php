@@ -29,10 +29,10 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
         
-        // Detectar propiedad desde el parámetro property
-        $propertySlug = $request->input('property');
-        
-        // Si no viene el parámetro, intentar extraer de la URL intended
+        // Detectar propiedad: prioridad query, luego sesión, luego URL intended
+        $propertySlug = $request->input('property')
+            ?: session('current_property_slug');
+
         if (!$propertySlug) {
             $intendedUrl = $request->session()->get('url.intended', '');
             if ($intendedUrl && preg_match('/\/propiedades\/([^\/]+)/', $intendedUrl, $matches)) {
@@ -42,33 +42,44 @@ class AuthenticatedSessionController extends Controller
         
         // Para admin: verificar si es su propiedad o no
         if ($user->role === 'admin') {
-            // Si viene desde una propiedad específica, verificar ownership
             if ($propertySlug) {
                 $property = \App\Models\Property::where('slug', $propertySlug)->whereNull('deleted_at')->first();
-                
-                // Si es su propiedad, ir al panel admin
-                if ($property && $property->user_id === $user->id) {
-                    return redirect()->intended(route('admin.dashboard'));
+                if ($property) {
+                    session(['current_property_slug' => $property->slug]);
+                    $intendedUrl = $request->session()->get('url.intended', '');
+                    if ($intendedUrl && str_contains($intendedUrl, "/propiedades/{$property->slug}")) {
+                        return redirect($intendedUrl);
+                    }
+                    // Si el admin ES propietario de la propiedad del contexto -> dashboard específico
+                    if ($property->user_id === $user->id) {
+                        return redirect()->route('admin.property.dashboard', $property->slug);
+                    }
+                    // Admin no propietario (visitando otra propiedad): permanecer en vista pública de esa propiedad
+                    return redirect()->route('properties.show', $property->slug);
                 }
-                
-                // Si no es su propiedad, tratarlo como cliente y redirigir a mis-reservas de esa propiedad
-                return redirect(route('properties.reservas.index', $propertySlug));
             }
-            
-            // Si no viene desde una propiedad, ir al panel admin
-            return redirect()->intended(route('admin.dashboard'));
+            // Sin slug válido: si tiene alguna propiedad propia, usar la primera de él como contexto
+            $ownProperty = \App\Models\Property::where('user_id', $user->id)->whereNull('deleted_at')->first();
+            if ($ownProperty) {
+                session(['current_property_slug' => $ownProperty->slug]);
+                return redirect()->route('admin.property.dashboard', $ownProperty->slug);
+            }
+            return redirect()->intended(route('home'));
         }
         
         // Para clientes
         // Redirigir a mis-reservas de la propiedad detectada
         if ($propertySlug) {
-            // Verificar si hay una URL intended que sea de esta misma propiedad
-            $intendedUrl = $request->session()->get('url.intended', '');
-            if ($intendedUrl && str_contains($intendedUrl, "/propiedades/{$propertySlug}")) {
-                return redirect($intendedUrl);
+            $property = \App\Models\Property::where('slug', $propertySlug)->whereNull('deleted_at')->first();
+            if ($property) {
+                session(['current_property_slug' => $property->slug]);
+                $intendedUrl = $request->session()->get('url.intended', '');
+                if ($intendedUrl && str_contains($intendedUrl, "/propiedades/{$property->slug}")) {
+                    return redirect($intendedUrl);
+                }
+                // Ficha pública como aterrizaje consistente
+                return redirect()->route('properties.show', $property);
             }
-            // Si no hay intended o no es de esta propiedad, ir a mis-reservas
-            return redirect(route('properties.reservas.index', $propertySlug));
         }
         
         // Si no hay propiedad detectada, ir a la URL intended o home
