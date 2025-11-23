@@ -131,7 +131,7 @@
         <div class="admin-form-card" style="border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); padding: 1.5rem; margin-bottom: 2rem;">
             <style>
                 .admin-form-card {
-                    background: #333333 !important;
+                    background: rgba(51, 51, 51, 0.2) !important;
                 }
                 html[data-theme="light"] .admin-form-card {
                     background: #E3E3E3 !important;

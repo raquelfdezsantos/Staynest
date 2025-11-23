@@ -309,11 +309,19 @@
       background: rgba(255, 255, 255, 0.02);
     }
 
+    html[data-theme="dark"] .calendar-card-header {
+      background: #222222;
+    }
+
     .calendar-card-body {
       padding: 1.5rem;
       flex: 1;
       display: flex;
       flex-direction: column;
+    }
+
+    html[data-theme="dark"] .calendar-card-body {
+      background: rgba(51, 51, 51, 0.2);
     }
 
     .calendar-card-body form {
@@ -360,6 +368,10 @@
       font-size: var(--text-sm);
       font-family: var(--font-sans);
       transition: border-color 0.2s ease;
+    }
+
+    html[data-theme="dark"] .calendar-input {
+      background-color: #222222;
     }
 
     .calendar-input:focus {
