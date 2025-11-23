@@ -33,10 +33,10 @@ $maxWidth = [
     }"
     x-init="$watch('show', value => {
         if (value) {
-            document.body.classList.add('overflow-y-hidden');
+            document.body.classList.add('overflow-hidden');
             {{ $attributes->has('focusable') ? 'setTimeout(() => firstFocusable().focus(), 100)' : '' }}
         } else {
-            document.body.classList.remove('overflow-y-hidden');
+            document.body.classList.remove('overflow-hidden');
         }
     })"
     x-on:open-modal.window="$event.detail == '{{ $name }}' ? show = true : null"
@@ -53,19 +53,13 @@ $maxWidth = [
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     class="modal-overlay fixed inset-0"
-    style="z-index: 9999; background-color: rgba(0, 0, 0, 0.5); padding: 1rem; display: flex; align-items: center; justify-content: center;"
+    style="z-index: 99999; background-color: rgba(0, 0, 0, 0.5);"
     @click="show = false"
 >
     <div
-        class="overflow-hidden shadow-xl transform transition-all {{ $maxWidth }}"
-        style="background-color: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: 2px; position: relative; z-index: 1; width: 100%; max-width: 42rem; margin: auto;"
+        class="overflow-hidden shadow-xl {{ $maxWidth }}"
+        style="background-color: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: 2px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100000; width: 100%; max-width: 42rem;"
         @click.stop
-        x-transition:enter="ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
     >
         {{ $slot }}
     </div>
