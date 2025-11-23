@@ -259,52 +259,68 @@
                                                     Marcar pagada
                                                 </button>
 
-                                                <x-modal name="confirm-mark-paid-{{ $r->id }}" focusable>
+                                                <button type="button"
+                                                        x-data=""
+                                                        x-on:click.prevent="$dispatch('open-modal', 'confirm-cancel-{{ $r->id }}')"
+                                                        class="btn-action btn-action-danger">
+                                                    Cancelar
+                                                </button>
+
+                                            @elseif ($r->status === 'paid' && $r->invoice)
+                                                <a href="{{ route('invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary">Ver factura</a>
+                                                <a href="{{ route('invoices.show', $r->invoice->number) }}?download=1" class="btn-action btn-action-secondary">PDF</a>
+
+                                                <button type="button"
+                                                        x-data=""
+                                                        x-on:click.prevent="$dispatch('open-modal', 'confirm-refund-{{ $r->id }}')"
+                                                        class="btn-action btn-action-danger">
+                                                    Reembolsar
+                                                </button>
+
+                                                <x-modal name="confirm-refund-{{ $r->id }}" focusable>
                                                     <div style="padding: 2rem; border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.9); backdrop-filter: blur(10px);">
-                                                        <form method="POST" action="{{ route('reservations.pay', $r->id) }}">
+                                                        <form method="POST" action="{{ route('admin.reservations.refund', $r->id) }}">
                                                             @csrf
 
                                                             <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
-                                                                ¿Marcar como pagada?
+                                                                ¿Reembolsar esta reserva?
                                                             </h2>
 
                                                             <p style="margin-bottom: 1.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
-                                                                Se generará automáticamente una factura para esta reserva.
+                                                                Esto marcará la reserva como cancelada y registrará el reembolso. Esta acción no se puede deshacer.
                                                             </p>
 
                                                             <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                                                                 <button type="button"
-                                                                        @click="$dispatch('close-modal', 'confirm-mark-paid-{{ $r->id }}')"
-                                                                        class="btn-action btn-action-secondary sn-sentence py-2 px-5">
+                                                                        @click="$dispatch('close-modal', 'confirm-refund-{{ $r->id }}')"
+                                                                        class="btn-action btn-action-secondary sn-sentence"
+                                                                        style="height: 36px; padding: 0 1.25rem;">
                                                                     Cancelar
                                                                 </button>
 
                                                                 <button type="submit" 
-                                                                        class="btn-action btn-action-primary sn-sentence py-2 px-5">
-                                                                    Confirmar
+                                                                        style="height: 36px; padding: 0 1.25rem; font-size: var(--text-sm); font-weight: 600; color: white; background-color: var(--color-error); border: none; border-radius: 2px; cursor: pointer; transition: background-color var(--transition-fast);"
+                                                                        onmouseover="this.style.backgroundColor='#d87876'"
+                                                                        onmouseout="this.style.backgroundColor='var(--color-error)'">
+                                                                    Reembolsar
                                                                 </button>
                                                             </div>
                                                         </form>
                                                     </div>
                                                 </x-modal>
 
-                                                <form method="POST" action="{{ route('admin.reservations.cancel', $r->id) }}" style="display: inline;">
-                                                    @csrf
-                                                    <button type="submit" class="btn-action btn-action-danger" onclick="return confirm('¿Cancelar esta reserva y reponer noches?')">
-                                                        Cancelar
-                                                    </button>
-                                                </form>
-
-                                            @elseif ($r->status === 'paid' && $r->invoice)
-                                                <a href="{{ route('invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary">Ver factura</a>
-                                                <a href="{{ route('invoices.show', $r->invoice->number) }}?download=1" class="btn-action btn-action-secondary">PDF</a>
-
-                                                <form method="POST" action="{{ route('admin.reservations.refund', $r->id) }}" style="display: inline;">
-                                                    @csrf
-                                                    <button type="submit" class="btn-action btn-action-danger" onclick="return confirm('Esto marcará la reserva como cancelada y registrará reembolso. ¿Continuar?')">
-                                                        Reembolsar
-                                                    </button>
-                                                </form>
+                                            @elseif ($r->status === 'cancelled')
+                                                @php
+                                                    $refundInvoices = $r->invoices->filter(fn($inv) => str_starts_with($inv->number, 'RECT-'));
+                                                @endphp
+                                                @if($refundInvoices->isNotEmpty())
+                                                    @foreach($refundInvoices as $refInv)
+                                                        <a href="{{ route('invoices.show', $refInv->number) }}" class="btn-action btn-action-danger">Ver factura</a>
+                                                        <a href="{{ route('invoices.show', $refInv->number) }}?download=1" class="btn-action btn-action-danger">PDF</a>
+                                                    @endforeach
+                                                @else
+                                                    <span style="color: var(--color-text-muted); font-size: var(--text-sm);">Cancelada sin factura</span>
+                                                @endif
 
                                             @elseif ($r->status === 'paid')
                                                 <span style="color: var(--color-text-muted); font-size: var(--text-sm);">Sin factura</span>
@@ -316,6 +332,72 @@
                                     </div>
                                 </td>
                             </tr>
+
+                            {{-- Modales para esta reserva --}}
+                            @if ($r->status === 'pending')
+                                <x-modal name="confirm-mark-paid-{{ $r->id }}" focusable>
+                                    <div style="padding: 2rem; border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.9); backdrop-filter: blur(10px);">
+                                        <form method="POST" action="{{ route('reservations.pay', $r->id) }}">
+                                            @csrf
+
+                                            <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
+                                                ¿Marcar como pagada?
+                                            </h2>
+
+                                            <p style="margin-bottom: 1.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+                                                Se generará automáticamente una factura para esta reserva.
+                                            </p>
+
+                                            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                                <button type="button"
+                                                        x-on:click="$dispatch('close-modal', 'confirm-mark-paid-{{ $r->id }}')"
+                                                        class="btn-action btn-action-secondary sn-sentence"
+                                                        style="height: 36px; padding: 0 1.25rem;">
+                                                    Cancelar
+                                                </button>
+
+                                                <button type="submit" 
+                                                        class="btn-action btn-action-primary sn-sentence"
+                                                        style="height: 36px; padding: 0 1.25rem;">
+                                                    Confirmar
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </x-modal>
+
+                                <x-modal name="confirm-cancel-{{ $r->id }}" focusable>
+                                    <div style="padding: 2rem; border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.9); backdrop-filter: blur(10px);">
+                                        <form method="POST" action="{{ route('admin.reservations.cancel', $r->id) }}">
+                                            @csrf
+
+                                            <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
+                                                ¿Cancelar esta reserva?
+                                            </h2>
+
+                                            <p style="margin-bottom: 1.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+                                                Se cancelará la reserva y se repondrán las noches en el calendario. Esta acción no se puede deshacer.
+                                            </p>
+
+                                            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                                <button type="button"
+                                                        x-on:click="$dispatch('close-modal', 'confirm-cancel-{{ $r->id }}')"
+                                                        class="btn-action btn-action-secondary sn-sentence"
+                                                        style="height: 36px; padding: 0 1.25rem;">
+                                                    No, volver
+                                                </button>
+
+                                                <button type="submit" 
+                                                        style="height: 36px; padding: 0 1.25rem; font-size: var(--text-sm); font-weight: 600; color: white; background-color: var(--color-error); border: none; border-radius: 2px; cursor: pointer; transition: background-color var(--transition-fast);"
+                                                        onmouseover="this.style.backgroundColor='#d87876'"
+                                                        onmouseout="this.style.backgroundColor='var(--color-error)'">
+                                                    Sí, cancelar reserva
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </x-modal>
+                            @endif
                         @empty
                             <tr>
                                 <td style="padding: 2rem; text-align: center; color: var(--color-text-secondary);" colspan="7">No hay reservas.</td>

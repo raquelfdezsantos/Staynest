@@ -85,6 +85,16 @@ class Reservation extends Model
     }
 
     /**
+     * Relación: una reserva puede tener múltiples facturas (original + rectificativas).
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Invoice>
+     */
+    public function invoices()
+    {
+        return $this->hasMany(\App\Models\Invoice::class);
+    }
+
+    /**
      * Relación: una reserva puede tener múltiples pagos.
      * 
      * @return \Illuminate\Database\Eloquent\Relations\HasMany<Payment>

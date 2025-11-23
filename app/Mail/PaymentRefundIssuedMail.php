@@ -18,7 +18,8 @@ class PaymentRefundIssuedMail extends Mailable
      */
     public function __construct(
         public $reservation,
-        public $refund
+        public $refund,
+        public $invoice = null
     ) {}
 
     /**
@@ -41,6 +42,7 @@ class PaymentRefundIssuedMail extends Mailable
             with: [
                 'reservation' => $this->reservation->loadMissing(['user','property']),
                 'refund' => $this->refund,
+                'invoice' => $this->invoice,
             ],
         );
     }
@@ -52,6 +54,14 @@ class PaymentRefundIssuedMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+
+        if ($this->invoice && $this->invoice->pdf_path) {
+            $attachments[] = \Illuminate\Mail\Mailables\Attachment::fromStorage($this->invoice->pdf_path)
+                ->as($this->invoice->number . '.pdf')
+                ->withMime('application/pdf');
+        }
+
+        return $attachments;
     }
 }

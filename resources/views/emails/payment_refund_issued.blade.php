@@ -34,9 +34,20 @@
                 <li><strong>Check-in:</strong> {{ $reservation->check_in->format('d/m/Y') }}</li>
                 <li><strong>Check-out:</strong> {{ $reservation->check_out->format('d/m/Y') }}</li>
                 <li><strong>Total actual:</strong> {{ number_format($reservation->total_price, 2) }}€</li>
+                @if($invoice)
+                <li><strong>Factura rectificativa:</strong> {{ $invoice->number }} (adjunta en este correo)</li>
+                @endif
             </ul>
             
-            <p>El importe devuelto debería aparecer en tu cuenta en los próximos 5-10 días hábiles, dependiendo de tu entidad bancaria.</p>
+            @if($invoice)
+            <p style="margin: 20px 0;">
+                <a href="{{ route('invoices.show', $invoice->number) }}" style="display: inline-block; padding: 12px 24px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                    📄 Ver Factura Rectificativa Online
+                </a>
+            </p>
+            @endif
+            
+            <p>El importe devuelto debería aparecer en tu cuenta en los próximos 5-10 días hábiles, dependiendo de tu entidad bancaria. Encontrarás la factura rectificativa adjunta a este correo y también puedes acceder a ella en cualquier momento a través del enlace superior.</p>
             
             <p>Si tienes alguna pregunta, contacta con nosotros respondiendo a este correo.</p>
             

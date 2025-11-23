@@ -35,9 +35,20 @@
                 <li><strong>Check-in:</strong> {{ $reservation->check_in->format('d/m/Y') }}</li>
                 <li><strong>Check-out:</strong> {{ $reservation->check_out->format('d/m/Y') }}</li>
                 <li><strong>Total actual:</strong> {{ number_format($reservation->total_price, 2) }}€</li>
+                @if($invoice)
+                <li><strong>Factura rectificativa:</strong> {{ $invoice->number }}</li>
+                @endif
             </ul>
             
-            <p>Esta devolución se ha generado automáticamente debido a una modificación de la reserva que redujo el total.</p>
+            @if($invoice)
+            <p style="margin: 20px 0;">
+                <a href="{{ route('invoices.show', $invoice->number) }}" style="display: inline-block; padding: 12px 24px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+                    📄 Ver Factura Rectificativa Online
+                </a>
+            </p>
+            @endif
+            
+            <p>Esta devolución se ha procesado y se ha generado una factura rectificativa que se adjunta a este correo y está disponible a través del enlace superior.</p>
             
             <p><small>Este es un mensaje automático del sistema de gestión de reservas.</small></p>
         </div>

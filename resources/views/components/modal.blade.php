@@ -53,12 +53,12 @@ $maxWidth = [
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
     class="modal-overlay fixed inset-0"
-    style="display: none; z-index: 9999; background-color: rgba(0, 0, 0, 0.5); padding: 1rem;"
+    style="z-index: 9999; background-color: rgba(0, 0, 0, 0.5); padding: 1rem; display: flex; align-items: center; justify-content: center;"
     @click="show = false"
 >
     <div
         class="overflow-hidden shadow-xl transform transition-all {{ $maxWidth }}"
-        style="background-color: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: 2px; position: relative; z-index: 1; width: 100%; max-width: 42rem;"
+        style="background-color: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: 2px; position: relative; z-index: 1; width: 100%; max-width: 42rem; margin: auto;"
         @click.stop
         x-transition:enter="ease-out duration-300"
         x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"

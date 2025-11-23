@@ -27,6 +27,7 @@ use App\Models\Property;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReservationCancelledMail;
 use App\Mail\PaymentRefundIssuedMail;
+use App\Mail\AdminPaymentRefundIssuedMail;
 use App\Mail\ReservationUpdatedMail;
 use App\Mail\PropertyDeletedConfirmationMail;
 
@@ -45,7 +46,7 @@ class AdminController extends Controller
     {
         $adminId = auth()->id();
         
-        $query = Reservation::with(['user', 'property', 'invoice'])
+        $query = Reservation::with(['user', 'property', 'invoice', 'invoices'])
             ->whereHas('property', function($q) use ($adminId) {
                 $q->where('user_id', $adminId);
             })
@@ -448,7 +449,7 @@ class AdminController extends Controller
         }
 
         $refund = $reservation->total_price;
-        DB::transaction(function () use ($reservation, $refund) {
+        $refundInvoice = DB::transaction(function () use ($reservation, $refund) {
             // 1) Cancelar y reponer noches
             $reservation->update(['status' => 'cancelled']);
 
@@ -466,6 +467,18 @@ class AdminController extends Controller
                 'status'         => 'refunded',
                 'provider_ref'   => 'REF-' . Str::upper(Str::random(8)),
             ]);
+
+            // 3) Generar factura rectificativa
+            $count = \App\Models\Invoice::count() + 1;
+            $invoiceNumber = 'RECT-' . now()->year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+            
+            return \App\Models\Invoice::create([
+                'reservation_id' => $reservation->id,
+                'number' => $invoiceNumber,
+                'pdf_path' => null,
+                'issued_at' => now(),
+                'amount' => -$refund, // Negativo para reembolso
+            ]);
         });
 
         // Notificaciones de cancelación y reembolso (cliente y admin)
@@ -480,12 +493,17 @@ class AdminController extends Controller
             report($e);
         }
         try {
-            \Mail::to($reservation->user->email)->send(new PaymentRefundIssuedMail($reservation, $refund));
+            \Mail::to($reservation->user->email)->send(new PaymentRefundIssuedMail($reservation, $refund, $refundInvoice));
+        } catch (\Throwable $e) {
+            report($e);
+        }
+        try {
+            \Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new AdminPaymentRefundIssuedMail($reservation, $refund, $refundInvoice));
         } catch (\Throwable $e) {
             report($e);
         }
 
-        return back()->with('success', 'Reserva cancelada, reembolso registrado y notificada.');
+        return back()->with('success', 'Reembolso procesado, factura rectificativa generada y notificaciones enviadas.');
     }
 
 

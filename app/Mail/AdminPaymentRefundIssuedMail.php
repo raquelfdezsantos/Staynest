@@ -14,7 +14,8 @@ class AdminPaymentRefundIssuedMail extends Mailable
 
     public function __construct(
         public $reservation,
-        public $refundAmount
+        public $refundAmount,
+        public $invoice = null
     ) {}
 
     public function envelope(): Envelope
@@ -31,12 +32,21 @@ class AdminPaymentRefundIssuedMail extends Mailable
             with: [
                 'reservation' => $this->reservation->loadMissing(['user', 'property']),
                 'refundAmount' => $this->refundAmount,
+                'invoice' => $this->invoice,
             ],
         );
     }
 
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+
+        if ($this->invoice && $this->invoice->pdf_path) {
+            $attachments[] = \Illuminate\Mail\Mailables\Attachment::fromStorage($this->invoice->pdf_path)
+                ->as($this->invoice->number . '.pdf')
+                ->withMime('application/pdf');
+        }
+
+        return $attachments;
     }
 }
