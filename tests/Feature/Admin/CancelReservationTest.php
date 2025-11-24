@@ -9,7 +9,8 @@ uses(RefreshDatabase::class);
 it('admin puede cancelar reserva y libera fechas', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $user = User::factory()->create();
-    $prop = Property::factory()->create();
+    // La propiedad debe pertenecer al admin para que el controlador no 404
+    $prop = Property::factory()->create(['user_id' => $admin->id]);
 
     // Crear calendario con fechas disponibles
     foreach ([10, 11, 12] as $d) {
@@ -53,7 +54,7 @@ it('admin puede cancelar reserva y libera fechas', function () {
 it('admin no puede cancelar reserva ya pagada', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $user = User::factory()->create();
-    $prop = Property::factory()->create();
+    $prop = Property::factory()->create(['user_id' => $admin->id]);
 
     $reservation = Reservation::factory()->create([
         'user_id' => $user->id,

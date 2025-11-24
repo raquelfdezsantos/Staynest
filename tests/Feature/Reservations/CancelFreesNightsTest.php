@@ -5,7 +5,7 @@ use function Pest\Laravel\{actingAs, post, assertDatabaseHas};
 
 it('cancelar libera noches (is_available=true)', function () {
     $admin = User::factory()->create(['role' => 'admin']);
-    $prop = Property::factory()->create();
+    $prop = Property::factory()->create(['user_id' => $admin->id]);
 
     // 10→13 (10,11,12 bloqueadas en la vida real)
     foreach ([10,11,12] as $d) {

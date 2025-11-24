@@ -8,7 +8,7 @@ uses(RefreshDatabase::class);
 
 it('editar aumenta total y deja balance pendiente si era paid', function () {
     $admin = User::factory()->create(['role' => 'admin']);
-    $prop  = Property::factory()->create();
+    $prop  = Property::factory()->create(['user_id' => $admin->id]);
 
     // Calendario: 3 noches libres a 100
     foreach ([10,11,12] as $d) {

@@ -8,7 +8,7 @@ uses(RefreshDatabase::class);
 
 it('al acortar estancia crea Payment negativo (refund) y ajusta total', function () {
     $admin = User::factory()->create(['role' => 'admin']);
-    $prop  = Property::factory()->create();
+    $prop  = Property::factory()->create(['user_id' => $admin->id]);
 
     foreach ([10,11,12] as $d) {
         RateCalendar::factory()->create([

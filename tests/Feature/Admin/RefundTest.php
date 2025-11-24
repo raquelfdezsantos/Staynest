@@ -13,7 +13,7 @@ it('admin puede procesar refund completo y envía emails', function () {
 
     $admin = User::factory()->create(['role' => 'admin']);
     $user = User::factory()->create();
-    $prop = Property::factory()->create();
+    $prop = Property::factory()->create(['user_id' => $admin->id]);
 
     $reservation = Reservation::factory()->create([
         'user_id' => $user->id,
@@ -58,7 +58,7 @@ it('admin puede procesar refund completo y envía emails', function () {
 it('admin no puede procesar refund si no está paid', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $user = User::factory()->create();
-    $prop = Property::factory()->create();
+    $prop = Property::factory()->create(['user_id' => $admin->id]);
 
     $reservation = Reservation::factory()->create([
         'user_id' => $user->id,

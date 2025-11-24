@@ -35,10 +35,10 @@ it('el listado de mis facturas solo muestra facturas de mi usuario', function ()
 
     actingAs($a);
 
-    // La ruta es 'invoices.index' para clientes (GET /mis-facturas)
-    $resp = get(route('invoices.index'));
+        // Ahora la vista de facturas del cliente es anidada por propiedad
+        $resp = get(route('properties.invoices.index', $prop->slug));
 
-    $resp->assertOk()
-         ->assertSee('INV-A-00001')
-         ->assertDontSee('INV-B-00001');
+        $resp->assertOk()
+            ->assertSee('INV-A-00001')
+            ->assertDontSee('INV-B-00001');
 });
