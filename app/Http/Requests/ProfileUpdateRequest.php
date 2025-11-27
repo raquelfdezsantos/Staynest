@@ -6,12 +6,17 @@ use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/**
+ * Request para validar la actualización de perfil de usuario.
+ *
+ * Valida los campos de nombre, email, avatar, dirección y documento identificativo.
+ */
 class ProfileUpdateRequest extends FormRequest
 {
     /**
-     * Get the validation rules that apply to the request.
+     * Obtiene las reglas de validación para la actualización de perfil.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array Reglas de validación para los campos del perfil.
      */
     public function rules(): array
     {
@@ -37,9 +42,9 @@ class ProfileUpdateRequest extends FormRequest
     }
 
     /**
-     * Get the custom validation messages.
+     * Obtiene los mensajes personalizados de validación para la actualización de perfil.
      *
-     * @return array<string, string>
+     * @return array Mensajes de error personalizados.
      */
     public function messages(): array
     {
@@ -58,9 +63,9 @@ class ProfileUpdateRequest extends FormRequest
     }
 
     /**
-     * Get custom attributes for validator errors.
+     * Obtiene los nombres personalizados de los atributos para los errores de validación.
      *
-     * @return array<string, string>
+     * @return array Nombres personalizados de los campos.
      */
     public function attributes(): array
     {

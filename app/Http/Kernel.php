@@ -4,10 +4,17 @@ namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
+/**
+ * Kernel HTTP principal de la aplicación.
+ *
+ * Define los middleware globales, grupos y alias utilizados en las rutas.
+ */
 class Kernel extends HttpKernel
 {
     /**
-     * Middleware globales (se ejecutan en todas las peticiones)
+     * Middleware globales que se ejecutan en todas las peticiones HTTP.
+     *
+     * @var array Lista de clases de middleware globales.
      */
     protected $middleware = [
         // \App\Http\Middleware\TrustHosts::class,
@@ -20,7 +27,9 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * Grupos de middleware
+     * Grupos de middleware para diferentes contextos (web, api, etc).
+     *
+     * @var array Grupos de middleware por tipo de ruta.
      */
     protected $middlewareGroups = [
         'web' => [
@@ -42,7 +51,9 @@ class Kernel extends HttpKernel
     ];
 
     /**
-     * Alias de middleware para usar en rutas
+     * Alias de middleware para usar en rutas.
+     *
+     * @var array Alias personalizados y estándar para middleware.
      */
     protected $middlewareAliases = [
         'auth' => \App\Http\Middleware\Authenticate::class,

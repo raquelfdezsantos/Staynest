@@ -16,7 +16,9 @@ class StoreReservationRequest extends FormRequest
     /**
      * Determina si el usuario está autorizado para realizar la reserva.
      *
-     * @return bool
+     * Solo permite reservas de usuarios autenticados.
+     *
+     * @return bool True si el usuario está autenticado.
      */
     public function authorize(): bool
     {
@@ -27,7 +29,9 @@ class StoreReservationRequest extends FormRequest
     /**
      * Reglas de validación aplicadas a la solicitud de reserva.
      *
-     * @return array<string, array<int, string>>
+     * Valida fechas, capacidad, desglose de huéspedes y notas.
+     *
+     * @return array Reglas de validación para la reserva.
      */
     public function rules(): array
     {
@@ -48,7 +52,7 @@ class StoreReservationRequest extends FormRequest
     /**
      * Mensajes de error personalizados para las reglas de validación.
      *
-     * @return array<string, string>
+     * @return array Mensajes de error personalizados.
      */
     public function messages(): array
     {
