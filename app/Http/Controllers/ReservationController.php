@@ -20,7 +20,13 @@ use App\Mail\ReservationUpdatedMail;
 use App\Mail\ReservationCancelledMail;
 use App\Mail\PaymentRefundIssuedMail;
 use App\Mail\PaymentBalanceDueMail;
+use App\Mail\ReservationModifiedRefundPendingMail;
+use App\Mail\AdminPaymentRefundIssuedMail;
+use App\Mail\PaymentReceiptMail;
 use Throwable;
+use App\Models\Photo;
+use App\Models\Invoice;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 
 
@@ -72,16 +78,23 @@ class ReservationController extends Controller
     }
 
 
-    /** Listado de reservas del cliente */
+    /**
+     * Muestra el listado de reservas del cliente para una propiedad específica.
+     *
+     * Si el usuario es admin y dueño de la propiedad, redirige al panel de administración.
+     *
+     * @param Property $property Propiedad asociada a las reservas.
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     */
     public function index(Property $property)
     {
         // Si es admin y es dueño de la propiedad, redirigir al panel admin
-        if (\Auth::user()->role === 'admin' && $property->user_id === \Auth::id()) {
+        if (Auth::user()->role === 'admin' && $property->user_id === Auth::id()) {
             return redirect()->route('admin.dashboard');
         }
         
         $reservations = Reservation::with(['property', 'invoice'])
-            ->where('user_id', \Auth::id())
+            ->where('user_id', Auth::id())
             ->latest('check_in')
             ->paginate(10);
 
@@ -119,7 +132,9 @@ class ReservationController extends Controller
         }
 
         $period = CarbonPeriod::create($data['check_in'], $data['check_out'])->excludeEndDate();
-        $dates  = collect($period)->map(fn($d) => $d->toDateString());
+        $dates  = collect($period)->map(function($d) {
+            return is_object($d) && method_exists($d, 'toDateString') ? $d->toDateString() : (string) $d;
+        });
 
         $nights = $dates->count();
         
@@ -129,10 +144,10 @@ class ReservationController extends Controller
             return back()->withErrors(['check_in' => "La estancia mínima es de {$minStayGlobal} noches."])->withInput();
         }
 
-        // --- Fallback: crear filas que falten en RateCalendar para el rango ---
+        // Fallback: crear filas que falten en RateCalendar para el rango
         $missingDates = $dates->filter(function ($d) use ($property) {
             return !RateCalendar::where('property_id', $property->id)
-                ->whereDate('date', $d)
+                ->where('date', is_object($d) && method_exists($d, 'toDateString') ? $d->toDateString() : (string) $d)
                 ->exists();
         });
 
@@ -147,8 +162,8 @@ class ReservationController extends Controller
                 'min_stay'     => 2,
             ]);
         }
-        // ---------------------------------------------------------------------
 
+        // Verificar solapamientos con reservas existentes
         $overlap = Reservation::where('property_id', $property->id)
             ->whereNotIn('status', ['cancelled'])
             ->where(function ($q) use ($data) {
@@ -175,7 +190,7 @@ class ReservationController extends Controller
                 }
             })
             ->get()
-            ->keyBy(fn($r) => $r->date->toDateString());
+            ->keyBy(fn($r) => is_object($r->date) && method_exists($r->date, 'toDateString') ? $r->date->toDateString() : (string) $r->date);
 
         Log::info('Validando disponibilidad', [
             'dates' => $dates->toArray(),
@@ -223,7 +238,7 @@ class ReservationController extends Controller
             $period = CarbonPeriod::create($data['check_in'], $data['check_out'])->excludeEndDate();
             foreach ($period as $d) {
                 RateCalendar::where('property_id', $property->id)
-                    ->whereDate('date', $d->toDateString())
+                    ->where('date', is_object($d) && method_exists($d, 'toDateString') ? $d->toDateString() : (string) $d)
                     ->update(['is_available' => false, 'blocked_by' => 'reservation']);
             }
 
@@ -248,7 +263,7 @@ class ReservationController extends Controller
         }
 
         // Limpiar datos temporales de selección tras crear la reserva
-        try { $request->session()->forget('pending_reservation'); } catch (\Throwable $e) { /* no-op */ }
+        try { $request->session()->forget('pending_reservation'); } catch (Throwable $e) { /* no-op */ }
 
         return redirect()->route('reservas.index')
             ->with('status', 'Reserva creada. Total: ' . number_format($total, 2, ',', '.') . ' €');
@@ -272,14 +287,30 @@ class ReservationController extends Controller
     }
 
 
+    /**
+     * Genera un array de fechas entre dos días (excluyendo el último).
+     * Utiliza CarbonPeriod para crear el rango y devuelve las fechas en formato string.
+     *
+     * @param string $from Fecha de inicio (YYYY-MM-DD).
+     * @param string $to Fecha de fin (YYYY-MM-DD).
+     * @return array Array de fechas en formato string.
+     */
     private function rangeDates(string $from, string $to): array
     {
         // [from, to) excluye la salida
         $period = CarbonPeriod::create($from, $to)->excludeEndDate();
-        return collect($period)->map(fn($d) => $d->toDateString())->all();
+        return collect($period)->map(function($d) {
+            return is_object($d) && method_exists($d, 'toDateString') ? $d->toDateString() : (string) $d;
+        })->all();
     }
 
     /** Genera un código único con formato: SN-YYYY-XXXXXX (máx 20 chars). */
+    /**
+     * Genera un código único para la reserva con formato SN-YYYY-XXXXXX.
+     * Realiza varios intentos para evitar colisiones y asegura longitud máxima de 20 caracteres.
+     *
+     * @return string Código único de reserva.
+     */
     private function generateReservationCode(): string
     {
         $prefix = 'SN-' . now()->format('Y') . '-'; // Ej: SN-2025-
@@ -295,6 +326,15 @@ class ReservationController extends Controller
         return $prefix . $segment;
     }
 
+    /**
+     * Establece la disponibilidad de un conjunto de fechas para una propiedad.
+     * Actualiza el campo is_available en RateCalendar para las fechas indicadas.
+     *
+     * @param int $propertyId ID de la propiedad.
+     * @param array $dates Fechas a modificar.
+     * @param bool $available Estado de disponibilidad.
+     * @return void
+     */
     private function setAvailability(int $propertyId, array $dates, bool $available): void
     {
         if (empty($dates)) return;
@@ -308,7 +348,12 @@ class ReservationController extends Controller
             ->update(['is_available' => $available]);
     }
 
-    /** Form de edición (cliente, permite pending y paid) */
+    /**
+     * Muestra el formulario de edición de una reserva para el cliente (solo estados pending y paid).
+     *
+     * @param Reservation $reservation Reserva a editar.
+     * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     */
     public function edit(Reservation $reservation)
     {
         $this->authorize('update', $reservation);
@@ -322,7 +367,9 @@ class ReservationController extends Controller
 
         // Rango actual de la reserva (para permitir seleccionarlo aunque esté bloqueado)
         $currentPeriod = CarbonPeriod::create($reservation->check_in, $reservation->check_out)->excludeEndDate();
-        $currentNights = collect($currentPeriod)->map(fn($d) => $d->toDateString())->all();
+        $currentNights = collect($currentPeriod)->map(function($d) {
+            return is_object($d) && method_exists($d, 'toDateString') ? $d->toDateString() : (string) $d;
+        })->all();
 
         // Fechas bloqueadas desde RateCalendar, excluyendo las noches de esta reserva
         $blockedDates = RateCalendar::query()
@@ -358,7 +405,15 @@ class ReservationController extends Controller
         ));
     }
 
-    /** Update fechas (cliente, permite pending y paid) */
+    /**
+     * Actualiza las fechas y datos de una reserva para el cliente (solo estados pending y paid).
+     *
+     * Valida solapamientos, disponibilidad y reglas de negocio. Gestiona pagos y reembolsos si hay diferencia.
+     *
+     * @param Request $request Solicitud HTTP con los datos de la reserva.
+     * @param Reservation $reservation Reserva a actualizar.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, Reservation $reservation)
     {
         $this->authorize('update', $reservation);
@@ -417,7 +472,7 @@ class ReservationController extends Controller
                 }
             })
             ->get()
-            ->keyBy(fn($r) => $r->date->toDateString());
+            ->keyBy(fn($r) => is_object($r->date) && method_exists($r->date, 'toDateString') ? $r->date->toDateString() : (string) $r->date);
 
         foreach ($newDates as $d) {
             $rate = $rates->get($d);
@@ -497,7 +552,7 @@ class ReservationController extends Controller
             Log::info('Enviando ReservationModifiedRefundPendingMail al cliente', ['email' => $reservation->user->email]);
             try {
                 Mail::to($reservation->user->email)->send(
-                    new \App\Mail\ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund)
+                    new ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund)
                 );
                 Log::info('ReservationModifiedRefundPendingMail enviado al cliente');
             } catch (Throwable $e) {
@@ -508,7 +563,7 @@ class ReservationController extends Controller
             Log::info('Enviando ReservationModifiedRefundPendingMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
             try {
                 Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(
-                    new \App\Mail\ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund)
+                    new ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund)
                 );
                 Log::info('ReservationModifiedRefundPendingMail enviado al admin');
             } catch (Throwable $e) {
@@ -540,7 +595,7 @@ class ReservationController extends Controller
             Log::info('Enviando AdminPaymentRefundIssuedMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test'), 'refund' => $refund]);
             try {
                 Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(
-                    new \App\Mail\AdminPaymentRefundIssuedMail($reservation, $refund)
+                    new AdminPaymentRefundIssuedMail($reservation, $refund)
                 );
                 Log::info('AdminPaymentRefundIssuedMail enviado al admin');
             } catch (Throwable $e) {
@@ -566,7 +621,7 @@ class ReservationController extends Controller
                 if ($reservation->invoice) {
                     try {
                         Mail::to($reservation->user->email)->send(
-                            new \App\Mail\PaymentReceiptMail($reservation, $reservation->invoice)
+                            new PaymentReceiptMail($reservation, $reservation->invoice)
                         );
                         Log::info('PaymentReceiptMail enviado al cliente por pago adicional');
                     } catch (Throwable $e) {
@@ -598,7 +653,14 @@ class ReservationController extends Controller
         return redirect()->route('reservas.index')->with('success', 'Reserva actualizada correctamente.');
     }
 
-    /** Cancelar (cliente, permite pending y paid) */
+    /**
+     * Cancela una reserva para el cliente (solo estados pending y paid).
+     *
+     * Calcula el posible reembolso según la política y libera las noches en el calendario.
+     *
+     * @param Reservation $reservation Reserva a cancelar.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function cancel(Reservation $reservation)
     {
         $this->authorize('cancel', $reservation);
