@@ -7,20 +7,22 @@ use Illuminate\Http\Request;
 
 /**
  * Middleware que configura los proxies confiables para la aplicación.
+ *
+ * Permite definir las IPs y cabeceras que la aplicación debe considerar como confiables para proxies.
  */
 class TrustProxies extends Middleware
 {
     /**
-     * Las direcciones IP de los proxies confiables.
+     * Direcciones IP de los proxies confiables.
      *
-     * @var array<int, string>|string|null
+     * @var array<int, string>|string|null IPs o rangos de proxies confiables.
      */
     protected $proxies;
 
     /**
-     * Las cabeceras que deben ser utilizadas para detectar proxies.
+     * Cabeceras utilizadas para detectar proxies confiables.
      *
-     * @var int
+     * @var int Máscara de cabeceras HTTP para proxies.
      */
     protected $headers =
         Request::HEADER_X_FORWARDED_FOR |
