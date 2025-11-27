@@ -1,4 +1,12 @@
+
 <?php
+
+/**
+ * Archivo de arranque de la aplicación Laravel.
+ *
+ * Crea y configura la instancia principal de la aplicación,
+ * cargando rutas, middleware, excepciones y proveedores.
+ */
 
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
