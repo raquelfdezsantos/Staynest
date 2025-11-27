@@ -9,12 +9,20 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Mailable para notificar al administrador que el pago de la diferencia ha sido completado.
+ *
+ * Envía un correo con los datos de la reserva y el importe pagado.
+ */
 class AdminPaymentBalanceSettledMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Create a new message instance.
+     * Constructor del mailable.
+     *
+     * @param mixed $reservation Instancia de la reserva.
+     * @param mixed $amount Importe pagado.
      */
     public function __construct(
         public $reservation,
@@ -22,7 +30,9 @@ class AdminPaymentBalanceSettledMail extends Mailable
     ) {}
 
     /**
-     * Get the message envelope.
+     * Define el sobre del correo (asunto, destinatario, etc).
+     *
+     * @return Envelope Sobre del correo con el asunto personalizado.
      */
     public function envelope(): Envelope
     {
@@ -32,7 +42,9 @@ class AdminPaymentBalanceSettledMail extends Mailable
     }
 
     /**
-     * Get the message content definition.
+     * Define el contenido del correo (vista y datos).
+     *
+     * @return Content Contenido del correo con la vista y datos de la reserva y el importe.
      */
     public function content(): Content
     {
@@ -46,9 +58,9 @@ class AdminPaymentBalanceSettledMail extends Mailable
     }
 
     /**
-     * Get the attachments for the message.
+     * Define los archivos adjuntos del correo (ninguno en este caso).
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return array Lista de adjuntos vacía.
      */
     public function attachments(): array
     {

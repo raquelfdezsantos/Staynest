@@ -7,17 +7,35 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Attachment;
 
+/**
+ * Mailable para notificar al administrador sobre una devolución completada.
+ *
+ * Envía un correo con los datos de la reserva, el importe devuelto y la factura si existe.
+ */
 class AdminPaymentRefundIssuedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * Constructor del mailable.
+     *
+     * @param mixed $reservation Instancia de la reserva.
+     * @param mixed $refundAmount Importe devuelto.
+     * @param mixed|null $invoice Factura asociada (opcional).
+     */
     public function __construct(
         public $reservation,
         public $refundAmount,
         public $invoice = null
     ) {}
 
+    /**
+     * Define el sobre del correo (asunto, destinatario, etc).
+     *
+     * @return Envelope Sobre del correo con el asunto personalizado.
+     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -25,6 +43,11 @@ class AdminPaymentRefundIssuedMail extends Mailable
         );
     }
 
+    /**
+     * Define el contenido del correo (vista y datos).
+     *
+     * @return Content Contenido del correo con la vista, datos de la reserva, importe y factura.
+     */
     public function content(): Content
     {
         return new Content(
@@ -37,12 +60,17 @@ class AdminPaymentRefundIssuedMail extends Mailable
         );
     }
 
+    /**
+     * Define los archivos adjuntos del correo (PDF de la factura si existe).
+     *
+     * @return array Lista de adjuntos (puede incluir la factura en PDF).
+     */
     public function attachments(): array
     {
         $attachments = [];
 
         if ($this->invoice && $this->invoice->pdf_path) {
-            $attachments[] = \Illuminate\Mail\Mailables\Attachment::fromStorage($this->invoice->pdf_path)
+            $attachments[] = Attachment::fromStorage($this->invoice->pdf_path)
                 ->as($this->invoice->number . '.pdf')
                 ->withMime('application/pdf');
         }

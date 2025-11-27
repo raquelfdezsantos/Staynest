@@ -11,15 +11,31 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
+/**
+ * Mailable para notificar al administrador sobre un pago recibido.
+ *
+ * Envía un correo con los datos de la reserva y la factura asociada.
+ */
 class AdminPaymentNotificationMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
+    /**
+     * Constructor del mailable.
+     *
+     * @param Reservation $reservation Instancia de la reserva pagada.
+     * @param Invoice $invoice Instancia de la factura asociada.
+     */
     public function __construct(
         public Reservation $reservation,
         public Invoice $invoice
     ) {}
 
+    /**
+     * Define el sobre del correo (asunto, destinatario, etc).
+     *
+     * @return Envelope Sobre del correo con el asunto personalizado.
+     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -27,6 +43,11 @@ class AdminPaymentNotificationMail extends Mailable implements ShouldQueue
         );
     }
 
+    /**
+     * Define el contenido del correo (vista y datos).
+     *
+     * @return Content Contenido del correo con la vista y datos de la reserva y factura.
+     */
     public function content(): Content
     {
         return new Content(
@@ -38,6 +59,11 @@ class AdminPaymentNotificationMail extends Mailable implements ShouldQueue
         );
     }
 
+    /**
+     * Define los archivos adjuntos del correo (ninguno en este caso).
+     *
+     * @return array Lista de adjuntos vacía.
+     */
     public function attachments(): array
     {
         return [];

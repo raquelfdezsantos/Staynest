@@ -9,12 +9,27 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+/**
+ * Mailable para notificar al administrador sobre una nueva reserva pendiente.
+ *
+ * Envía un correo con los datos de la reserva al administrador.
+ */
 class AdminNewReservationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
+    /**
+     * Constructor del mailable.
+     *
+     * @param Reservation $reservation Instancia de la reserva pendiente.
+     */
     public function __construct(public Reservation $reservation) {}
 
+    /**
+     * Define el sobre del correo (asunto, destinatario, etc).
+     *
+     * @return Envelope Sobre del correo con el asunto personalizado.
+     */
     public function envelope(): Envelope
     {
         return new Envelope(
@@ -22,6 +37,11 @@ class AdminNewReservationMail extends Mailable
         );
     }
 
+    /**
+     * Define el contenido del correo (vista y datos).
+     *
+     * @return Content Contenido del correo con la vista y datos de la reserva.
+     */
     public function content(): Content
     {
         return new Content(
@@ -32,6 +52,11 @@ class AdminNewReservationMail extends Mailable
         );
     }
 
+    /**
+     * Define los archivos adjuntos del correo (ninguno en este caso).
+     *
+     * @return array Lista de adjuntos vacía.
+     */
     public function attachments(): array
     {
         return [];
