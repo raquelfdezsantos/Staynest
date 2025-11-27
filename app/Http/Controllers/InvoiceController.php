@@ -8,8 +8,21 @@ use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 
+/**
+ * Controlador para la gestión de facturas.
+ *
+ * Permite listar, mostrar y descargar facturas tanto para clientes como para administradores.
+ */
 class InvoiceController extends Controller
 {
+    /**
+     * Muestra el listado de facturas de un cliente para una propiedad específica.
+     *
+     * Si el usuario es admin y dueño de la propiedad, redirige al panel de administración.
+     *
+     * @param Property $property Propiedad asociada a las facturas.
+    * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
+     */
     public function index(Property $property)
     {
         // Si es admin y es dueño de la propiedad, redirigir al panel admin
@@ -26,10 +39,10 @@ class InvoiceController extends Controller
     }
 
     /**
-     * Muestra los detalles de una factura específica.
+     * Muestra los detalles de una factura específica y permite descargarla en PDF.
      *
      * @param string $number Número de la factura a mostrar.
-     * @return \Illuminate\View\View Vista con los detalles de la factura.
+     * @return \Illuminate\View\View|\Symfony\Component\HttpFoundation\BinaryFileResponse|\Illuminate\Http\Response Vista o descarga PDF de la factura.
      */
     public function show(string $number)
     {
@@ -46,9 +59,9 @@ class InvoiceController extends Controller
         return view('invoices.show', compact('invoice'));
     }
 
-
     /**
-     * Summary of adminIndex
+     * Muestra el listado de todas las facturas para el administrador.
+     *
      * @return \Illuminate\Contracts\View\View
      */
     public function adminIndex()

@@ -8,13 +8,31 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use App\Models\Property;
 
+/**
+ * Controlador para el formulario de contacto.
+ *
+ * Permite mostrar el formulario y procesar el envío de mensajes de contacto asociados a una propiedad.
+ */
 class ContactController extends Controller
 {
+    /**
+     * Muestra el formulario de contacto para una propiedad específica.
+     *
+     * @param Property $property Propiedad asociada al mensaje de contacto.
+     * @return \Illuminate\Contracts\View\View
+     */
     public function create(Property $property)
     {
         return view('contact.form', compact('property'));
     }
 
+    /**
+     * Procesa el envío del formulario de contacto y envía el mensaje por email al administrador.
+     *
+     * @param Property $property Propiedad asociada al mensaje de contacto.
+     * @param Request $request Solicitud HTTP con los datos del formulario.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Property $property, Request $request)
     {
         $data = $request->validate([
