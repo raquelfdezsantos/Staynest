@@ -8,8 +8,22 @@ use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
+/**
+ * Controlador para la obtención de presupuestos de reserva.
+ *
+ * Calcula el precio total de una estancia en función de las fechas, número de huéspedes y tarifas de la propiedad.
+ */
 class QuoteController extends Controller
 {
+    /**
+     * Calcula y devuelve el presupuesto de una reserva en formato JSON.
+     *
+     * Valida los datos recibidos, verifica disponibilidad y suma el precio total según las noches y huéspedes.
+     *
+     * @param Request $request Solicitud HTTP con los datos de la reserva.
+     * @return \Illuminate\Http\JsonResponse
+     * @throws ValidationException Si el rango de fechas no es válido.
+     */
     public function show(Request $request)
     {
         $data = $request->validate([

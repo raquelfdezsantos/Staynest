@@ -98,7 +98,9 @@ class PropertyController extends Controller
 
         $blockedDates = $reservations->flatMap(function ($reservation) {
             $period = CarbonPeriod::create($reservation->check_in, $reservation->check_out)->excludeEndDate();
-            return collect($period)->map(fn($d) => $d->toDateString());
+            return collect($period)->map(function($d) {
+                return is_object($d) && method_exists($d, 'toDateString') ? $d->toDateString() : (string) $d;
+            });
         })
             ->unique()
             ->values()
@@ -144,7 +146,7 @@ class PropertyController extends Controller
         session(['current_property_slug' => $property->slug]);
         $property->load('photos');
 
-        // Fechas bloqueadas desde tu RateCalendar
+        // Fechas bloqueadas desde RateCalendar
         $blockedDates = RateCalendar::query()
             ->where('property_id', $property->id)
             ->where('is_available', false)
@@ -161,7 +163,7 @@ class PropertyController extends Controller
         $checkinDates = $reservations->pluck('check_in')->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))->unique()->values()->toArray();
         $checkoutDates = $reservations->pluck('check_out')->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))->unique()->values()->toArray();
 
-        // Precio "desde" (si lo usas)
+        // Precio "desde"
         $fromPrice = RateCalendar::where('property_id', $property->id)
             ->where('is_available', true)
             ->min('price');
