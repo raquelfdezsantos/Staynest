@@ -1,15 +1,12 @@
 <?php
 
+
 /**
- * -----------------------------------------------------------------------------
- *  Descripción:
- *    Controlador del área de administración. Permite:
- *      - Ver el listado de reservas con filtros básicos.
- *      - Cancelar reservas pendientes y reponer noches en el calendario.
- *  Notas:
- *    - Requiere middleware de autenticación y rol 'admin'.
- *    - La reposición de noches afecta a RateCalendar indicando disponibilidad=true.
- * -----------------------------------------------------------------------------
+ * Controlador del área de administración.
+ *
+ * Permite gestionar reservas, propiedades, fotos, calendario y precios, así como realizar cancelaciones, reembolsos y bloqueos de fechas.
+ * Requiere autenticación y rol 'admin'.
+ * La reposición de noches afecta a RateCalendar indicando disponibilidad=true.
  */
 
 namespace App\Http\Controllers;
@@ -19,12 +16,16 @@ use App\Models\RateCalendar;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Carbon\CarbonPeriod;
 use Carbon\Carbon;
 use App\Models\Payment;
+use App\Models\Invoice;
 use Illuminate\Support\Str;
 use App\Models\Property;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Photo;
 use App\Mail\ReservationCancelledMail;
 use App\Mail\PaymentRefundIssuedMail;
 use App\Mail\AdminPaymentRefundIssuedMail;
@@ -44,7 +45,7 @@ class AdminController extends Controller
      */
     public function index(Request $request)
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         
         $query = Reservation::with(['user', 'property', 'invoice', 'invoices'])
             ->whereHas('property', function($q) use ($adminId) {
@@ -100,12 +101,18 @@ class AdminController extends Controller
     }
 
     /**
-     * Dashboard filtrado por una propiedad específica
+     * Muestra el dashboard filtrado por una propiedad específica.
+     *
+     * Verifica que la propiedad pertenezca al admin y muestra estadísticas y reservas solo de esa propiedad.
+     *
+     * @param Request $request Solicitud HTTP con filtros opcionales.
+     * @param Property $property Propiedad a filtrar.
+     * @return \Illuminate\Contracts\View\View
      */
     public function propertyDashboardFiltered(Request $request, Property $property)
     {
         // Verificar que la propiedad pertenece al admin
-        if ($property->user_id !== auth()->id()) {
+        if ($property->user_id !== Auth::id()) {
             abort(403, 'No autorizado');
         }
 
@@ -155,11 +162,13 @@ class AdminController extends Controller
     }
 
     /**
-     * Calcula el porcentaje de ocupación del mes actual.
+     * Calcula el porcentaje de ocupación del mes actual para todas las propiedades del admin.
+     *
+     * @return float Porcentaje de ocupación.
      */
     private function calculateOccupancyRate(): float
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         $startOfMonth = now()->startOfMonth();
         $endOfMonth = now()->endOfMonth();
         $daysInMonth = $startOfMonth->daysInMonth;
@@ -189,6 +198,9 @@ class AdminController extends Controller
 
     /**
      * Calcula el porcentaje de ocupación del mes actual para una propiedad específica.
+     *
+     * @param int $propertyId ID de la propiedad.
+     * @return float Porcentaje de ocupación.
      */
     private function calculateOccupancyRateForProperty(int $propertyId): float
     {
@@ -218,19 +230,17 @@ class AdminController extends Controller
     }
 
     /**
-     * Cancela una reserva "pending" y repone las noches al calendario.
+     * Cancela una reserva pendiente y repone las noches al calendario.
      *
-     * Reglas:
-     *  - Solo reservas con estado 'pending' pueden cancelarse aquí.
-     *  - Reposición: marca como disponibles (is_available=true) las fechas del
-     *    rango [check_in, check_out) para la propiedad asociada.
+     * Solo reservas con estado 'pending' pueden cancelarse aquí. Marca como disponibles las fechas del rango [check_in, check_out) para la propiedad asociada.
+     * Envía notificaciones de cancelación al cliente y al admin.
      *
-     * @param  int  $reservationId
+     * @param int $reservationId ID de la reserva a cancelar.
      * @return \Illuminate\Http\RedirectResponse
      */
     public function cancel(int $reservationId)
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         
         $reservation = Reservation::query()
             ->where('id', $reservationId)
@@ -256,26 +266,26 @@ class AdminController extends Controller
             // Reponemos cada día del rango [check_in, check_out)
             for ($date = $start->copy(); $date->lt($end); $date->addDay()) {
                 RateCalendar::where('property_id', $reservation->property_id)
-                    ->whereDate('date', $date->toDateString())
+                    ->where('date', $date->toDateString())
                     ->update(['is_available' => true, 'blocked_by' => null]);
             }
         });
 
         // Notificaciones de cancelación (cliente y admin)
-        \Log::info('Intentando enviar ReservationCancelledMail al cliente', ['email' => $reservation->user->email]);
+        Log::info('Intentando enviar ReservationCancelledMail al cliente', ['email' => $reservation->user->email]);
         try {
-            \Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation));
-            \Log::info('ReservationCancelledMail enviado al cliente', ['email' => $reservation->user->email]);
+            Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation));
+            Log::info('ReservationCancelledMail enviado al cliente', ['email' => $reservation->user->email]);
         } catch (\Throwable $e) {
-            \Log::error('Fallo ReservationCancelledMail cliente', ['msg' => $e->getMessage()]);
+            Log::error('Fallo ReservationCancelledMail cliente', ['msg' => $e->getMessage()]);
             report($e);
         }
-        \Log::info('Intentando enviar ReservationCancelledMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+        Log::info('Intentando enviar ReservationCancelledMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
         try {
-            \Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationCancelledMail($reservation));
-            \Log::info('ReservationCancelledMail enviado al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationCancelledMail($reservation));
+            Log::info('ReservationCancelledMail enviado al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
         } catch (\Throwable $e) {
-            \Log::error('Fallo ReservationCancelledMail admin', ['msg' => $e->getMessage()]);
+            Log::error('Fallo ReservationCancelledMail admin', ['msg' => $e->getMessage()]);
             report($e);
         }
 
@@ -283,11 +293,29 @@ class AdminController extends Controller
     }
 
 
+
+    /**
+     * Genera un array de fechas entre dos días (excluyendo el último).
+     *
+     * @param string $from Fecha de inicio (YYYY-MM-DD).
+     * @param string $to Fecha de fin (YYYY-MM-DD).
+     * @return array Array de fechas en formato string.
+     */
     private function rangeDates(string $from, string $to): array
     {
         $period = CarbonPeriod::create($from, $to)->excludeEndDate();
-        return collect($period)->map(fn($d) => $d->toDateString())->all();
+        return collect($period)->map(function($d) {
+            return is_object($d) && method_exists($d, 'toDateString') ? $d->toDateString() : (string) $d;
+        })->all();
     }
+
+    /**
+     * Establece la disponibilidad de un conjunto de fechas para una propiedad.
+     *
+     * @param int $propertyId ID de la propiedad.
+     * @param array $dates Fechas a modificar.
+     * @param bool $available Estado de disponibilidad.
+     */
     private function setAvailability(int $propertyId, array $dates, bool $available): void
     {
         if (empty($dates)) return;
@@ -296,10 +324,15 @@ class AdminController extends Controller
             ->update(['is_available' => $available]);
     }
 
-    /** Form edición (admin) */
+    /**
+     * Muestra el formulario de edición de una reserva para el admin.
+     *
+     * @param int $id ID de la reserva.
+     * @return \Illuminate\Contracts\View\View
+     */
     public function edit(int $id)
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         
         $reservation = Reservation::with('property', 'user')
             ->whereHas('property', function($q) use ($adminId) {
@@ -309,10 +342,15 @@ class AdminController extends Controller
         return view('admin.reservations.edit', compact('reservation')); // crea vista simple
     }
 
-    /** Vista de detalles (admin) */
+    /**
+     * Muestra la vista de detalles de una reserva para el admin.
+     *
+     * @param Reservation $reservation Reserva a mostrar.
+     * @return \Illuminate\Contracts\View\View
+     */
     public function show(Reservation $reservation)
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         
         // Verificar que la reserva pertenece a una propiedad del admin
         if ($reservation->property->user_id !== $adminId) {
@@ -323,10 +361,18 @@ class AdminController extends Controller
         return view('admin.reservations.show', compact('reservation'));
     }
 
-    /** Update (admin) — permite pending/paid */
+    /**
+     * Actualiza una reserva (solo estados pending/paid) y notifica cambios.
+     *
+     * Valida fechas, huéspedes y disponibilidad. Notifica por email al cliente y admin. Si hay diferencia a devolver, simula reembolso.
+     *
+     * @param Request $request Solicitud HTTP con los datos de la reserva.
+     * @param int $id ID de la reserva.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function update(Request $request, int $id)
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         
         $reservation = Reservation::with('property')
             ->whereHas('property', function($q) use ($adminId) {
@@ -364,11 +410,11 @@ class AdminController extends Controller
         $rates = RateCalendar::where('property_id', $property->id)
             ->where(function($q) use ($newDates) {
                 foreach ($newDates as $d) {
-                    $q->orWhereDate('date', $d);
+                    $q->orWhere('date', $d);
                 }
             })
             ->get()
-            ->keyBy(fn($r) => $r->date->toDateString());
+            ->keyBy(fn($r) => is_object($r->date) && method_exists($r->date, 'toDateString') ? $r->date->toDateString() : (string) $r->date);
 
         foreach ($newDates as $d) {
             $rate = $rates->get($d);
@@ -392,20 +438,20 @@ class AdminController extends Controller
         });
 
         // Notificaciones por email (cliente y admin)
-        \Log::info('Intentando enviar ReservationUpdatedMail al cliente', ['email' => $reservation->user->email]);
+        Log::info('Intentando enviar ReservationUpdatedMail al cliente', ['email' => $reservation->user->email]);
         try {
-            \Mail::to($reservation->user->email)->send(new ReservationUpdatedMail($reservation));
-            \Log::info('ReservationUpdatedMail enviado al cliente', ['email' => $reservation->user->email]);
+            Mail::to($reservation->user->email)->send(new ReservationUpdatedMail($reservation));
+            Log::info('ReservationUpdatedMail enviado al cliente', ['email' => $reservation->user->email]);
         } catch (\Throwable $e) {
-            \Log::error('Fallo ReservationUpdatedMail cliente', ['msg' => $e->getMessage()]);
+            Log::error('Fallo ReservationUpdatedMail cliente', ['msg' => $e->getMessage()]);
             report($e);
         }
-        \Log::info('Intentando enviar ReservationUpdatedMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+        Log::info('Intentando enviar ReservationUpdatedMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
         try {
-            \Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationUpdatedMail($reservation));
-            \Log::info('ReservationUpdatedMail enviado al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationUpdatedMail($reservation));
+            Log::info('ReservationUpdatedMail enviado al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
         } catch (\Throwable $e) {
-            \Log::error('Fallo ReservationUpdatedMail admin', ['msg' => $e->getMessage()]);
+            Log::error('Fallo ReservationUpdatedMail admin', ['msg' => $e->getMessage()]);
             report($e);
         }
 
@@ -424,7 +470,7 @@ class AdminController extends Controller
                 ]);
             });
             try {
-                \Mail::to($reservation->user->email)->send(new PaymentRefundIssuedMail($reservation, $refund));
+                Mail::to($reservation->user->email)->send(new PaymentRefundIssuedMail($reservation, $refund));
             } catch (\Throwable $e) {
                 report($e);
             }
@@ -434,9 +480,17 @@ class AdminController extends Controller
     }
 
 
+    /**
+     * Procesa el reembolso de una reserva pagada, cancela la reserva y genera factura rectificativa.
+     *
+     * Envía notificaciones de cancelación y reembolso al cliente y al admin.
+     *
+     * @param int $id ID de la reserva.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function refund(int $id)
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         
         $reservation = Reservation::with('property')
             ->whereHas('property', function($q) use ($adminId) {
@@ -455,7 +509,7 @@ class AdminController extends Controller
 
             for ($d = $reservation->check_in->copy(); $d->lt($reservation->check_out); $d->addDay()) {
                 RateCalendar::where('property_id', $reservation->property_id)
-                    ->whereDate('date', $d->toDateString())
+                    ->where('date', $d->toDateString())
                     ->update(['is_available' => true, 'blocked_by' => null]);
             }
 
@@ -469,10 +523,10 @@ class AdminController extends Controller
             ]);
 
             // 3) Generar factura rectificativa
-            $count = \App\Models\Invoice::count() + 1;
+            $count = Invoice::count() + 1;
             $invoiceNumber = 'RECT-' . now()->year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
             
-            return \App\Models\Invoice::create([
+            return Invoice::create([
                 'reservation_id' => $reservation->id,
                 'number' => $invoiceNumber,
                 'pdf_path' => null,
@@ -483,22 +537,22 @@ class AdminController extends Controller
 
         // Notificaciones de cancelación y reembolso (cliente y admin)
         try {
-            \Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation));
+            Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation));
         } catch (\Throwable $e) {
             report($e);
         }
         try {
-            \Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationCancelledMail($reservation));
+            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationCancelledMail($reservation));
         } catch (\Throwable $e) {
             report($e);
         }
         try {
-            \Mail::to($reservation->user->email)->send(new PaymentRefundIssuedMail($reservation, $refund, $refundInvoice));
+            Mail::to($reservation->user->email)->send(new PaymentRefundIssuedMail($reservation, $refund, $refundInvoice));
         } catch (\Throwable $e) {
             report($e);
         }
         try {
-            \Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new AdminPaymentRefundIssuedMail($reservation, $refund, $refundInvoice));
+            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new AdminPaymentRefundIssuedMail($reservation, $refund, $refundInvoice));
         } catch (\Throwable $e) {
             report($e);
         }
@@ -507,6 +561,14 @@ class AdminController extends Controller
     }
 
 
+    /**
+     * Bloquea noches en el calendario de una propiedad.
+     *
+     * No permite bloquear si existen reservas que solapan el rango. Marca las fechas como no disponibles.
+     *
+     * @param Request $request Solicitud HTTP con las fechas y propiedad.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function blockDates(Request $request)
     {
         $data = $request->validate([
@@ -519,10 +581,10 @@ class AdminController extends Controller
         if (!$prop) {
             // Fallback para rutas antiguas
             $request->validate(['property_id' => ['required', 'exists:properties,id']]);
-            $prop = Property::where('user_id', auth()->id())->findOrFail($request->input('property_id'));
+            $prop = Property::where('user_id', Auth::id())->findOrFail($request->input('property_id'));
         } else {
             // Verificar que la propiedad pertenece al admin
-            if ($prop->user_id !== auth()->id()) {
+            if ($prop->user_id !== Auth::id()) {
                 abort(403, 'No autorizado');
             }
         }
@@ -558,6 +620,14 @@ class AdminController extends Controller
         return back()->with('success', 'Noches bloqueadas correctamente.');
     }
 
+    /**
+     * Desbloquea noches en el calendario de una propiedad.
+     *
+     * Marca las fechas como disponibles en el calendario.
+     *
+     * @param Request $request Solicitud HTTP con las fechas y propiedad.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function unblockDates(Request $request)
     {
         $data = $request->validate([
@@ -570,10 +640,10 @@ class AdminController extends Controller
         if (!$prop) {
             // Fallback para rutas antiguas
             $request->validate(['property_id' => ['required', 'exists:properties,id']]);
-            $prop = Property::where('user_id', auth()->id())->findOrFail($request->input('property_id'));
+            $prop = Property::where('user_id', Auth::id())->findOrFail($request->input('property_id'));
         } else {
             // Verificar que la propiedad pertenece al admin
-            if ($prop->user_id !== auth()->id()) {
+            if ($prop->user_id !== Auth::id()) {
                 abort(403, 'No autorizado');
             }
         }
@@ -593,12 +663,17 @@ class AdminController extends Controller
     }
 
     /**
-     * Soft delete de la propiedad con cancelación de reservas futuras.
+     * Elimina (soft delete) una propiedad y cancela sus reservas futuras.
+     *
+     * Libera fechas, procesa reembolsos y envía notificaciones. Envía confirmación al admin.
+     *
+     * @param Property $property Propiedad a eliminar.
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroyProperty(Property $property)
     {
         // Verificar que la propiedad pertenece al admin
-        if ($property->user_id !== auth()->id()) {
+        if ($property->user_id !== Auth::id()) {
             abort(403, 'No autorizado');
         }
         
@@ -689,11 +764,14 @@ class AdminController extends Controller
 
     /**
      * Muestra el formulario de edición de la propiedad.
+     *
+     * @param Property $property Propiedad a editar.
+     * @return \Illuminate\Contracts\View\View
      */
     public function propertyEdit(Property $property)
     {
         // Verificar que la propiedad pertenece al admin
-        if ($property->user_id !== auth()->id()) {
+        if ($property->user_id !== Auth::id()) {
             abort(403, 'No autorizado');
         }
 
@@ -708,11 +786,15 @@ class AdminController extends Controller
 
     /**
      * Actualiza los datos de la propiedad.
+     *
+     * @param Request $request Solicitud HTTP con los datos de la propiedad.
+     * @param Property $property Propiedad a actualizar.
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function propertyUpdate(Request $request, Property $property)
     {
         // Verificar que la propiedad pertenece al admin
-        if ($property->user_id !== auth()->id()) {
+        if ($property->user_id !== Auth::id()) {
             abort(403, 'No autorizado');
         }
         
@@ -737,11 +819,14 @@ class AdminController extends Controller
 
     /**
      * Lista las fotos de la propiedad y permite gestionarlas.
+     *
+     * @param Property $property Propiedad cuyas fotos se gestionan.
+     * @return \Illuminate\Contracts\View\View
      */
     public function photosIndex(Property $property)
     {
         // Verificar que la propiedad pertenece al admin
-        if ($property->user_id !== auth()->id()) {
+        if ($property->user_id !== Auth::id()) {
             abort(403, 'No autorizado');
         }
 
@@ -753,10 +838,13 @@ class AdminController extends Controller
 
     /**
      * Sube una o varias fotos a la propiedad.
+     *
+     * @param Request $request Solicitud HTTP con las fotos y propiedad.
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function photosStore(Request $request)
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         
         // Obtener property desde route binding o request
         $property = $request->route('property');
@@ -797,13 +885,16 @@ class AdminController extends Controller
     }
 
     /**
-     * Elimina una foto.
+     * Elimina una foto de una propiedad.
+     *
+     * @param int $photoId ID de la foto a eliminar.
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function photosDestroy($photoId)
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         
-        $photo = \App\Models\Photo::with('property')
+        $photo = Photo::with('property')
             ->whereHas('property', function($q) use ($adminId) {
                 $q->where('user_id', $adminId);
             })
@@ -811,7 +902,7 @@ class AdminController extends Controller
 
         // Eliminar archivo físico solo si es local (no URL externa)
         if (!str_starts_with($photo->url, 'http')) {
-            \Storage::disk('public')->delete($photo->url);
+            Storage::disk('public')->delete($photo->url);
         }
 
         // Eliminar registro de BD
@@ -821,11 +912,14 @@ class AdminController extends Controller
     }
 
     /**
-     * Actualiza el orden de las fotos.
-     */
+    * Actualiza el orden de las fotos de una propiedad.
+    *
+    * @param Request $request Solicitud HTTP con el nuevo orden.
+    * @return \Illuminate\Http\JsonResponse
+    */
     public function photosReorder(Request $request)
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         
         $request->validate([
             'order' => 'required|array',
@@ -833,7 +927,7 @@ class AdminController extends Controller
         ]);
 
         foreach ($request->order as $index => $photoId) {
-            \App\Models\Photo::whereHas('property', function($q) use ($adminId) {
+            Photo::whereHas('property', function($q) use ($adminId) {
                 $q->where('user_id', $adminId);
             })
             ->where('id', $photoId)
@@ -844,20 +938,23 @@ class AdminController extends Controller
     }
 
     /**
-     * Marca una foto como portada (is_cover).
+     * Marca una foto como portada (is_cover) de una propiedad.
+     *
+     * @param int $photoId ID de la foto a marcar como portada.
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function photosSetCover($photoId)
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         
-        $photo = \App\Models\Photo::with('property')
+        $photo = Photo::with('property')
             ->whereHas('property', function($q) use ($adminId) {
                 $q->where('user_id', $adminId);
             })
             ->findOrFail($photoId);
         
         // Quitar is_cover de todas las fotos de la propiedad
-        \App\Models\Photo::where('property_id', $photo->property_id)->update(['is_cover' => false]);
+        Photo::where('property_id', $photo->property_id)->update(['is_cover' => false]);
         
         // Marcar la seleccionada
         $photo->update(['is_cover' => true]);
@@ -866,12 +963,14 @@ class AdminController extends Controller
     }
 
     /**
-     * Muestra el listado de todas las propiedades (activas y borradas).
+     * Muestra el listado de todas las propiedades (activas y borradas) del admin.
+     *
+     * @return \Illuminate\Contracts\View\View
      */
     public function propertiesIndex()
     {
         $properties = Property::withTrashed()
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->with('photos')
             ->latest()
             ->get();
@@ -881,11 +980,14 @@ class AdminController extends Controller
 
     /**
      * Muestra el dashboard de una propiedad específica con sus reservas.
+     *
+     * @param Property $property Propiedad a mostrar.
+     * @return \Illuminate\Contracts\View\View
      */
     public function propertyDashboard(Property $property)
     {
         // Verificar que la propiedad pertenece al admin
-        if ($property->user_id !== auth()->id()) {
+        if ($property->user_id !== Auth::id()) {
             abort(403, 'No autorizado');
         }
         
@@ -901,6 +1003,8 @@ class AdminController extends Controller
 
     /**
      * Muestra el formulario para crear una nueva propiedad.
+     *
+     * @return \Illuminate\Contracts\View\View
      */
     public function propertiesCreate()
     {
@@ -909,6 +1013,9 @@ class AdminController extends Controller
 
     /**
      * Almacena una nueva propiedad.
+     *
+     * @param Request $request Solicitud HTTP con los datos de la nueva propiedad.
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function propertiesStore(Request $request)
     {
@@ -925,7 +1032,7 @@ class AdminController extends Controller
             'rental_registration' => 'nullable|string|max:100',
         ]);
 
-        $validated['user_id'] = auth()->id();
+        $validated['user_id'] = Auth::id();
         $property = Property::create($validated);
 
         return redirect()
@@ -934,11 +1041,14 @@ class AdminController extends Controller
     }
 
     /**
-     * Restaura una propiedad soft-deleted.
+     * Restaura una propiedad eliminada (soft delete).
+     *
+     * @param int $propertyId ID de la propiedad a restaurar.
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function propertiesRestore($propertyId)
     {
-        $adminId = auth()->id();
+        $adminId = Auth::id();
         
         $property = Property::withTrashed()
             ->where('user_id', $adminId)
@@ -955,11 +1065,14 @@ class AdminController extends Controller
 
     /**
      * Muestra el calendario con la propiedad pre-seleccionada si se pasa property_id.
+     *
+     * @param Property $property Propiedad seleccionada.
+     * @return \Illuminate\Contracts\View\View
      */
     public function calendarIndex(Property $property)
     {
         // Verificar que la propiedad pertenece al admin
-        if ($property->user_id !== auth()->id()) {
+        if ($property->user_id !== Auth::id()) {
             abort(403, 'No autorizado');
         }
         
@@ -967,14 +1080,14 @@ class AdminController extends Controller
         $blockedDates = [];
         
         // 1. Fechas bloqueadas manualmente
-        $manuallyBlocked = \App\Models\RateCalendar::where('property_id', $selectedPropertyId)
+        $manuallyBlocked = RateCalendar::where('property_id', $selectedPropertyId)
             ->where('is_available', false)
             ->pluck('date')
-            ->map(fn($d) => \Carbon\Carbon::parse($d)->format('Y-m-d'))
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
             ->toArray();
 
         // 2. Fechas ocupadas por reservas activas
-        $occupiedDates = \App\Models\Reservation::where('property_id', $selectedPropertyId)
+        $occupiedDates = Reservation::where('property_id', $selectedPropertyId)
             ->whereIn('status', ['pending', 'paid'])
             ->get()
             ->flatMap(function ($reservation) {
@@ -994,7 +1107,10 @@ class AdminController extends Controller
     }
 
     /**
-     * Establece el precio por noche para un rango de fechas.
+     * Establece el precio por noche para un rango de fechas en una propiedad.
+     *
+     * @param Request $request Solicitud HTTP con el precio y rango de fechas.
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function setPrice(Request $request)
     {
@@ -1010,25 +1126,25 @@ class AdminController extends Controller
             // Fallback para rutas antiguas que usan property_id
             $propertyId = $request->input('property_id');
             $property = Property::where('id', $propertyId)
-                ->where('user_id', auth()->id())
+                ->where('user_id', Auth::id())
                 ->firstOrFail();
         } else {
             // Verificar que la propiedad pertenece al admin
-            if ($property->user_id !== auth()->id()) {
+            if ($property->user_id !== Auth::id()) {
                 abort(403, 'No autorizado');
             }
         }
 
         $propertyId = $property->id;
         $price = $request->input('price');
-        $start = \Carbon\Carbon::parse($request->input('start'));
-        $end = \Carbon\Carbon::parse($request->input('end'));
+        $start = Carbon::parse($request->input('start'));
+        $end = Carbon::parse($request->input('end'));
 
         $datesUpdated = 0;
         $current = $start->copy();
 
         while ($current->lte($end)) {
-            \App\Models\RateCalendar::updateOrCreate(
+            RateCalendar::updateOrCreate(
                 [
                     'property_id' => $propertyId,
                     'date' => $current->format('Y-m-d'),
