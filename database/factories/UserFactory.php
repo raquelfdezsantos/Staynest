@@ -7,19 +7,24 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 /**
+ * Factory UserFactory
+ *
+ * Genera datos simulados para el modelo User en pruebas y seeders.
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
  */
 class UserFactory extends Factory
 {
     /**
-     * The current password being used by the factory.
+     * Contraseña actual utilizada por la factory.
+     *
+     * @var string|null
      */
     protected static ?string $password;
 
     /**
-     * Define the model's default state.
+     * Define el estado por defecto del modelo User.
      *
-     * @return array<string, mixed>
+     * @return array<string, mixed> Datos simulados para un usuario
      */
     public function definition(): array
     {
@@ -33,7 +38,9 @@ class UserFactory extends Factory
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * Indica que el email del usuario debe estar sin verificar.
+     *
+     * @return static Estado del usuario con email no verificado
      */
     public function unverified(): static
     {
