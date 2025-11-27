@@ -11,6 +11,24 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * Representa una vivienda turística registrada en el sistema.
  * Cada propiedad tiene fotos, un calendario de tarifas y reservas asociadas.
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $name
+ * @property string $slug
+ * @property string $description
+ * @property string $address
+ * @property string $city
+ * @property string $postal_code
+ * @property string $province
+ * @property int $capacity
+ * @property string $tourism_license
+ * @property string $rental_registration
+ * @property float $latitude
+ * @property float $longitude
+ * @property array $services
+ * @property string $owner_name
+ * @property string $owner_tax_id
  */
 class Property extends Model
 {
@@ -43,7 +61,7 @@ class Property extends Model
     /**
      * Relación: una propiedad pertenece a un usuario admin.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, Property>
      */
     public function user()
     {
@@ -53,7 +71,7 @@ class Property extends Model
     /**
      * Relación: una propiedad puede tener muchas fotos.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Photo>
      */
     public function photos()
     {
@@ -63,7 +81,7 @@ class Property extends Model
     /**
      * Relación: una propiedad tiene un calendario de tarifas.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<RateCalendar>
      */
     public function rateCalendar()
     {

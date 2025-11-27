@@ -106,7 +106,9 @@ class Reservation extends Model
 
 
     /**
-     * Total realmente pagado (succeeded) menos refunds.
+     * Calcula el total realmente pagado (pagos con estado 'succeeded' menos reembolsos).
+     *
+     * @return float Total pagado neto (incluye reembolsos como negativos)
      */
     public function paidAmount(): float
     {
@@ -122,6 +124,11 @@ class Reservation extends Model
         return $paid + $refunded; // refunds son negativos
     }
 
+    /**
+     * Calcula el total reembolsado en la reserva.
+     *
+     * @return float Monto total reembolsado
+     */
     public function refundedAmount(): float
     {
         if ($this->relationLoaded('payments')) {
@@ -133,12 +140,22 @@ class Reservation extends Model
             ->sum('amount');
     }
 
+    /**
+     * Calcula el saldo pendiente de pago en la reserva.
+     *
+     * @return float Monto pendiente de pago
+     */
     public function balanceDue(): float
     {
         // Lo que falta por cobrar si total > pagado; 0 si no.
         return max(0, (float)$this->total_price - $this->paidAmount());
     }
 
+    /**
+     * Calcula el exceso pagado sobre el total de la reserva.
+     *
+     * @return float Monto pagado en exceso
+     */
     public function overpaid(): float
     {
         // Exceso pagado (para detectar devoluciones); 0 si no.
@@ -146,9 +163,10 @@ class Reservation extends Model
     }
 
     /**
-     * Porcentaje de reembolso aplicable al cancelar según días restantes.
-     * Política definida en config/reservations.php.
-     * Sólo aplica si la reserva está pagada.
+     * Calcula el porcentaje de reembolso aplicable al cancelar según días restantes.
+     * Política definida en config/reservations.php. Sólo aplica si la reserva está pagada.
+     *
+     * @return int Porcentaje de reembolso aplicable
      */
     public function cancellationRefundPercent(): int
     {

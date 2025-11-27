@@ -11,6 +11,19 @@ use Illuminate\Notifications\Notifiable;
  *
  * Representa a los usuarios del sistema, que pueden ser clientes o administradores.
  * Gestiona la autenticación, notificaciones y relaciones con sus reservas.
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $password
+ * @property string $role
+ * @property string|null $phone
+ * @property string|null $avatar_path
+ * @property string|null $address
+ * @property string|null $document_id
+ * @property \Illuminate\Support\Carbon|null $birth_date
+ * @property string|null $payment_method
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
  */
 class User extends Authenticatable
 {
@@ -47,7 +60,7 @@ class User extends Authenticatable
     /**
      * Relación: un usuario admin puede tener varias propiedades.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Property>
      */
     public function properties()
     {

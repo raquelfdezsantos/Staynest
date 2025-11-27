@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -9,6 +10,12 @@ use Illuminate\Database\Eloquent\Model;
  *
  * Gestiona las fotografías asociadas a una propiedad.
  * Cada foto pertenece a una única propiedad y contiene su ruta de almacenamiento.
+ *
+ * @property int $id
+ * @property int $property_id
+ * @property string $url
+ * @property bool $is_cover
+ * @property int $sort_order
  */
 class Photo extends Model
 {
@@ -25,6 +32,8 @@ class Photo extends Model
 
     /**
      * Relación: una foto pertenece a una propiedad.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Property, Photo>
      */
     public function property()
     {

@@ -10,6 +10,14 @@ use Illuminate\Database\Eloquent\Model;
  *
  * Representa el calendario de tarifas y disponibilidad de una propiedad.
  * Define el precio por noche, la estancia mínima y el estado de reserva de cada fecha.
+ *
+ * @property int $id
+ * @property int $property_id
+ * @property \Illuminate\Support\Carbon $date
+ * @property float $price
+ * @property bool $is_available
+ * @property int $min_stay
+ * @property string|null $blocked_by
  */
 class RateCalendar extends Model
 {
