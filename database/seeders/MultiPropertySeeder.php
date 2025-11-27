@@ -14,7 +14,7 @@ class MultiPropertySeeder extends Seeder
     /**
      * Run the database seeds.
      * 
-     * ⚠️ IMPORTANTE: Este seeder es SOLO para DEMOSTRACIÓN de escalabilidad (RNF9).
+     * IMPORTANTE: Este seeder es SOLO para DEMOSTRACIÓN de escalabilidad (RNF9).
      * 
      * Crea 3 propiedades adicionales con datos realistas:
      * - 2 propiedades activas con fotos y calendario completo
