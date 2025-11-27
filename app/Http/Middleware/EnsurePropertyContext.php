@@ -6,8 +6,23 @@ use Closure;
 use Illuminate\Http\Request;
 use App\Models\Property;
 
+/**
+ * Middleware para asegurar el contexto de propiedad en la sesión y las vistas.
+ *
+ * Establece la propiedad actual según la sesión, la query o por defecto, y la comparte con las vistas.
+ */
 class EnsurePropertyContext
 {
+    /**
+     * Maneja la verificación y establecimiento del contexto de propiedad.
+     *
+     * Busca la propiedad en sesión, query o por defecto y la comparte con las vistas.
+     * Redirige si es necesario para establecer la URL canónica.
+     *
+     * @param Request $request Solicitud HTTP.
+     * @param Closure $next Siguiente middleware o controlador.
+     * @return mixed Respuesta HTTP o redirección.
+     */
     public function handle(Request $request, Closure $next)
     {
         // Si ya hay contexto en sesión, intentar cargarlo

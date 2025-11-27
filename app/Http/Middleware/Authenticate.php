@@ -7,14 +7,16 @@ use Illuminate\Http\Request;
 
 /**
  * Middleware que verifica si el usuario está autenticado.
+ *
+ * Redirige a la página de login si el usuario no está autenticado.
  */
 class Authenticate extends Middleware
 {
     /**
-     * Redirige al login si no está autenticado.
-     * 
-     * @param \Illuminate\Http\Request $request
-     * @return string|null
+     * Determina la ruta a la que se debe redirigir si el usuario no está autenticado.
+     *
+     * @param Request $request Solicitud HTTP.
+     * @return string|null Ruta de redirección o null si espera JSON.
      */
     protected function redirectTo(Request $request): ?string
     {
