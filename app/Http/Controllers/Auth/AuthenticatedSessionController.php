@@ -9,10 +9,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
+
+/**
+ * Controlador para la gestión de sesiones autenticadas.
+ *
+ * Permite mostrar la vista de login, procesar la autenticación de usuarios y cerrar la sesión.
+ */
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Muestra la vista de inicio de sesión.
+     *
+     * @return View Vista de login.
      */
     public function create(): View
     {
@@ -20,7 +28,12 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Procesa la solicitud de autenticación de usuario.
+     *
+     * Valida las credenciales, gestiona el contexto de la propiedad y redirige según el tipo de usuario y la propiedad detectada.
+     *
+     * @param LoginRequest $request Solicitud de login con credenciales y contexto.
+     * @return RedirectResponse Redirección a la página correspondiente tras el login.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -28,7 +41,6 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = $request->user();
-        
         // Detectar propiedad: prioridad query, luego sesión, luego URL intended
         $propertySlug = $request->input('property')
             ?: session('current_property_slug');
@@ -39,7 +51,6 @@ class AuthenticatedSessionController extends Controller
                 $propertySlug = $matches[1];
             }
         }
-        
         // Para admin: verificar si es su propiedad o no
         if ($user->role === 'admin') {
             if ($propertySlug) {
@@ -50,15 +61,15 @@ class AuthenticatedSessionController extends Controller
                     if ($intendedUrl && str_contains($intendedUrl, "/propiedades/{$property->slug}")) {
                         return redirect($intendedUrl);
                     }
-                    // Si el admin ES propietario de la propiedad del contexto -> dashboard específico
+                    // Si el admin es propietario de la propiedad del contexto, redirigir al dashboard específico
                     if ($property->user_id === $user->id) {
                         return redirect()->route('admin.property.dashboard', $property->slug);
                     }
-                    // Admin no propietario (visitando otra propiedad): permanecer en vista pública de esa propiedad
+                    // Si el admin no es propietario, permanecer en la vista pública de esa propiedad
                     return redirect()->route('properties.show', $property->slug);
                 }
             }
-            // Sin slug válido: si tiene alguna propiedad propia, usar la primera de él como contexto
+            // Sin slug válido: si tiene alguna propiedad propia, usar la primera como contexto
             $ownProperty = \App\Models\Property::where('user_id', $user->id)->whereNull('deleted_at')->first();
             if ($ownProperty) {
                 session(['current_property_slug' => $ownProperty->slug]);
@@ -66,9 +77,7 @@ class AuthenticatedSessionController extends Controller
             }
             return redirect()->intended(route('home'));
         }
-        
-        // Para clientes
-        // Redirigir a mis-reservas de la propiedad detectada
+        // Para clientes: redirigir a la ficha pública de la propiedad detectada
         if ($propertySlug) {
             $property = \App\Models\Property::where('slug', $propertySlug)->whereNull('deleted_at')->first();
             if ($property) {
@@ -81,13 +90,17 @@ class AuthenticatedSessionController extends Controller
                 return redirect()->route('properties.show', $property);
             }
         }
-        
         // Si no hay propiedad detectada, ir a la URL intended o home
         return redirect()->intended(route('home'));
     }
 
     /**
-     * Destroy an authenticated session.
+     * Cierra la sesión autenticada del usuario.
+     *
+     * Invalida la sesión y regenera el token de seguridad.
+     *
+     * @param Request $request Solicitud HTTP para cerrar sesión.
+     * @return RedirectResponse Redirección a la página principal.
      */
     public function destroy(Request $request): RedirectResponse
     {

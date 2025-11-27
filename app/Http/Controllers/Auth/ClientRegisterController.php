@@ -12,10 +12,19 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
+
+/**
+ * Controlador para el registro de clientes.
+ *
+ * Gestiona la visualización del formulario de registro y el proceso de alta de nuevos clientes,
+ * incluyendo la validación de datos personales y la redirección según el contexto de la propiedad.
+ */
 class ClientRegisterController extends Controller
 {
     /**
-     * Display the client registration view.
+     * Muestra la vista de registro de cliente.
+     *
+     * @return View Vista de registro de cliente.
      */
     public function create(): View
     {
@@ -23,9 +32,13 @@ class ClientRegisterController extends Controller
     }
 
     /**
-     * Handle an incoming client registration request.
+     * Procesa la solicitud de registro de un nuevo cliente.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * Valida los datos personales, crea el usuario y redirige según la propiedad detectada.
+     *
+     * @param Request $request Solicitud HTTP con los datos de registro.
+     * @return RedirectResponse Redirección a la ficha pública de la propiedad o a la página principal.
+     * @throws \Illuminate\Validation\ValidationException Si la validación de los datos falla.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -59,8 +72,8 @@ class ClientRegisterController extends Controller
 
         // Detectar propiedad desde parámetro o sesión
         $propertySlug = $request->input('property') ?: session('current_property_slug');
-        
-        // Si viene desde una propiedad específica, redirigir a mis-reservas de esa propiedad
+
+        // Si viene desde una propiedad específica, redirigir a la ficha pública de esa propiedad
         if ($propertySlug) {
             $property = \App\Models\Property::where('slug', $propertySlug)->whereNull('deleted_at')->first();
             if ($property) {

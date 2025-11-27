@@ -14,10 +14,19 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
+
+/**
+ * Controlador para el registro de administradores.
+ *
+ * Gestiona la visualización del formulario de registro y el proceso de alta de nuevos administradores,
+ * incluyendo la validación de datos personales y de la propiedad, así como la creación de usuario y alojamiento.
+ */
 class AdminRegisterController extends Controller
 {
     /**
-     * Display the admin registration view.
+     * Muestra la vista de registro de administrador.
+     *
+     * @return View Vista de registro de administrador.
      */
     public function create(): View
     {
@@ -25,9 +34,14 @@ class AdminRegisterController extends Controller
     }
 
     /**
-     * Handle an incoming admin registration request.
+     * Procesa la solicitud de registro de un nuevo administrador.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * Valida los datos personales y de la propiedad, crea el usuario y la propiedad asociada,
+     * y redirige al dashboard correspondiente.
+     *
+     * @param Request $request Solicitud HTTP con los datos de registro.
+     * @return RedirectResponse Redirección al dashboard de la propiedad o a la página principal.
+     * @throws \Illuminate\Validation\ValidationException Si la validación de los datos falla.
      */
     public function store(Request $request): RedirectResponse
     {
@@ -63,7 +77,7 @@ class AdminRegisterController extends Controller
         }
 
         DB::transaction(function () use ($request) {
-            // Crear usuario admin
+            // Crear usuario administrador
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -91,11 +105,11 @@ class AdminRegisterController extends Controller
                 'owner_tax_id' => $request->document_id,
             ]);
 
-            // Loguear al usuario
+            // Iniciar sesión con el usuario recién creado
             Auth::login($user);
         });
 
-        // Tras registro crear propiedad -> fijar contexto explícito y enviar al dashboard de esa nueva propiedad
+        // Tras el registro, crear la propiedad, fijar el contexto y redirigir al dashboard de la nueva propiedad
         $property = \App\Models\Property::where('user_id', Auth::id())
             ->whereNull('deleted_at')
             ->latest('id')

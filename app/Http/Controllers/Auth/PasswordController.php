@@ -8,10 +8,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
+
+/**
+ * Controlador para la actualización de la contraseña del usuario.
+ *
+ * Permite validar y actualizar la contraseña actual del usuario autenticado.
+ */
 class PasswordController extends Controller
 {
     /**
-     * Update the user's password.
+     * Actualiza la contraseña del usuario autenticado.
+     *
+     * @param Request $request Solicitud HTTP con los datos de la contraseña actual y la nueva.
+     * @return RedirectResponse Redirección de vuelta con estado tras la actualización.
      */
     public function update(Request $request): RedirectResponse
     {
