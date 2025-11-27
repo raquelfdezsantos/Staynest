@@ -8,13 +8,23 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Attachment;
 
+/**
+ * Mailable para notificar al usuario sobre una devolución emitida.
+ *
+ * Envía un correo con los datos de la reserva, el importe devuelto y la factura si existe.
+ */
 class PaymentRefundIssuedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Create a new message instance.
+     * Constructor del mailable.
+     *
+     * @param mixed $reservation Instancia de la reserva.
+     * @param mixed $refund Importe devuelto.
+     * @param mixed|null $invoice Factura asociada (opcional).
      */
     public function __construct(
         public $reservation,
@@ -23,7 +33,9 @@ class PaymentRefundIssuedMail extends Mailable
     ) {}
 
     /**
-     * Get the message envelope.
+     * Define el sobre del correo (asunto, destinatario, etc).
+     *
+     * @return Envelope Sobre del correo con el asunto personalizado.
      */
     public function envelope(): Envelope
     {
@@ -33,7 +45,9 @@ class PaymentRefundIssuedMail extends Mailable
     }
 
     /**
-     * Get the message content definition.
+     * Define el contenido del correo (vista y datos).
+     *
+     * @return Content Contenido del correo con la vista, datos de la reserva, importe y factura.
      */
     public function content(): Content
     {
@@ -48,16 +62,16 @@ class PaymentRefundIssuedMail extends Mailable
     }
 
     /**
-     * Get the attachments for the message.
+     * Define los archivos adjuntos del correo (PDF de la factura si existe).
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return array Lista de adjuntos (puede incluir la factura en PDF).
      */
     public function attachments(): array
     {
         $attachments = [];
 
         if ($this->invoice && $this->invoice->pdf_path) {
-            $attachments[] = \Illuminate\Mail\Mailables\Attachment::fromStorage($this->invoice->pdf_path)
+            $attachments[] = Attachment::fromStorage($this->invoice->pdf_path)
                 ->as($this->invoice->number . '.pdf')
                 ->withMime('application/pdf');
         }

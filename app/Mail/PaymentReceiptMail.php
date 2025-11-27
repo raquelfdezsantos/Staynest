@@ -11,23 +11,30 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\Reservation;
 use App\Models\Invoice;
 
+/**
+ * Mailable para enviar el recibo de pago al usuario.
+ *
+ * Envía un correo con los datos de la reserva y la factura asociada tras el pago.
+ */
 class PaymentReceiptMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     /**
-     * Crea una nueva instancia de mensaje.
-     * @param \App\Models\Reservation $reservation recibe la reserva
-     * @param \App\Models\Invoice $invoice recibe la factura
+     * Constructor del mailable.
+     *
+     * @param Reservation $reservation Instancia de la reserva pagada.
+     * @param Invoice $invoice Instancia de la factura asociada.
      */
-    
     public function __construct(
         public Reservation $reservation,
         public Invoice $invoice
     ) {}
 
     /**
-     * Define el sobre del mensaje (asunto, etc.)
+     * Define el sobre del correo (asunto, destinatario, etc).
+     *
+     * @return Envelope Sobre del correo con el asunto personalizado.
      */
     public function envelope(): Envelope
     {
@@ -37,7 +44,9 @@ class PaymentReceiptMail extends Mailable implements ShouldQueue
     }
 
     /**
-     * Define el contenido del mensaje (vista y datos)
+     * Define el contenido del correo (vista y datos).
+     *
+     * @return Content Contenido del correo con la vista y datos de la reserva y factura.
      */
     public function content(): Content
     {
@@ -51,9 +60,9 @@ class PaymentReceiptMail extends Mailable implements ShouldQueue
     }
 
     /**
-     * Get the attachments for the message.
+     * Define los archivos adjuntos del correo (ninguno en este caso).
      *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     * @return array Lista de adjuntos vacía.
      */
     public function attachments(): array
     {
