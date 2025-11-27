@@ -17,8 +17,23 @@ use Illuminate\Support\Facades\Log;
 use Stripe\Stripe;
 use Throwable;
 
+use App\Mail\PaymentBalanceSettledMail;
+use App\Mail\AdminPaymentBalanceSettledMail;
+
+/**
+ * Controlador para la gestión de pagos con Stripe.
+ *
+ * Permite iniciar pagos, gestionar diferencias, procesar éxito/cancelación y enviar notificaciones.
+ */
 class StripeController extends Controller
 {
+    /**
+     * Inicia el proceso de pago completo de una reserva mediante Stripe Checkout.
+     *
+     * @param Request $request Solicitud HTTP.
+     * @param Reservation $reservation Reserva a pagar.
+     * @return \Illuminate\Http\RedirectResponse Redirige a la URL de Stripe Checkout.
+     */
     public function checkout(Request $request, Reservation $reservation)
     {
         $this->authorize('pay', $reservation);
@@ -59,6 +74,13 @@ class StripeController extends Controller
         return redirect()->away($session->url);
     }
 
+    /**
+     * Inicia el proceso de pago de la diferencia tras modificar una reserva.
+     *
+     * @param Request $request Solicitud HTTP.
+     * @param Reservation $reservation Reserva a pagar la diferencia.
+     * @return \Illuminate\Http\RedirectResponse Redirige a la URL de Stripe Checkout.
+     */
     public function checkoutDifference(Request $request, Reservation $reservation)
     {
         $this->authorize('pay', $reservation);
@@ -104,6 +126,15 @@ class StripeController extends Controller
         return redirect()->away($session->url);
     }
 
+    /**
+     * Procesa el retorno de Stripe tras un pago exitoso.
+     *
+     * Recupera la sesión de Stripe, valida el pago y registra Payment/Invoice.
+     * Envía notificaciones por email al cliente y al administrador.
+     *
+     * @param Request $request Solicitud HTTP con el session_id de Stripe.
+     * @return \Illuminate\Http\RedirectResponse Redirige al listado de reservas con mensaje de éxito o error.
+     */
     public function success(Request $request)
     {
         // 1) Recuperar session_id que Stripe añade al return_url
@@ -174,7 +205,7 @@ class StripeController extends Controller
             ]);
         });
 
-        // 6) Enviar correos (cliente + admin). Reutiliza tus mailables
+        // 6) Enviar correos (cliente + admin). Reutiliza mailables
         try {
             Mail::to($reservation->user->email)->queue(
                 new PaymentReceiptMail($reservation, $invoice)
@@ -196,6 +227,12 @@ class StripeController extends Controller
 
     /**
      * Gestiona el pago de la diferencia tras modificar una reserva.
+     *
+     * Registra el pago, actualiza la factura y envía notificaciones.
+     *
+     * @param Reservation $reservation Reserva a la que se aplica el pago de diferencia.
+     * @param mixed $session Sesión de Stripe con metadata y datos de pago.
+     * @return \Illuminate\Http\RedirectResponse Redirige al listado de reservas con mensaje de éxito.
      */
     private function handleDifferencePayment(Reservation $reservation, $session)
     {
@@ -230,26 +267,31 @@ class StripeController extends Controller
         Log::info('Enviando email pago diferencia al cliente', ['email' => $reservation->user->email, 'amount' => $amount]);
         try {
             Mail::to($reservation->user->email)->send(
-                new \App\Mail\PaymentBalanceSettledMail($reservation, $amount)
+                new PaymentBalanceSettledMail($reservation, $amount)
             );
             Log::info('PaymentBalanceSettledMail enviado correctamente');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Fallo enviando PaymentBalanceSettledMail: ' . $e->getMessage());
         }
         
         Log::info('Enviando email pago diferencia al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
         try {
             Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(
-                new \App\Mail\AdminPaymentBalanceSettledMail($reservation, $amount)
+                new AdminPaymentBalanceSettledMail($reservation, $amount)
             );
             Log::info('AdminPaymentBalanceSettledMail enviado correctamente');
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Fallo enviando AdminPaymentBalanceSettledMail: ' . $e->getMessage());
         }
         
         return redirect()->route('reservas.index')->with('success', 'Diferencia pagada correctamente.');
     }
 
+    /**
+     * Procesa la cancelación del pago por parte del usuario.
+     *
+     * @return \Illuminate\Http\RedirectResponse Redirige al listado de reservas con mensaje de error.
+     */
     public function cancel()
     {
         return redirect()->route('reservas.index')->with('error', 'Pago cancelado por el usuario.');

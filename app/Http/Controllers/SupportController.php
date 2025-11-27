@@ -5,19 +5,33 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SupportMessageMail;
+use App\Models\Property;
 
+/**
+ * Controlador para la gestión de soporte y contacto.
+ *
+ * Permite mostrar el formulario de soporte y enviar mensajes al equipo de soporte.
+ */
 class SupportController extends Controller
 {
+    /**
+     * Muestra el formulario de contacto con soporte.
+     *
+     * Recupera la propiedad actual del contexto de sesión o de la query.
+     *
+     * @param Request $request Solicitud HTTP.
+     * @return \Illuminate\Contracts\View\View Vista del formulario de soporte.
+     */
     public function index(Request $request)
     {
         // Usar contexto existente en sesión, solo aceptar query si no hay contexto
         $property = null;
         if (session('current_property_slug')) {
-            $property = \App\Models\Property::where('slug', session('current_property_slug'))
+            $property = Property::where('slug', session('current_property_slug'))
                 ->whereNull('deleted_at')
                 ->first();
         } elseif ($request->query('property')) {
-            $property = \App\Models\Property::where('slug', $request->query('property'))
+            $property = Property::where('slug', $request->query('property'))
                 ->whereNull('deleted_at')
                 ->first();
             if ($property) {
@@ -27,6 +41,14 @@ class SupportController extends Controller
         return view('support.index', compact('property'));
     }
 
+    /**
+     * Procesa el envío del formulario de soporte.
+     *
+     * Valida los datos, asocia la propiedad si existe y envía el email al equipo de soporte.
+     *
+     * @param Request $request Solicitud HTTP con los datos del formulario.
+     * @return \Illuminate\Http\RedirectResponse Redirige con mensaje de éxito tras enviar el email.
+     */
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -49,7 +71,7 @@ class SupportController extends Controller
         // Asociar propiedad actual si existe
         $property = null;
         if (session('current_property_slug')) {
-            $property = \App\Models\Property::where('slug', session('current_property_slug'))
+            $property = Property::where('slug', session('current_property_slug'))
                 ->whereNull('deleted_at')
                 ->first();
         }
