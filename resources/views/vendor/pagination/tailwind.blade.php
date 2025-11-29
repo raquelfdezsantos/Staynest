@@ -3,6 +3,15 @@
         .pagination-link:focus {
             box-shadow: none;
         }
+        /* Altura fija de 36px para todos los botones de paginación */
+        .pagination-link,
+        .pagination-container > span > span,
+        .pagination-container > a,
+        .pagination-container > span {
+            height: 36px !important;
+            min-height: 36px !important;
+            line-height: 1 !important;
+        }
     </style>
     <nav role="navigation" aria-label="{{ __('Pagination Navigation') }}" class="flex items-center justify-between">
         <div class="flex justify-between flex-1 sm:hidden">
