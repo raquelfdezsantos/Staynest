@@ -376,31 +376,33 @@
         </div>
 
         {{-- Zona de peligro: Dar de baja propiedad --}}
-        <div class="danger-zone">
+        <div class="danger-zone" style="margin-top: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.9); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.25rem 1.5rem;">
             <h3 class="danger-title">
                 <svg style="width: 20px; height: 20px; flex-shrink: 0;" fill="none" stroke="var(--color-error)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                 </svg>
                 Zona de peligro
             </h3>
-            
-            <p class="danger-text">
+            <p class="danger-text" style="font-size: var(--text-base); color: var(--color-text-secondary); margin-bottom: 1rem;">
                 Una vez que des de baja la propiedad, se cancelarán todas las reservas futuras activas 
                 y se procesarán los reembolsos automáticamente.
             </p>
 
             @if($futureReservationsCount > 0)
-                <div style="background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.3); border-radius: var(--radius-base); padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: var(--text-sm); line-height: 1.5;">
+                <div style="background: rgba(var(--color-bg-secondary-rgb), 0.9); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: var(--text-sm); line-height: 1.5; backdrop-filter: blur(10px);">
                     <p style="font-weight: 600; margin-bottom: 0.25rem; color: var(--color-text-primary);">{{ $futureReservationsCount }} reserva(s) futura(s) será(n) cancelada(s)</p>
                     <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">Los clientes recibirán un reembolso completo y un email de notificación.</p>
                 </div>
             @endif
 
             <button 
-                type="button"
-                class="btn-danger"
+            <button 
+                class="btn-action btn-action-danger sn-sentence py-2 px-5"
+                style="height:36px; display:inline-flex; align-items:center; background-color: transparent; color: #fff; border: 1px solid var(--color-error); border-radius: var(--radius-base); transition: all 0.3s ease; font-size: 14px;"
                 x-data=""
                 x-on:click.prevent="$dispatch('open-modal', 'confirm-delete-property')"
+                onmouseover="this.style.color = 'var(--color-error)'; this.style.backgroundColor = 'rgba(204, 89, 86, 0.10)'; this.style.borderColor = 'transparent';"
+                onmouseout="this.style.backgroundColor = 'transparent'; this.style.color = '#fff'; this.style.borderColor = 'var(--color-error)';"
             >
                 Dar de baja propiedad
             </button>
