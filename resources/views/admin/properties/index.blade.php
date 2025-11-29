@@ -21,11 +21,12 @@
         {{-- Botón crear nueva propiedad --}}
         <div style="margin-bottom: 2rem;">
             <a href="{{ route('admin.properties.create') }}" 
-               class="btn-action btn-action-primary">
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               class="btn-action btn-action-secondary sn-sentence"
+               style="height: 36px;">
+                <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                <span class="sn-sentence">Crear nueva propiedad</span>
+                <span>Crear nueva propiedad</span>
             </a>
         </div>
 

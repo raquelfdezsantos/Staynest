@@ -1,10 +1,124 @@
 <x-app-layout>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         html[data-theme="dark"] .profile-card {
             background: rgba(51, 51, 51, 0.2) !important;
         }
         html[data-theme="light"] .profile-card {
             background: #e3e3e3 !important;
+        }
+
+        /* Calendario Flatpickr - Modo Oscuro */
+        html[data-theme="dark"] .flatpickr-calendar {
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border-light);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        html[data-theme="dark"] .flatpickr-months {
+            background: var(--color-bg-card);
+            border-bottom: 1px solid var(--color-border-light);
+        }
+        
+        html[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months,
+        html[data-theme="dark"] .flatpickr-current-month input.cur-year {
+            color: var(--color-text-primary);
+            background: var(--color-bg-secondary);
+        }
+        
+        html[data-theme="dark"] .flatpickr-weekdays {
+            background: var(--color-bg-card);
+        }
+        
+        html[data-theme="dark"] span.flatpickr-weekday {
+            color: var(--color-text-secondary);
+        }
+        
+        html[data-theme="dark"] .flatpickr-day {
+            color: var(--color-text-primary);
+        }
+        
+        html[data-theme="dark"] .flatpickr-day:hover {
+            background: rgba(77,141,148,0.10);
+            border-color: var(--color-accent);
+        }
+        
+        html[data-theme="dark"] .flatpickr-day.selected {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+            color: white;
+        }
+        
+        html[data-theme="dark"] .flatpickr-day.today {
+            border-color: var(--color-accent);
+        }
+        
+        html[data-theme="dark"] .flatpickr-months .flatpickr-prev-month svg,
+        html[data-theme="dark"] .flatpickr-months .flatpickr-next-month svg {
+            fill: var(--color-text-primary);
+        }
+        
+        /* Modo Claro */
+        html[data-theme="light"] .flatpickr-calendar {
+            background: #d1d1d1;
+            border: 1px solid #e0e0e0;
+        }
+        
+        html[data-theme="light"] .flatpickr-months {
+            background: #d1d1d1;
+        }
+        
+        html[data-theme="light"] .flatpickr-weekdays {
+            background: #d1d1d1;
+        }
+        
+        html[data-theme="light"] .flatpickr-day {
+            color: #222;
+        }
+        
+        html[data-theme="light"] .flatpickr-day:hover {
+            background: rgba(77,141,148,0.10);
+            border-color: var(--color-accent);
+        }
+        
+        html[data-theme="light"] .flatpickr-day.selected {
+            background: var(--color-accent);
+            border-color: var(--color-accent);
+            color: white;
+        }
+        
+        html[data-theme="light"] .flatpickr-day.today {
+            border-color: var(--color-accent);
+        }
+        
+        /* Ajustar el grid de días */
+        .flatpickr-days {
+            width: 308px !important;
+        }
+        
+        .dayContainer {
+            width: 308px !important;
+            min-width: 308px !important;
+            max-width: 308px !important;
+            justify-content: center !important;
+        }
+        
+        /* Hacer los días cuadrados */
+        .flatpickr-day {
+            max-width: 38px !important;
+            max-height: 38px !important;
+            width: 38px !important;
+            height: 38px !important;
+            line-height: 38px !important;
+            margin: 2px !important;
+            border-radius: 2px !important;
+            border: none !important;
+        }
+        
+        /* Días de meses anterior/posterior más apagados */
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay {
+            opacity: 0.4 !important;
         }
     </style>
     
@@ -83,6 +197,27 @@
                     </div>
                 </form>
             </div>
-        </x-modal>
+            </x-modal>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar Flatpickr para fecha de nacimiento (solo si existe el campo)
+            const birthDateInput = document.getElementById('birth_date');
+            if (birthDateInput) {
+                // Calcular fecha máxima (18 años atrás desde hoy)
+                const today = new Date();
+                const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+                
+                flatpickr('#birth_date', {
+                    locale: 'es',
+                    dateFormat: 'Y-m-d',
+                    maxDate: maxDate,
+                    allowInput: true
+                });
+            }
+        });
+    </script>
 </x-app-layout>

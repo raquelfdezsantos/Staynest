@@ -59,6 +59,32 @@
             @endif
         </div>
 
+        @if($user->role === 'admin')
+            {{-- Teléfono (solo admin) --}}
+            <div>
+                <x-input-label for="phone" value="Teléfono" />
+                <x-text-input id="phone"
+                              name="phone"
+                              type="tel"
+                              class="block mt-1 w-full"
+                              :value="old('phone', $user->phone)"
+                              autocomplete="tel"
+                              placeholder="+34 600 000 000" />
+            </div>
+
+            {{-- Fecha de nacimiento (solo admin) --}}
+            <div>
+                <x-input-label for="birth_date" value="Fecha de nacimiento" />
+                <x-text-input id="birth_date"
+                              name="birth_date"
+                              type="text"
+                              class="block mt-1 w-full"
+                              :value="old('birth_date', $user->birth_date)"
+                              placeholder="Selecciona tu fecha de nacimiento"
+                              autocomplete="bday" />
+            </div>
+        @endif
+
         {{-- Dirección fiscal --}}
         <div>
             <x-input-label for="address" value="Dirección (facturación)" />
@@ -71,9 +97,9 @@
             <p style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top:0.25rem;">Incluye calle, número, localidad y código postal para la factura.</p>
         </div>
 
-        {{-- NIF/CIF --}}
+        {{-- DNI/NIF --}}
         <div>
-            <x-input-label for="document_id" value="NIF/CIF/PAS/Otro" />
+            <x-input-label for="document_id" :value="$user->role === 'admin' ? 'DNI/NIF' : 'NIF/CIF/PAS/Otro'" />
             <x-text-input id="document_id"
                           name="document_id"
                           type="text"
@@ -82,6 +108,20 @@
                           autocomplete="off" />
             <p style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top:0.25rem;">Necesario para facturación y completar el pago.</p>
         </div>
+
+        @if($user->role === 'admin')
+            {{-- Método de cobro (solo admin) --}}
+            <div>
+                <x-input-label for="payment_method" value="Método de cobro" />
+                <select id="payment_method" name="payment_method" class="sn-input block mt-1 w-full" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 0.5rem 0.75rem; color: var(--color-text-primary);">
+                    <option value="">Seleccionar...</option>
+                    <option value="stripe" {{ old('payment_method', $user->payment_method) === 'stripe' ? 'selected' : '' }}>Stripe (recomendado)</option>
+                    <option value="bank_transfer" {{ old('payment_method', $user->payment_method) === 'bank_transfer' ? 'selected' : '' }}>Transferencia bancaria</option>
+                    <option value="paypal" {{ old('payment_method', $user->payment_method) === 'paypal' ? 'selected' : '' }}>PayPal</option>
+                </select>
+                <p style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top:0.25rem;">Método que usarás para recibir los pagos de tus reservas.</p>
+            </div>
+        @endif
 
         {{-- Avatar --}}
         <div>

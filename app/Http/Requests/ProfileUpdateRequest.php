@@ -20,7 +20,7 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
@@ -39,6 +39,15 @@ class ProfileUpdateRequest extends FormRequest
             'address' => ['nullable','string','max:255'],
             'document_id' => ['nullable','string','max:50'],
         ];
+
+        // Campos adicionales solo para administradores
+        if ($this->user()->role === 'admin') {
+            $rules['phone'] = ['nullable', 'string', 'max:30'];
+            $rules['birth_date'] = ['nullable', 'date', 'before:today'];
+            $rules['payment_method'] = ['nullable', 'string', 'in:stripe,bank_transfer,paypal'];
+        }
+
+        return $rules;
     }
 
     /**
@@ -59,6 +68,10 @@ class ProfileUpdateRequest extends FormRequest
             'avatar.max' => 'La imagen no puede pesar más de 2MB.',
             'address.max' => 'La dirección no puede superar :max caracteres.',
             'document_id.max' => 'El NIF/CIF no puede superar :max caracteres.',
+            'phone.max' => 'El teléfono no puede superar :max caracteres.',
+            'birth_date.date' => 'La fecha de nacimiento debe ser una fecha válida.',
+            'birth_date.before' => 'Debes haber nacido antes de hoy.',
+            'payment_method.in' => 'El método de cobro seleccionado no es válido.',
         ];
     }
 
@@ -75,6 +88,9 @@ class ProfileUpdateRequest extends FormRequest
             'avatar' => 'foto de perfil',
             'address' => 'dirección',
             'document_id' => 'NIF/CIF',
+            'phone' => 'teléfono',
+            'birth_date' => 'fecha de nacimiento',
+            'payment_method' => 'método de cobro',
         ];
     }
 }

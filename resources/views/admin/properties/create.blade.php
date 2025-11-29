@@ -1,232 +1,125 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Crear Nueva Propiedad') }}
-        </h2>
-    </x-slot>
+    <div class="sn-reservar max-w-4xl mx-auto px-4 py-10">
+        {{-- Header centrado --}}
+        <header style="margin-bottom: 4rem; text-align: center;">
+            <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Crear Nueva Propiedad</h1>
+            <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Completa los datos del alojamiento. Podrás añadir fotos después desde la sección "Fotos".</p>
+        </header>
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <form method="POST" action="{{ route('admin.properties.store') }}">
-                        @csrf
+        <form method="POST" action="{{ route('admin.properties.store') }}" novalidate>
+            @csrf
 
-                        <div class="space-y-4">
-                            {{-- Nombre --}}
-                            <div>
-                                <label for="name" class="block text-sm font-medium text-gray-700">
-                                    Nombre de la propiedad *
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="name" 
-                                    id="name"
-                                    value="{{ old('name') }}"
-                                    required
-                                    maxlength="150"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                @error('name')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+            @if ($errors->any())
+                <div class="alert alert-error" style="margin-bottom: 1.5rem;">
+                    <strong>Revisa los siguientes campos:</strong>
+                    <ul style="margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                            {{-- Slug --}}
-                            <div>
-                                <label for="slug" class="block text-sm font-medium text-gray-700">
-                                    Slug (URL amigable) *
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="slug" 
-                                    id="slug"
-                                    value="{{ old('slug') }}"
-                                    required
-                                    maxlength="150"
-                                    placeholder="apartamento-centro-madrid"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                <p class="mt-1 text-xs text-gray-500">Se usará en la URL: /propiedad/tu-slug</p>
-                                @error('slug')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+            {{-- Formulario de creación --}}
+            <div class="admin-form-card" style="border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); padding: 1.5rem; margin-bottom: 2rem;">
+                <style>
+                    .admin-form-card {
+                        background: rgba(51, 51, 51, 0.2) !important;
+                    }
+                    html[data-theme="light"] .admin-form-card {
+                        background: #E3E3E3 !important;
+                    }
+                    /* Textarea en modo oscuro */
+                    html[data-theme="dark"] .admin-textarea {
+                        background: #222222 !important;
+                    }
+                    .form-hint {
+                        margin-top: 0.25rem;
+                        font-size: var(--text-xs);
+                        color: var(--color-text-muted);
+                    }
+                </style>
+                <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1.5rem;">Datos del Alojamiento</h3>
 
-                            {{-- Descripción --}}
-                            <div>
-                                <label for="description" class="block text-sm font-medium text-gray-700">
-                                    Descripción
-                                </label>
-                                <textarea 
-                                    name="description" 
-                                    id="description"
-                                    rows="5"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >{{ old('description') }}</textarea>
-                                @error('description')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    {{-- Nombre del alojamiento --}}
+                    <div>
+                        <x-input-label for="name" value="Nombre del alojamiento *" />
+                        <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus maxlength="150" />
+                    </div>
 
-                            {{-- Dirección --}}
-                            <div>
-                                <label for="address" class="block text-sm font-medium text-gray-700">
-                                    Dirección
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="address" 
-                                    id="address"
-                                    value="{{ old('address') }}"
-                                    maxlength="200"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                @error('address')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                    {{-- Slug (auto-generado, pero editable) --}}
+                    <div>
+                        <x-input-label for="slug" value="URL personalizada *" />
+                        <x-text-input id="slug" class="block mt-1 w-full" type="text" name="slug" :value="old('slug')" required maxlength="150" placeholder="apartamento-centro-madrid" />
+                        <p class="form-hint">Se usará en la URL: /propiedad/tu-slug</p>
+                    </div>
 
-                            {{-- Ciudad --}}
-                            <div>
-                                <label for="city" class="block text-sm font-medium text-gray-700">
-                                    Ciudad
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="city" 
-                                    id="city"
-                                    value="{{ old('city') }}"
-                                    maxlength="100"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                @error('city')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                    {{-- Descripción --}}
+                    <div>
+                        <x-input-label for="description" value="Descripción completa" />
+                        <textarea 
+                            id="description"
+                            name="description"
+                            rows="6"
+                            class="sn-input admin-textarea"
+                            style="width: 100%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; padding: 0.75rem; color: var(--color-text-primary); font-size: var(--text-base);"
+                            placeholder="Describe tu alojamiento de forma detallada..."
+                        >{{ old('description') }}</textarea>
+                        <p class="form-hint">Esta descripción se mostrará en la página pública del alojamiento.</p>
+                    </div>
 
-                            {{-- Código Postal --}}
-                            <div>
-                                <label for="postal_code" class="block text-sm font-medium text-gray-700">
-                                    Código Postal
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="postal_code" 
-                                    id="postal_code"
-                                    value="{{ old('postal_code') }}"
-                                    maxlength="10"
-                                    placeholder="28013"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                @error('postal_code')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                    {{-- Dirección del alojamiento --}}
+                    <div>
+                        <x-input-label for="address" value="Dirección" />
+                        <x-text-input id="address" class="block mt-1 w-full" type="text" name="address" :value="old('address')" maxlength="200" />
+                    </div>
 
-                            {{-- Provincia --}}
-                            <div>
-                                <label for="province" class="block text-sm font-medium text-gray-700">
-                                    Provincia
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="province" 
-                                    id="province"
-                                    value="{{ old('province') }}"
-                                    maxlength="100"
-                                    placeholder="Madrid"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                @error('province')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                    {{-- Ciudad --}}
+                    <div>
+                        <x-input-label for="city" value="Ciudad" />
+                        <x-text-input id="city" class="block mt-1 w-full" type="text" name="city" :value="old('city')" maxlength="100" />
+                    </div>
 
-                            {{-- Capacidad --}}
-                            <div>
-                                <label for="capacity" class="block text-sm font-medium text-gray-700">
-                                    Capacidad (huéspedes) *
-                                </label>
-                                <input 
-                                    type="number" 
-                                    name="capacity" 
-                                    id="capacity"
-                                    value="{{ old('capacity', 2) }}"
-                                    required
-                                    min="1"
-                                    max="50"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                @error('capacity')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                    {{-- Código Postal --}}
+                    <div>
+                        <x-input-label for="postal_code" value="Código Postal" />
+                        <x-text-input id="postal_code" class="block mt-1 w-full" type="text" name="postal_code" :value="old('postal_code')" maxlength="10" placeholder="28013" />
+                    </div>
 
-                            {{-- Licencia turística --}}
-                            <div>
-                                <label for="tourism_license" class="block text-sm font-medium text-gray-700">
-                                    Nº Licencia Turística
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="tourism_license" 
-                                    id="tourism_license"
-                                    value="{{ old('tourism_license') }}"
-                                    maxlength="100"
-                                    placeholder="VT-28-0001234"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                <p class="mt-1 text-xs text-gray-500">Número de licencia turística oficial</p>
-                                @error('tourism_license')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                    {{-- Provincia --}}
+                    <div>
+                        <x-input-label for="province" value="Provincia" />
+                        <x-text-input id="province" class="block mt-1 w-full" type="text" name="province" :value="old('province')" maxlength="100" placeholder="Madrid" />
+                    </div>
 
-                            {{-- Registro de alquiler --}}
-                            <div>
-                                <label for="rental_registration" class="block text-sm font-medium text-gray-700">
-                                    Nº Registro de Alquiler
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="rental_registration" 
-                                    id="rental_registration"
-                                    value="{{ old('rental_registration') }}"
-                                    maxlength="100"
-                                    placeholder="ATR-28-001234-2024"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                >
-                                <p class="mt-1 text-xs text-gray-500">Número de registro único de alquiler</p>
-                                @error('rental_registration')
-                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                                @enderror
-                            </div>
+                    {{-- Capacidad --}}
+                    <div>
+                        <x-input-label for="capacity" value="Capacidad (huéspedes) *" />
+                        <x-text-input id="capacity" type="number" class="block mt-1 w-full" name="capacity" :value="old('capacity', 4)" required min="1" max="50" />
+                    </div>
 
-                            {{-- Botones --}}
-                            <div class="flex items-center justify-between pt-4">
-                                <a href="{{ route('admin.properties.index') }}" 
-                                   class="text-sm text-gray-600 hover:text-gray-900">
-                                    ← Cancelar
-                                </a>
-                                <button 
-                                    type="submit"
-                                    class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                                >
-                                    Crear Propiedad
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+                    {{-- Licencia turística --}}
+                    <div>
+                        <x-input-label for="tourism_license" value="Nº Licencia Turística" />
+                        <x-text-input id="tourism_license" class="block mt-1 w-full" type="text" name="tourism_license" :value="old('tourism_license')" placeholder="VT-28-0001234" maxlength="100" />
+                        <p class="form-hint">Número de licencia turística oficial</p>
+                    </div>
 
-                    <div class="mt-6 p-4 bg-blue-50 border-l-4 border-blue-500">
-                        <p class="text-sm text-blue-700">
-                            <strong>💡 Nota:</strong> Después de crear la propiedad podrás añadir fotos, configurar el calendario de precios y comenzar a recibir reservas.
-                        </p>
+                    {{-- Registro de alquiler --}}
+                    <div>
+                        <x-input-label for="rental_registration" value="Nº Registro de Alquiler" />
+                        <x-text-input id="rental_registration" class="block mt-1 w-full" type="text" name="rental_registration" :value="old('rental_registration')" placeholder="ATR-28-001234-2024" maxlength="100" />
+                        <p class="form-hint">Número de registro único de alquiler</p>
+                    </div>
+
+                    {{-- Botón de crear --}}
+                    <div style="align-self: flex-start; padding-top: 0.5rem;">
+                        <button type="submit" class="btn-action btn-action-primary sn-sentence" style="height: 36px; min-height: 36px; padding: 0 1.25rem; display: inline-flex; align-items: center; justify-content: center;">Crear Propiedad</button>
                     </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <script>
