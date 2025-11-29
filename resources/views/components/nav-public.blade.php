@@ -10,7 +10,7 @@
     data-sn-transparent="{{ $transparent ? '1' : '0' }}" style="border-bottom: {{ $initialBorder }};">
 
     {{-- Logo grande en hero (solo visible en modo transparente) --}}
-    <div class="nav-logo-hero">
+    <div class="nav-logo-hero" style="transform: translate(-90px, 30px);">
         <a href="{{ $property ? route('properties.show', $property) : route('home') }}">
             <x-logo />
         </a>

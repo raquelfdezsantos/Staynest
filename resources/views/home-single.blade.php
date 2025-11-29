@@ -21,7 +21,7 @@
         <div class="sn-hero__overlay"></div>
 
         <div class="container sn-hero__content">
-            <div>
+            <div style="margin-top: 50px;">
                 <h1 class="sn-hero__title">{{ $property->name ?? 'Staynest' }}</h1>
                 <div class="sn-hero__strap">
                     {{ $property->short_tagline ?? 'Tu escapada perfecta, todo el año.' }}
@@ -30,7 +30,7 @@
         </div>
 
         @if($property && ($property->tourism_license || $property->rental_registration))
-            <div class="sn-hero__panel-wrap">
+            <div class="sn-hero__panel-wrap" style="margin-top: 50px;">
                 <div class="sn-hero__panel">
                     <div>
                         <small>Asturias — Registro autonómico</small>

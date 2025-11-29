@@ -705,7 +705,7 @@ html[data-theme="light"] .nav-header--transparent {
 
 
 .nav-logo {
-    height: 48px;
+    height: 44px; /* reducido ligeramente */
     width: auto;
     transition: opacity var(--transition-fast);
 }
@@ -1670,8 +1670,9 @@ body:not(.sn-hero-mode) .sn-hero--flush-top { margin-top: calc(-1 * var(--sn-hea
 body.sn-hero-mode .sn-hero--flush-top { margin-top: 0; }
 
 .sn-hero__overlay{
-  position:absolute; inset:0;
-  background: linear-gradient(180deg, rgba(0,0,0,.28) 0%, rgba(0,0,0,.10) 40%, rgba(0,0,0,0) 60%);
+    position:absolute; inset:0;
+    /* Eliminamos cualquier oscurecido: totalmente transparente */
+    background: transparent;
 }
 .sn-hero__content{
   position: relative;
@@ -1734,7 +1735,8 @@ body.sn-hero-mode .sn-hero--flush-top { margin-top: 0; }
 /* transiciones del header al salir del hero */
 .sn-hero__blend{
   position:absolute; left:0; right:0; bottom:-1px; height: 120px;
-  background: linear-gradient(180deg, rgba(24,24,24,0) 0%, rgba(24,24,24,1) 85%);
+    /* Degradado lineal sencillo adaptable a modo claro/oscuro */
+    background: linear-gradient(180deg, rgba(var(--color-bg-primary-rgb),0) 0%, var(--color-bg-primary) 85%);
   pointer-events:none;
   z-index:1;
 }
@@ -2001,7 +2003,7 @@ footer { flex-shrink: 0; }
 }
 
 .nav-logo-hero .nav-logo {
-    height: 96px;
+    height: 88px; /* reducido ligeramente desde 96px */
 }
 
 /* Mostrar logo hero solo en modo transparente */
@@ -2020,7 +2022,7 @@ footer { flex-shrink: 0; }
 }
 
 .nav-logo-wrapper .nav-logo {
-    height: 48px;
+    height: 44px; /* mantener coherente con la regla global */
 }
 
 /* Ocultar logo del nav-container en modo transparente */

@@ -18,7 +18,7 @@
 
 <style>
     .nav-logo {
-        height: 48px;
+        height: 44px; /* reducido ligeramente de 48px */
         width: auto;
         transition: opacity var(--transition-fast);
     }
