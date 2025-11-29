@@ -58,7 +58,7 @@ $maxWidth = [
 >
     <div
         class="overflow-hidden shadow-xl {{ $maxWidth }}"
-        style="background-color: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: 2px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100000; width: 100%; max-width: 42rem;"
+        style="background-color: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: 2px; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 100000; width: 90%; max-width: 42rem; max-height: 90vh; overflow-y: auto;"
         @click.stop
     >
         {{ $slot }}

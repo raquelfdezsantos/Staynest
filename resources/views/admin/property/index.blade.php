@@ -396,7 +396,6 @@
             @endif
 
             <button 
-            <button 
                 class="btn-action btn-action-danger sn-sentence py-2 px-5"
                 style="height:36px; display:inline-flex; align-items:center; background-color: transparent; color: #fff; border: 1px solid var(--color-error); border-radius: var(--radius-base); transition: all 0.3s ease; font-size: 14px;"
                 x-data=""
@@ -406,7 +405,10 @@
             >
                 Dar de baja propiedad
             </button>
-            <x-modal name="confirm-delete-property" focusable>
+        </div>
+
+        {{-- Modal de confirmación --}}
+        <x-modal name="confirm-delete-property" focusable>
                 <div style="padding: 2rem; border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.9); backdrop-filter: blur(10px);">
                     <form method="POST" action="{{ route('admin.property.destroy', $property->slug) }}">
                         @csrf
@@ -449,6 +451,5 @@
                     </form>
                 </div>
             </x-modal>
-        </div>
     </div>
 </x-app-layout>
