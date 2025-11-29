@@ -605,10 +605,11 @@ input[type="checkbox"]:not(.sn-auth input[type="checkbox"]):hover {
    ============================================================================ */
 
 .nav-header {
+    /* Fondo a ancho visual completo y recorte antes de la scrollbar (fallback fijo) */
     position: fixed;
     top: 0;
     left: 0;
-    right: var(--sn-scrollbar-w, var(--sn-scrollbar-fallback));
+    right: 10px;
     z-index: 1000;
     background-color: var(--color-bg-primary);
     border-bottom: 1px solid var(--color-border-light);
@@ -626,6 +627,7 @@ body.sn-has-fixed-header {
 
 /* Home: header transparente SOBRE el hero */
 .nav-header--transparent {
+    /* Fondo gestionado por .nav-header (full-width menos scrollbar). Contenido limitado por .nav-container */
     background: linear-gradient(
         to bottom,
         rgba(0,0,0,0.90),
@@ -637,6 +639,7 @@ body.sn-has-fixed-header {
 }
 
 html[data-theme="light"] .nav-header--transparent {
+    /* Fondo gestionado por .nav-header (full-width menos scrollbar). Contenido limitado por .nav-container */
     background: linear-gradient(
         to bottom,
         rgba(24,24,24,0.90),
@@ -649,6 +652,7 @@ html[data-theme="light"] .nav-header--transparent {
 
 /* Modo sólido explícito (cuando haces scroll o lo fuerza JS) */
 .nav-header--solid {
+    /* Fondo gestionado por .nav-header (full-width menos scrollbar). Contenido limitado por .nav-container */
     background-color: var(--color-bg-primary);
     border-bottom: 1px solid var(--color-border-light);
 }
@@ -657,7 +661,7 @@ html[data-theme="light"] .nav-header--transparent {
 .nav-header .theme-toggle--corner {
     position: absolute;
     top: 50%;
-    right: var(--spacing-xl);
+    right: calc(var(--spacing-xl) + 10px);
     transform: translateY(-50%);
     z-index: 1000;
 }
@@ -665,7 +669,7 @@ html[data-theme="light"] .nav-header--transparent {
 .nav-header .mobile-menu-toggle {
     position: absolute;
     top: 50%;
-    right: calc(var(--spacing-xl) + 44px);
+    right: calc(var(--spacing-xl) + 44px + 10px);
     transform: translateY(-50%);
 }
 
