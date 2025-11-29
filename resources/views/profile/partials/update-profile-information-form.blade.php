@@ -59,31 +59,35 @@
             @endif
         </div>
 
-        @if($user->role === 'admin')
-            {{-- Teléfono (solo admin) --}}
-            <div>
-                <x-input-label for="phone" value="Teléfono" />
-                <x-text-input id="phone"
-                              name="phone"
-                              type="tel"
-                              class="block mt-1 w-full"
-                              :value="old('phone', $user->phone)"
-                              autocomplete="tel"
-                              placeholder="+34 600 000 000" />
-            </div>
+        {{-- Teléfono --}}
+        <div>
+            <x-input-label for="phone" value="Teléfono" />
+            <x-text-input id="phone"
+                          name="phone"
+                          type="tel"
+                          class="block mt-1 w-full"
+                          :value="old('phone', $user->phone)"
+                          autocomplete="tel"
+                          placeholder="+34 600 000 000" />
+            @if($user->role === 'customer')
+                <p style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top:0.25rem;">Se solicitará si vas a realizar un pago.</p>
+            @endif
+        </div>
 
-            {{-- Fecha de nacimiento (solo admin) --}}
-            <div>
-                <x-input-label for="birth_date" value="Fecha de nacimiento" />
-                <x-text-input id="birth_date"
-                              name="birth_date"
-                              type="text"
-                              class="block mt-1 w-full"
-                              :value="old('birth_date', $user->birth_date)"
-                              placeholder="Selecciona tu fecha de nacimiento"
-                              autocomplete="bday" />
-            </div>
-        @endif
+        {{-- Fecha de nacimiento --}}
+        <div>
+            <x-input-label for="birth_date" value="Fecha de nacimiento" />
+            <x-text-input id="birth_date"
+                          name="birth_date"
+                          type="text"
+                          class="block mt-1 w-full"
+                          :value="old('birth_date', $user->birth_date)"
+                          placeholder="Selecciona tu fecha de nacimiento"
+                          autocomplete="bday" />
+            @if($user->role === 'customer')
+                <p style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top:0.25rem;">Debes ser mayor de 18 años.</p>
+            @endif
+        </div>
 
         {{-- Dirección fiscal --}}
         <div>

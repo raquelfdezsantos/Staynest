@@ -38,12 +38,12 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'address' => ['nullable','string','max:255'],
             'document_id' => ['nullable','string','max:50'],
+            'phone' => ['nullable', 'string', 'max:30'],
+            'birth_date' => ['nullable', 'date', 'before:today'],
         ];
 
-        // Campos adicionales solo para administradores
+        // Campo adicional solo para administradores
         if ($this->user()->role === 'admin') {
-            $rules['phone'] = ['nullable', 'string', 'max:30'];
-            $rules['birth_date'] = ['nullable', 'date', 'before:today'];
             $rules['payment_method'] = ['nullable', 'string', 'in:stripe,bank_transfer,paypal'];
         }
 
