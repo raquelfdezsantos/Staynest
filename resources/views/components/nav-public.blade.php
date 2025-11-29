@@ -1,7 +1,13 @@
 @props(['transparent' => false, 'property' => null])
 
+@php
+    // Header sin borde inferior solo en home y ficha de propiedad cuando está en modo transparente (hero)
+    $isHeroCandidate = request()->routeIs('home') || request()->routeIs('properties.show');
+    // Estado inicial: si transparente y en hero => sin borde; en resto => con borde
+    $initialBorder = ($transparent && $isHeroCandidate) ? 'none' : '1px solid var(--color-border-light)';
+@endphp
 <header class="nav-header {{ $transparent ? 'nav-header--transparent' : 'nav-header--solid' }}"
-    data-sn-transparent="{{ $transparent ? '1' : '0' }}">
+    data-sn-transparent="{{ $transparent ? '1' : '0' }}" style="border-bottom: {{ $initialBorder }};">
 
     {{-- Logo grande en hero (solo visible en modo transparente) --}}
     <div class="nav-logo-hero">
@@ -243,6 +249,7 @@
             if (!IS_TRANSPARENT_PAGE) {
                 header.classList.add('nav-header--solid');
                 header.classList.remove('nav-header--transparent');
+                header.style.borderBottom = '1px solid var(--color-border-light)';
                 document.body.classList.remove('sn-hero-mode');
                 return;
             }
@@ -251,11 +258,13 @@
             if (window.scrollY > threshold) {
                 header.classList.add('nav-header--solid');
                 header.classList.remove('nav-header--transparent');
+                header.style.borderBottom = '1px solid var(--color-border-light)';
                 document.body.classList.remove('sn-hero-mode');
                 document.body.style.paddingTop = '';
             } else {
                 header.classList.add('nav-header--transparent');
                 header.classList.remove('nav-header--solid');
+                header.style.borderBottom = 'none';
                 document.body.classList.add('sn-hero-mode');
                 document.body.style.paddingTop = '0';
             }
@@ -282,11 +291,13 @@
                             if (entry.intersectionRatio >= 0.95) {
                                 header.classList.add('nav-header--transparent');
                                 header.classList.remove('nav-header--solid');
+                                header.style.borderBottom = 'none';
                                 document.body.classList.add('sn-hero-mode');
                                 document.body.style.paddingTop = '0';
                             } else {
                                 header.classList.add('nav-header--solid');
                                 header.classList.remove('nav-header--transparent');
+                                header.style.borderBottom = '1px solid var(--color-border-light)';
                                 document.body.classList.remove('sn-hero-mode');
                                 document.body.style.paddingTop = '';
                             }
