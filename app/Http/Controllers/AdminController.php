@@ -940,24 +940,27 @@ class AdminController extends Controller
     /**
      * Marca una foto como portada (is_cover) de una propiedad.
      *
-     * @param int $photoId ID de la foto a marcar como portada.
+     * @param Property $property La propiedad
+     * @param int $photo ID de la foto a marcar como portada.
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function photosSetCover($photoId)
+    public function photosSetCover(Property $property, $photo)
     {
         $adminId = Auth::id();
         
-        $photo = Photo::with('property')
-            ->whereHas('property', function($q) use ($adminId) {
-                $q->where('user_id', $adminId);
-            })
-            ->findOrFail($photoId);
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== $adminId) {
+            abort(403);
+        }
+        
+        $photoModel = Photo::where('property_id', $property->id)
+            ->findOrFail($photo);
         
         // Quitar is_cover de todas las fotos de la propiedad
-        Photo::where('property_id', $photo->property_id)->update(['is_cover' => false]);
+        Photo::where('property_id', $property->id)->update(['is_cover' => false]);
         
         // Marcar la seleccionada
-        $photo->update(['is_cover' => true]);
+        $photoModel->update(['is_cover' => true]);
 
         return back()->with('success', 'Foto marcada como portada.');
     }

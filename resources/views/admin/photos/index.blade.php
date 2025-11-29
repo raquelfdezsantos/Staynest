@@ -107,12 +107,13 @@
                                     <div class="photo-actions">
                                         {{-- Botón marcar como portada --}}
                                         @if(!$photo->is_cover)
-                                            <form method="POST" action="{{ route('admin.property.photos.set-cover', [$property->slug, $photo->id]) }}" class="inline-block">
+                                            <form method="POST" action="{{ route('admin.property.photos.set-cover', [$property->slug, $photo->id]) }}" class="inline-block" id="form-star-{{ $photo->id }}">
                                                 @csrf
                                                 <button 
                                                     type="submit"
                                                     title="Marcar como portada"
                                                     class="btn-photo btn-photo-star"
+                                                    onclick="console.log('Click en estrella foto {{ $photo->id }}'); return true;"
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                                                 </button>
@@ -233,35 +234,38 @@
             height: 12rem;
             object-fit: cover;
             display: block;
+            position: relative;
+            z-index: 1;
         }
 
         .photo-badge {
             position: absolute;
             font-size: 11px;
-            font-weight: 700;
-            padding: 6px 10px;
-            border-radius: 2px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            z-index: 20;
-            letter-spacing: 0.5px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: var(--radius-sm);
+            backdrop-filter: blur(8px);
+            z-index: 10;
+            letter-spacing: 0.3px;
             text-transform: uppercase;
+            pointer-events: none;
         }
 
         .photo-badge-cover {
             top: 8px;
             left: 8px;
-            background-color: var(--color-warning);
-            color: #000;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: rgba(var(--color-accent-rgb), 0.9);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .photo-badge-order {
             bottom: 36px;
             right: 8px;
-            background-color: var(--color-bg-primary);
-            color: var(--color-text-primary);
-            border: 1px solid var(--color-border-light);
-            font-size: 13px;
+            background-color: rgba(var(--color-bg-primary-rgb), 0.85);
+            color: var(--color-text-secondary);
+            border: 1px solid rgba(var(--color-border-rgb), 0.3);
+            font-size: 12px;
         }
 
         .photo-actions {
@@ -269,43 +273,52 @@
             top: 8px;
             right: 8px;
             display: flex;
-            gap: 4px;
-            z-index: 30;
+            gap: 6px;
+            z-index: 20;
+        }
+        
+        .photo-actions form {
+            display: inline-block;
         }
 
         .btn-photo {
-            padding: 8px 10px;
-            color: white;
-            border: none;
-            border-radius: 2px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            width: 36px;
+            height: 36px;
+            border: 1px solid rgba(var(--color-border-rgb), 0.3);
+            border-radius: var(--radius-sm);
+            backdrop-filter: blur(8px);
             cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.2s ease;
         }
 
         .btn-photo svg {
             display: block;
+            width: 18px;
+            height: 18px;
         }
 
         .btn-photo-star {
-            background-color: var(--color-warning);
-            color: #000;
+            background-color: rgba(var(--color-bg-primary-rgb), 0.85);
+            color: var(--color-accent);
         }
 
         .btn-photo-star:hover {
-            opacity: 0.9;
+            background-color: rgba(var(--color-accent-rgb), 0.2);
+            border-color: var(--color-accent);
         }
 
         .btn-photo-delete {
-            background-color: var(--color-error);
+            background-color: rgba(var(--color-bg-primary-rgb), 0.85);
+            color: var(--color-text-secondary);
         }
 
         .btn-photo-delete:hover {
-            opacity: 0.9;
+            background-color: rgba(var(--color-error-rgb), 0.2);
+            border-color: var(--color-error);
+            color: var(--color-error);
         }
 
         .drag-handle {
@@ -313,22 +326,26 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 36px;
-            background-color: var(--color-accent);
-            color: white;
+            height: 32px;
+            background-color: rgba(var(--color-bg-secondary-rgb), 0.95);
+            backdrop-filter: blur(8px);
+            color: var(--color-text-secondary);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: move;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            border-top: 1px solid rgba(var(--color-border-rgb), 0.3);
             z-index: 25;
+            transition: all 0.2s ease;
         }
 
         .drag-handle:hover {
-            background-color: #3d7178;
+            background-color: rgba(var(--color-accent-rgb), 0.15);
+            color: var(--color-accent);
+            border-top-color: var(--color-accent);
         }
 
         /* SortableJS states */
@@ -388,6 +405,8 @@
             const sortable = new Sortable(grid, {
                 animation: 200,
                 handle: '.drag-handle',
+                filter: '.btn-photo, .photo-actions, button, form',
+                preventOnFilter: false,
                 ghostClass: 'sortable-ghost',
                 dragClass: 'sortable-drag',
                 chosenClass: 'sortable-chosen',
