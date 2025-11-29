@@ -98,15 +98,16 @@
             {{-- Botón custom para activar el input --}}
             <button type="button" 
                     onclick="document.getElementById('avatar').click()"
-                    class="btn btn-primary sn-sentence"
-                    style="margin-top: 0.5rem;">
-                Seleccionar archivo
+                    class="btn-action btn-action-secondary sn-sentence"
+                    style="margin-top: 0.5rem; height: 36px;">
+                <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span id="file-label">Seleccionar archivo</span>
             </button>
             
             {{-- Nombre del archivo seleccionado --}}
-            <p id="file-name" style="margin-top: 0.5rem; font-size: var(--text-sm); color: var(--color-text-secondary);">
-                Ningún archivo seleccionado
-            </p>
+            <span id="file-count" style="color: var(--color-text-secondary); font-size: 0.875rem; margin-left: 0.75rem;"></span>
             
             <p style="font-size: 0.75rem; color: var(--color-text-secondary); margin-top: 0.5rem;">
                 Formatos: JPG, PNG, WEBP. Máx. 2MB.
@@ -127,12 +128,13 @@
         function previewAvatar(event) {
             const input = event.target;
             const preview = document.getElementById('avatar-preview');
-            const fileName = document.getElementById('file-name');
+            const label = document.getElementById('file-label');
+            const countSpan = document.getElementById('file-count');
             
             if (input.files && input.files[0]) {
-                // Mostrar nombre del archivo
-                fileName.textContent = input.files[0].name;
-                fileName.style.color = 'var(--color-text-primary)';
+                // Actualizar label del botón
+                label.textContent = input.files[0].name;
+                countSpan.textContent = '';
                 
                 // Preview de la imagen
                 const reader = new FileReader();
@@ -141,8 +143,8 @@
                 };
                 reader.readAsDataURL(input.files[0]);
             } else {
-                fileName.textContent = 'Ningún archivo seleccionado';
-                fileName.style.color = 'var(--color-text-secondary)';
+                label.textContent = 'Seleccionar archivo';
+                countSpan.textContent = '';
             }
         }
         </script>
