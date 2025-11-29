@@ -98,7 +98,7 @@
                 </div>
               </div>
 
-              <button type="submit" class="calendar-btn calendar-btn-danger" style="margin-top: 1rem;">
+              <button type="submit" class="btn-action btn-action-danger sn-sentence" style="margin-top: 1rem; height: 36px;">
                 Bloquear noches
               </button>
             </div>
@@ -141,7 +141,7 @@
                 </div>
               </div>
 
-              <button type="submit" class="calendar-btn calendar-btn-success" style="margin-top: 1rem;">
+              <button type="submit" class="btn-action btn-action-secondary sn-sentence" style="margin-top: 1rem; height: 36px;">
                 Desbloquear noches
               </button>
             </div>
