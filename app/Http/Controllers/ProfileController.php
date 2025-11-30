@@ -9,6 +9,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Models\Reservation;
+use App\Models\Payment;
+use App\Models\RateCalendar;
+use App\Mail\ReservationCancelledMail;
+use App\Mail\PaymentRefundIssuedMail;
+use Illuminate\Support\Str;
 
 /**
  * Controlador de perfil de usuario.
@@ -69,6 +78,7 @@ class ProfileController extends Controller
 
     /**
      * Elimina la cuenta del usuario autenticado tras validar la contraseña.
+     * Cancela todas las reservas activas, calcula reembolsos, libera noches.
      * Cierra sesión, invalida la sesión y regenera el token CSRF.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -85,6 +95,11 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
+        // Cancelar todas las reservas activas del usuario
+        if ($user->role === 'customer') {
+            $this->cancelAllUserReservations($user);
+        }
+
         Auth::logout();
 
         $user->delete();
@@ -92,6 +107,121 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return Redirect::to('/')->with('success', 'Tu cuenta ha sido eliminada. Todas tus reservas han sido canceladas.');
+    }
+
+    /**
+     * Cancela todas las reservas activas de un usuario, libera noches y procesa reembolsos.
+     *
+     * @param  \App\Models\User  $user
+     * @return void
+     */
+    private function cancelAllUserReservations($user): void
+    {
+        // Obtener todas las reservas activas (pending, paid)
+        $activeReservations = Reservation::where('user_id', $user->id)
+            ->whereIn('status', ['pending', 'paid'])
+            ->get();
+
+        foreach ($activeReservations as $reservation) {
+            try {
+                // Calcular reembolso según política
+                $percent = $reservation->cancellationRefundPercent();
+                $paid = $reservation->paidAmount();
+                $refundAmount = 0.0;
+                
+                if ($percent > 0 && $paid > 0) {
+                    $refundAmount = round(min($paid, $reservation->total_price) * ($percent / 100), 2);
+                }
+
+                DB::transaction(function () use ($reservation, $refundAmount, $user) {
+                    // Liberar noches
+                    $dates = $this->rangeDates(
+                        $reservation->check_in->toDateString(),
+                        $reservation->check_out->toDateString()
+                    );
+                    $this->setAvailability($reservation->property_id, $dates, true);
+
+                    // Marcar reserva como cancelada
+                    $reservation->update(['status' => 'cancelled']);
+
+                    // Registrar reembolso si aplica
+                    if ($refundAmount > 0) {
+                        Payment::create([
+                            'reservation_id' => $reservation->id,
+                            'amount'        => -$refundAmount,
+                            'method'        => 'account_deletion',
+                            'status'        => 'refunded',
+                            'provider_ref'  => 'ACCDEL-' . Str::upper(Str::random(6)),
+                        ]);
+                    }
+                });
+
+                // Enviar emails de cancelación
+                try {
+                    Mail::to($user->email)->send(new ReservationCancelledMail($reservation));
+                } catch (\Throwable $e) {
+                    Log::error('Error enviando email de cancelación al cliente: ' . $e->getMessage());
+                }
+
+                try {
+                    Mail::to($reservation->property->user->email)->send(new ReservationCancelledMail($reservation));
+                } catch (\Throwable $e) {
+                    Log::error('Error enviando email de cancelación al admin: ' . $e->getMessage());
+                }
+
+                // Enviar email de reembolso si aplica
+                if ($refundAmount > 0) {
+                    try {
+                        Mail::to($user->email)->send(new PaymentRefundIssuedMail($reservation, $refundAmount));
+                    } catch (\Throwable $e) {
+                        Log::error('Error enviando email de reembolso: ' . $e->getMessage());
+                    }
+                }
+
+                Log::info('Reserva cancelada por eliminación de cuenta', [
+                    'reservation_id' => $reservation->id,
+                    'user_id' => $user->id,
+                    'refund_amount' => $refundAmount,
+                    'refund_percent' => $percent
+                ]);
+
+            } catch (\Throwable $e) {
+                Log::error('Error cancelando reserva en eliminación de cuenta: ' . $e->getMessage(), [
+                    'reservation_id' => $reservation->id,
+                    'user_id' => $user->id
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Genera un array de fechas entre check_in y check_out (excluyendo checkout).
+     *
+     * @param  string  $checkIn
+     * @param  string  $checkOut
+     * @return array<string>
+     */
+    private function rangeDates(string $checkIn, string $checkOut): array
+    {
+        $period = \Carbon\CarbonPeriod::create($checkIn, $checkOut)->excludeEndDate();
+        return collect($period)->map(fn($d) => $d->toDateString())->toArray();
+    }
+
+    /**
+     * Marca las fechas como disponibles/no disponibles en el calendario.
+     *
+     * @param  int  $propertyId
+     * @param  array<string>  $dates
+     * @param  bool  $available
+     * @return void
+     */
+    private function setAvailability(int $propertyId, array $dates, bool $available): void
+    {
+        foreach ($dates as $d) {
+            RateCalendar::where('property_id', $propertyId)
+                ->whereDate('date', $d)
+                ->update(['is_available' => $available]);
+        }
     }
 }

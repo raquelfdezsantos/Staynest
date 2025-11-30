@@ -163,8 +163,36 @@
                         ¿Estás seguro de que deseas eliminar tu cuenta?
                     </h2>
 
+                    <p style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+                        Una vez eliminada, todos tus datos se borrarán permanentemente.
+                    </p>
+
+                    @php
+                        $activeReservations = \App\Models\Reservation::where('user_id', auth()->id())
+                            ->whereIn('status', ['pending', 'paid'])
+                            ->count();
+                    @endphp
+
+                    @if($activeReservations > 0)
+                        <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: rgba(204, 89, 86, 0.1); border-left: 4px solid var(--color-error); border-radius: var(--radius-base);">
+                            <p style="font-size: var(--text-base); color: var(--color-error); font-weight: 600; margin-bottom: 0.5rem;">
+                                ⚠️ Atención: Tienes {{ $activeReservations }} {{ $activeReservations === 1 ? 'reserva activa' : 'reservas activas' }}
+                            </p>
+                            <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+                                Al eliminar tu cuenta, todas tus reservas se cancelarán automáticamente. 
+                                El reembolso dependerá de los días de antelación según la política de cancelación:
+                            </p>
+                            <ul style="margin-top: 0.5rem; margin-left: 1.5rem; font-size: var(--text-sm); color: var(--color-text-secondary);">
+                                <li>30 o más días: 100% de reembolso</li>
+                                <li>14-29 días: 75% de reembolso</li>
+                                <li>7-13 días: 50% de reembolso</li>
+                                <li>Menos de 7 días: Sin reembolso</li>
+                            </ul>
+                        </div>
+                    @endif
+
                     <p style="margin-bottom: 1.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
-                        Una vez eliminada, todos tus datos se borrarán permanentemente. Por favor, introduce tu contraseña para confirmar.
+                        Por favor, introduce tu contraseña para confirmar.
                     </p>
 
                     <div style="margin-bottom: 1.5rem;">

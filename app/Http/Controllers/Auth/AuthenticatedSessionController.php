@@ -75,6 +75,14 @@ class AuthenticatedSessionController extends Controller
                     'total_price' => $totalPrice,
                 ]);
 
+                // Enviar emails de confirmación
+                try {
+                    \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\ReservationConfirmedMail($reservation));
+                    \Illuminate\Support\Facades\Mail::to($property->user->email)->send(new \App\Mail\AdminNewReservationMail($reservation));
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Error enviando emails de confirmación de reserva: ' . $e->getMessage());
+                }
+
                 // Limpiar sesión
                 session()->forget(['pending_reservation', 'pending_reservation_auto', 'url.intended']);
 
