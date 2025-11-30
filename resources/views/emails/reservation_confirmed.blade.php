@@ -1,19 +1,19 @@
-<!doctype html>
-<html lang="es">
-<head><meta charset="utf-8"><title>Reserva registrada</title></head>
-<body style="font-family: Arial, sans-serif; color:#222; line-height:1.5;">
-  <h2 style="margin:0 0 12px;">¡Tu reserva se ha registrado!</h2>
-  <p>Hola {{ $reservation->user->name }},</p>
-  <p>Hemos recibido tu solicitud de reserva. Detalles:</p>
+@extends('emails.layouts.staynest')
 
-  <table cellpadding="6" cellspacing="0" style="border-collapse:collapse;">
-    <tr><td><strong>Reserva:</strong></td><td>{{ $reservation->code ?? ('#'.$reservation->id) }}</td></tr>
-    <tr><td><strong>Alojamiento:</strong></td><td>{{ $reservation->property->name ?? 'Alojamiento' }}</td></tr>
-    <tr><td><strong>Entrada:</strong></td><td>{{ $reservation->check_in->format('d/m/Y') }}</td></tr>
-    <tr><td><strong>Salida:</strong></td><td>{{ $reservation->check_out->format('d/m/Y') }}</td></tr>
+@section('content')
+  <h2 style="margin: 0 0 20px; font-family: Georgia, serif; font-size: 24px; color: #4D8D94; font-weight: 500;">¡Tu reserva se ha registrado!</h2>
+  
+  <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: #333333;">Hola {{ $reservation->user->name }},</p>
+  <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: #333333;">Hemos recibido tu solicitud de reserva. Detalles:</p>
+
+  <table cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; background-color: #f9f9f9; border-radius: 6px;"
+    <tr><td style="padding: 10px; font-size: 14px; color: #666666;"><strong style="color: #333333;">Reserva:</strong></td><td style="padding: 10px; font-size: 14px; color: #333333;">{{ $reservation->code ?? ('#'.$reservation->id) }}</td></tr>
+    <tr style="background-color: #ffffff;"><td style="padding: 10px; font-size: 14px; color: #666666;"><strong style="color: #333333;">Alojamiento:</strong></td><td style="padding: 10px; font-size: 14px; color: #333333;">{{ $reservation->property->name ?? 'Alojamiento' }}</td></tr>
+    <tr><td style="padding: 10px; font-size: 14px; color: #666666;"><strong style="color: #333333;">Entrada:</strong></td><td style="padding: 10px; font-size: 14px; color: #333333;">{{ $reservation->check_in->format('d/m/Y') }}</td></tr>
+    <tr style="background-color: #ffffff;"><td style="padding: 10px; font-size: 14px; color: #666666;"><strong style="color: #333333;">Salida:</strong></td><td style="padding: 10px; font-size: 14px; color: #333333;">{{ $reservation->check_out->format('d/m/Y') }}</td></tr>
     <tr>
-      <td><strong>Huéspedes:</strong></td>
-      <td>
+      <td style="padding: 10px; font-size: 14px; color: #666666;"><strong style="color: #333333;">Huéspedes:</strong></td>
+      <td style="padding: 10px; font-size: 14px; color: #333333;">
         @php
           $parts = [];
           $ad = (int) ($reservation->adults ?? 0);
@@ -30,17 +30,19 @@
         @endif
       </td>
     </tr>
-    <tr><td><strong>Total:</strong></td><td>{{ number_format($reservation->total_price, 2, ',', '.') }} €</td></tr>
+    <tr style="background-color: #ffffff;"><td style="padding: 10px; font-size: 14px; color: #666666;"><strong style="color: #333333;">Total:</strong></td><td style="padding: 10px; font-size: 14px; color: #333333; font-weight: 600;">{{ number_format($reservation->total_price, 2, ',', '.') }} €</td></tr>
     @if(!empty($reservation->notes))
       <tr>
-        <td valign="top"><strong>Notas del huésped:</strong></td>
-        <td style="white-space: pre-wrap;">{{ $reservation->notes }}</td>
+        <td valign="top" style="padding: 10px; font-size: 14px; color: #666666;"><strong style="color: #333333;">Notas del huésped:</strong></td>
+        <td style="padding: 10px; font-size: 14px; color: #333333; white-space: pre-wrap;">{{ $reservation->notes }}</td>
       </tr>
     @endif
-    <tr><td><strong>Estado:</strong></td><td>{{ ucfirst($reservation->status) }}</td></tr>
+    <tr style="background-color: #ffffff;"><td style="padding: 10px; font-size: 14px; color: #666666;"><strong style="color: #333333;">Estado:</strong></td><td style="padding: 10px; font-size: 14px; color: #4D8D94; font-weight: 500;">{{ ucfirst($reservation->status) }}</td></tr>
   </table>
 
-  <p style="margin-top:16px;">Cuando completes el pago te enviaremos la factura automáticamente.</p>
-  <p>Gracias por tu reserva.</p>
-</body>
-</html>
+  <p style="margin: 24px 0 0; padding: 16px; background-color: #f0f8f9; border-left: 3px solid #4D8D94; border-radius: 4px; font-size: 14px; line-height: 1.6; color: #333333;">
+    Cuando completes el pago te enviaremos la factura automáticamente.
+  </p>
+  
+  <p style="margin: 24px 0 0; font-size: 15px; line-height: 1.6; color: #333333;">Gracias por tu reserva.</p>
+@endsection

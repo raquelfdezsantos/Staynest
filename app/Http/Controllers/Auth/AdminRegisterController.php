@@ -50,7 +50,7 @@ class AdminRegisterController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'phone' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20', 'regex:/^[0-9\s\+\-\(\)]+$/'],
             'birth_date' => ['required', 'date', 'before:today'],
             'address' => ['required', 'string', 'max:255'],
             'document_id' => ['required', 'string', 'max:20', 'unique:'.User::class.',document_id'],
@@ -67,6 +67,8 @@ class AdminRegisterController extends Controller
 
             // Método de cobro (fingido)
             'payment_method' => ['required', 'string', 'in:stripe,bank_transfer,paypal'],
+        ], [
+            'phone.regex' => 'El teléfono solo puede contener números, espacios y los símbolos + - ( )',
         ]);
 
         // Validar que no sea menor de edad

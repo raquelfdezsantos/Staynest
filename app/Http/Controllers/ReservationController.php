@@ -50,17 +50,20 @@ class ReservationController extends Controller
             'property_id', 'check_in', 'check_out', 'guests', 'adults', 'children', 'pets', 'notes'
         ]);
 
+        // Obtener la propiedad para poder redirigir correctamente
+        $property = Property::findOrFail($request->property_id);
+
         // Guardar en sesión para repoblar el formulario al volver a /reservar
         $request->session()->put('pending_reservation', array_filter($payload, fn($v) => $v !== null && $v !== ''));
         // Flag para auto-crear tras login
         $request->session()->put('pending_reservation_auto', true);
 
         // Asegurar el retorno a /reservar tras login
-        session(['url.intended' => route('reservar')]);
+        session(['url.intended' => route('properties.reservar', $property->slug)]);
 
         // Si ya está logueado, volver a /reservar directamente; si no, a login
         if (Auth::check()) {
-            return redirect()->route('reservar');
+            return redirect()->route('properties.reservar', $property->slug);
         }
 
         return redirect()->guest(route('login'));

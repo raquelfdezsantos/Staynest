@@ -38,7 +38,7 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'address' => ['nullable','string','max:255'],
             'document_id' => ['nullable','string','max:50'],
-            'phone' => ['nullable', 'string', 'max:30'],
+            'phone' => ['nullable', 'string', 'max:30', 'regex:/^[0-9\s\+\-\(\)]+$/'],
             'birth_date' => ['nullable', 'date', 'before:today'],
         ];
 
@@ -69,6 +69,7 @@ class ProfileUpdateRequest extends FormRequest
             'address.max' => 'La dirección no puede superar :max caracteres.',
             'document_id.max' => 'El NIF/CIF no puede superar :max caracteres.',
             'phone.max' => 'El teléfono no puede superar :max caracteres.',
+            'phone.regex' => 'El teléfono solo puede contener números, espacios y los símbolos + - ( )',
             'birth_date.date' => 'La fecha de nacimiento debe ser una fecha válida.',
             'birth_date.before' => 'Debes haber nacido antes de hoy.',
             'payment_method.in' => 'El método de cobro seleccionado no es válido.',
