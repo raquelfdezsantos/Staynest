@@ -134,7 +134,8 @@ class ProfileController extends Controller
                     $refundAmount = round(min($paid, $reservation->total_price) * ($percent / 100), 2);
                 }
 
-                DB::transaction(function () use ($reservation, $refundAmount, $user) {
+                $refundInvoice = null;
+                DB::transaction(function () use ($reservation, $refundAmount, $user, &$refundInvoice) {
                     // Liberar noches
                     $dates = $this->rangeDates(
                         $reservation->check_in->toDateString(),
@@ -145,7 +146,7 @@ class ProfileController extends Controller
                     // Marcar reserva como cancelada
                     $reservation->update(['status' => 'cancelled']);
 
-                    // Registrar reembolso si aplica
+                    // Registrar reembolso y crear factura rectificativa si aplica
                     if ($refundAmount > 0) {
                         Payment::create([
                             'reservation_id' => $reservation->id,
@@ -153,6 +154,27 @@ class ProfileController extends Controller
                             'method'        => 'account_deletion',
                             'status'        => 'refunded',
                             'provider_ref'  => 'ACCDEL-' . Str::upper(Str::random(6)),
+                        ]);
+
+                        // Crear factura rectificativa de cancelación
+                        $invoiceNumber = \App\Models\Invoice::generateUniqueNumber('RECT');
+                        $refundInvoice = \App\Models\Invoice::create([
+                            'reservation_id' => $reservation->id,
+                            'number'         => $invoiceNumber,
+                            'pdf_path'       => null,
+                            'issued_at'      => now(),
+                            'amount'         => -$refundAmount,
+                            'details'        => [
+                                'context'        => 'cancellation',
+                                'refund_percent' => $percent,
+                                'refund_reason'  => 'Cancelación por eliminación de cuenta',
+                                'check_in'       => $reservation->check_in->format('Y-m-d'),
+                                'check_out'      => $reservation->check_out->format('Y-m-d'),
+                                'guests'         => $reservation->guests,
+                                'adults'         => $reservation->adults ?? 0,
+                                'children'       => $reservation->children ?? 0,
+                                'pets'           => $reservation->pets ?? 0,
+                            ],
                         ]);
                     }
                 });
@@ -171,9 +193,9 @@ class ProfileController extends Controller
                 }
 
                 // Enviar email de reembolso si aplica
-                if ($refundAmount > 0) {
+                if ($refundAmount > 0 && $refundInvoice) {
                     try {
-                        Mail::to($user->email)->send(new PaymentRefundIssuedMail($reservation, $refundAmount));
+                        Mail::to($user->email)->send(new PaymentRefundIssuedMail($reservation, $refundAmount, $refundInvoice));
                     } catch (\Throwable $e) {
                         Log::error('Error enviando email de reembolso: ' . $e->getMessage());
                     }
