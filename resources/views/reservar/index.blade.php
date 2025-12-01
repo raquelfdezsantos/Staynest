@@ -507,7 +507,6 @@
                             
                             if (isNaN(total) || !isFinite(total)) {
                                 document.getElementById('summary-total').textContent = '0.00€';
-                                console.error('Error calculando total:', { totalNightsPrice, guests, rates });
                             } else {
                                 document.getElementById('summary-total').textContent = total.toFixed(2) + '€';
                             }

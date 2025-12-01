@@ -1,51 +1,47 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #f8f9fa; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
-        .content { background: #fff; padding: 20px; border: 1px solid #e9ecef; border-radius: 5px; }
-        .footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e9ecef; font-size: 12px; color: #6c757d; }
-        .highlight { background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin: 20px 0; }
-        .amount { font-size: 24px; font-weight: bold; color: #28a745; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h2>Reserva {{ $reservation->code ?? ('#'.$reservation->id) }} modificada</h2>
-        </div>
-        
-        <div class="content">
-            <p>Hola {{ $reservation->user->name }},</p>
-            
-            <p>Tu reserva <strong>#{{ $reservation->id }}</strong> en <strong>{{ $reservation->property->name }}</strong> ha sido modificada correctamente.</p>
-            
-            <h3>Nuevos detalles de la reserva:</h3>
-            <ul>
-                <li><strong>Check-in:</strong> {{ $reservation->check_in->format('d/m/Y') }}</li>
-                <li><strong>Check-out:</strong> {{ $reservation->check_out->format('d/m/Y') }}</li>
-                <li><strong>Huéspedes:</strong> {{ $reservation->guests }}</li>
-                <li><strong>Nuevo total:</strong> {{ number_format($newTotal, 2) }}€</li>
-            </ul>
-            
-            <div class="highlight">
-                <p><strong>📢 Devolución pendiente</strong></p>
-                <p>El nuevo total de la reserva es inferior al monto ya pagado. Procederemos a tramitar la devolución de:</p>
-                <p class="amount">{{ number_format($refundAmount, 2) }}€</p>
-                <p>Te enviaremos un correo de confirmación cuando la devolución se haya procesado correctamente.</p>
-            </div>
-            
-            <p>Si tienes alguna pregunta, no dudes en contactarnos.</p>
-            
-            <p>Saludos cordiales,<br>El equipo de {{ config('app.name') }}</p>
-        </div>
-        
-        <div class="footer">
-            <p>Este es un mensaje automático. Por favor, no respondas a este correo.</p>
-        </div>
-    </div>
-</body>
-</html>
+@extends('emails.layouts.staynest')
+
+@section('title', 'Reserva modificada')
+
+@section('content')
+<h2 style="margin: 0 0 20px 0; color: #2c5aa0; font-size: 20px;">Reserva {{ $reservation->code ?? ('#'.$reservation->id) }} modificada</h2>
+
+<p style="margin: 0 0 16px 0;">Hola {{ $reservation->user->name }},</p>
+
+<p style="margin: 0 0 20px 0;">Tu reserva <strong>#{{ $reservation->id }}</strong> en <strong>{{ $reservation->property->name }}</strong> ha sido modificada correctamente.</p>
+
+<h3 style="margin: 24px 0 12px 0; font-size: 16px; color: #333;">Nuevos detalles de la reserva:</h3>
+
+<table style="width: 100%; margin: 12px 0; border-collapse: collapse; background: #f8f9fa; border-radius: 2px; overflow: hidden;">
+    <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #e9ecef;"><strong>Check-in:</strong></td>
+        <td style="padding: 12px; border-bottom: 1px solid #e9ecef; text-align: right;">{{ $reservation->check_in->format('d/m/Y') }}</td>
+    </tr>
+    <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #e9ecef;"><strong>Check-out:</strong></td>
+        <td style="padding: 12px; border-bottom: 1px solid #e9ecef; text-align: right;">{{ $reservation->check_out->format('d/m/Y') }}</td>
+    </tr>
+    <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #e9ecef;"><strong>Huéspedes:</strong></td>
+        <td style="padding: 12px; border-bottom: 1px solid #e9ecef; text-align: right;">{{ $reservation->guests }}</td>
+    </tr>
+    <tr>
+        <td style="padding: 12px;"><strong>Nuevo total:</strong></td>
+        <td style="padding: 12px; text-align: right; font-weight: bold;">{{ number_format($newTotal, 2) }}€</td>
+    </tr>
+</table>
+
+<div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin: 20px 0; border-radius: 2px;">
+    <p style="margin: 0 0 8px 0; font-weight: bold;">Devolución pendiente</p>
+    <p style="margin: 0 0 12px 0;">El nuevo total de la reserva es inferior al monto ya pagado. Procederemos a tramitar la devolución de:</p>
+    <p style="margin: 0 0 12px 0; font-size: 24px; font-weight: bold; color: #28a745;">{{ number_format($refundAmount, 2) }}€</p>
+    <p style="margin: 0;">Te enviaremos un correo de confirmación cuando la devolución se haya procesado correctamente.</p>
+</div>
+
+@if($invoice)
+<div style="text-align: center; margin: 24px 0;">
+    <p style="color:#666; font-size:14px; margin:0;">La factura actualizada está adjunta en este correo en formato PDF.</p>
+</div>
+@endif
+
+<p style="margin: 20px 0 0 0;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
+@endsection

@@ -11,12 +11,26 @@
         <tr>
             <td align="center">
                 <!-- Container principal -->
-                <table cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                <table cellpadding="0" cellspacing="0" border="0" width="600" style="max-width: 600px; background-color: #ffffff; border-radius: 2px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
                     
                     <!-- Header con logo -->
                     <tr>
                         <td style="background-color: #2a2a2a; padding: 30px 40px; text-align: center;">
-                            <h1 style="margin: 0; font-family: Georgia, serif; font-size: 32px; color: #ffffff; font-weight: 400; letter-spacing: 0.5px;">Staynest</h1>
+                            @php
+                                // Obtener el logo y convertirlo a Base64
+                                $logoPath = public_path('images/logos/logo-dark.png');
+                                $logoBase64 = '';
+                                if (file_exists($logoPath)) {
+                                    $logoData = base64_encode(file_get_contents($logoPath));
+                                    $logoBase64 = 'data:image/png;base64,' . $logoData;
+                                }
+                            @endphp
+                            
+                            @if($logoBase64)
+                                <img src="{{ $logoBase64 }}" alt="Staynest" style="max-width: 180px; height: auto; display: block; margin: 0 auto;">
+                            @else
+                                <h1 style="margin: 0; font-family: Georgia, serif; font-size: 32px; color: #ffffff; font-weight: 400; letter-spacing: 0.5px;">Staynest</h1>
+                            @endif
                         </td>
                     </tr>
                     

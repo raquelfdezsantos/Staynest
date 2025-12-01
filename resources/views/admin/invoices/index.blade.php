@@ -30,9 +30,9 @@
                             <td class="py-2 space-x-2">
                             <td class="py-2 space-x-2">
                                 <a class="text-indigo-600 hover:underline"
-                                    href="{{ route('invoices.show', $inv->number) }}">Ver</a>
+                                    href="{{ route('admin.invoices.show', $inv->number) }}">Ver</a>
                                 <a class="text-indigo-600 hover:underline ml-3"
-                                    href="{{ route('invoices.show', $inv->number) }}?download=1">
+                                    href="{{ route('admin.invoices.show', $inv->number) }}?download=1">
                                     Descargar PDF
                                 </a>
                             </td>

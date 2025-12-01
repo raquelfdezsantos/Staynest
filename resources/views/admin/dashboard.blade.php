@@ -278,8 +278,8 @@
                                                 </button>
 
                                             @elseif ($r->status === 'paid' && $r->invoice)
-                                                <a href="{{ route('invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary">Ver factura</a>
-                                                <a href="{{ route('invoices.show', $r->invoice->number) }}?download=1" class="btn-action btn-action-secondary">PDF</a>
+                                                <a href="{{ route('admin.invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary">Ver factura</a>
+                                                <a href="{{ route('admin.invoices.show', $r->invoice->number) }}?download=1" class="btn-action btn-action-secondary">PDF</a>
 
                                                 <button type="button"
                                                         x-data=""
@@ -326,8 +326,8 @@
                                                 @endphp
                                                 @if($refundInvoices->isNotEmpty())
                                                     @foreach($refundInvoices as $refInv)
-                                                        <a href="{{ route('invoices.show', $refInv->number) }}" class="btn-action btn-action-danger">Ver factura</a>
-                                                        <a href="{{ route('invoices.show', $refInv->number) }}?download=1" class="btn-action btn-action-danger">PDF</a>
+                                                        <a href="{{ route('admin.invoices.show', $refInv->number) }}" class="btn-action btn-action-danger">Ver factura</a>
+                                                        <a href="{{ route('admin.invoices.show', $refInv->number) }}?download=1" class="btn-action btn-action-danger">PDF</a>
                                                     @endforeach
                                                 @else
                                                     <span style="color: var(--color-text-muted); font-size: var(--text-sm);">Cancelada sin factura</span>

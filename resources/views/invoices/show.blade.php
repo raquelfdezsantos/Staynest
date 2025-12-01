@@ -1,10 +1,41 @@
 @extends('layouts.app')
 @section('title','Factura ' . $invoice->number)
 @section('content')
+    @php
+        $res = $invoice->reservation;
+        $isRect = ($invoice->amount < 0 || (is_array($invoice->details ?? null) && isset($invoice->details['context'])));
+        
+        if ($isRect && !empty($invoice->details['previous_check_in'])) {
+            $displayCheckIn = \Carbon\Carbon::parse($invoice->details['previous_check_in']);
+            $displayCheckOut = \Carbon\Carbon::parse($invoice->details['previous_check_out']);
+            $displayAmount = $invoice->details['previous_total'] ?? abs($invoice->amount);
+            $displayGuests = $invoice->details['previous_guests'] ?? $res->guests;
+        } else {
+            $displayCheckIn = $res->check_in;
+            $displayCheckOut = $res->check_out;
+            $displayAmount = $invoice->amount;
+            $displayGuests = $res->guests;
+        }
+        
+        $parts = [];
+        $ad = (int)($res->adults ?? 0);
+        $ch = (int)($res->children ?? 0);
+        $pt = (int)($res->pets ?? 0);
+        if($ad>0) $parts[] = $ad.' '.($ad===1?'adulto':'adultos');
+        if($ch>0) $parts[] = $ch.' '.($ch===1?'niño':'niños');
+        if($pt>0) $parts[] = $pt.' '.($pt===1?'mascota':'mascotas');
+    @endphp
+
     <div class="invoice-page max-w-5xl mx-auto px-4 py-10">
         {{-- Header centrado --}}
         <header class="mb-16 text-center">
-            <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Factura {{ $invoice->number }}</h1>
+            <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">
+                @if($invoice->amount < 0 || str_starts_with($invoice->number, 'RECT-'))
+                    Factura Rectificativa {{ $invoice->number }}
+                @else
+                    Factura {{ $invoice->number }}
+                @endif
+            </h1>
             <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Emitida: {{ optional($invoice->issued_at)->format('d/m/Y H:i') }}</p>
             @php($status = strtolower($invoice->reservation->status ?? ''))
             @if($status === 'paid')
@@ -42,30 +73,19 @@
                                 <div class="mb-2"><strong>Dirección:</strong> {{ $p->address ?? '—' }}, {{ $p->postal_code ?? '' }} {{ $p->city ?? '' }} {{ $p->province ? '(' . $p->province . ')' : '' }}</div>
                                 <div class="mb-2"><strong>Propietario:</strong> {{ $p->owner_name ?? '—' }}</div>
                                 <div class="mb-2"><strong>CIF/NIF:</strong> {{ $p->owner_tax_id ?? '—' }}</div>
-                                <div class="mb-2">Check-in: {{ $invoice->reservation->check_in->format('d/m/Y') }}</div>
-                                <div class="mb-2">Check-out: {{ $invoice->reservation->check_out->format('d/m/Y') }}</div>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <section class="invoice-card p-6" style="border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.8); backdrop-filter: blur(10px);">
-                    @php($res = $invoice->reservation)
-                    @php($nights = $res->check_in && $res->check_out ? $res->check_in->diffInDays($res->check_out) : 0)
-                    @php($parts = [])
-                    @php($ad = (int)($res->adults ?? 0))
-                    @php($ch = (int)($res->children ?? 0))
-                    @php($pt = (int)($res->pets ?? 0))
-                    @if($ad>0) @php($parts[] = $ad.' '.($ad===1?'adulto':'adultos')) @endif
-                    @if($ch>0) @php($parts[] = $ch.' '.($ch===1?'niño':'niños')) @endif
-                    @if($pt>0) @php($parts[] = $pt.' '.($pt===1?'mascota':'mascotas')) @endif
                     <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary); margin:0 0 1rem; text-transform: uppercase; letter-spacing:0.05em;">Resumen</h2>
                     <div class="overflow-hidden text-sm">
                          <table class="w-full text-sm" style="border-collapse: collapse;">
                             <thead>
                                 <tr class="text-center">
                                     <th class="py-3 font-medium" style="font-size: var(--text-base); text-align:left; color: var(--color-text-secondary);">Concepto</th>
-                                    <th class="py-3 font-medium" style="font-size: var(--text-base); text-align:center; color: var(--color-text-secondary);">Noches</th>
+                                    <th class="py-3 font-medium" style="font-size: var(--text-base); text-align:center; color: var(--color-text-secondary);">Fechas</th>
                                     <th class="py-3 font-medium" style="font-size: var(--text-base); text-align:center; color: var(--color-text-secondary);">Huéspedes</th>
                                     <th class="py-3 font-medium" style="font-size: var(--text-base); text-align:right; color: var(--color-text-secondary);">Importe</th>
                                 </tr>
@@ -76,20 +96,51 @@
                                          <div style="color: var(--color-text-primary); font-weight: 500;">Reserva {{ $res->code }}</div>
                                          <div style="color: var(--color-text-primary); font-weight: 500;">{{ $res->property->name }}</div>
                                      </td>
-                                     <td class="py-3 text-center" style="color: var(--color-text-secondary);">{{ $nights }}</td>
-                                     <td class="py-3 text-center" style="color: var(--color-text-secondary);">@if(count($parts)) {{ implode(', ',$parts) }} (total: {{ $res->guests }}) @else {{ $res->guests }} @endif</td>
-                                     <td class="py-3 text-right font-semibold" style="color: var(--color-text-secondary);">{{ number_format($invoice->amount,2,',','.') }} €</td>
+                                     <td class="py-3 text-center" style="color: var(--color-text-secondary);">{{ $displayCheckIn->format('d/m/Y') }} → {{ $displayCheckOut->format('d/m/Y') }}</td>
+                                     <td class="py-3 text-center" style="color: var(--color-text-secondary);">
+                                       @if($isRect)
+                                         {{ $displayGuests }} {{ $displayGuests === 1 ? 'huésped' : 'huéspedes' }}
+                                       @else
+                                         @if(count($parts)) {{ implode(', ',$parts) }} (total: {{ $res->guests }}) @else {{ $res->guests }} @endif
+                                       @endif
+                                     </td>
+                                     <td class="py-3 text-right font-semibold" style="color: var(--color-text-secondary);">{{ number_format($displayAmount, 2, ',', '.') }} €</td>
                                 </tr>
+                                @if($isRect && !empty($invoice->details['new_check_in']))
+                                <tr>
+                                    <td class="py-3 pr-4" style="color: var(--color-text-secondary);">Cambios aplicados</td>
+                                    <td class="py-3 text-center" style="color: var(--color-text-secondary);">
+                                      @if($invoice->details['previous_check_in'] !== $invoice->details['new_check_in'] || $invoice->details['previous_check_out'] !== $invoice->details['new_check_out'])
+                                        {{ \Carbon\Carbon::parse($invoice->details['new_check_in'])->format('d/m/Y') }} → {{ \Carbon\Carbon::parse($invoice->details['new_check_out'])->format('d/m/Y') }}
+                                      @else
+                                        —
+                                      @endif
+                                    </td>
+                                    <td class="py-3 text-center" style="color: var(--color-text-secondary);">
+                                      @if(!empty($invoice->details['previous_guests']) && !empty($invoice->details['new_guests']) && $invoice->details['previous_guests'] !== $invoice->details['new_guests'])
+                                        {{ $invoice->details['new_guests'] }} {{ $invoice->details['new_guests'] === 1 ? 'huésped' : 'huéspedes' }}
+                                      @else
+                                        —
+                                      @endif
+                                    </td>
+                                    <td class="py-3 text-right font-semibold" style="color: {{ $invoice->amount < 0 ? '#dc3545' : '#28a745' }};">
+                                      {{ $invoice->amount < 0 ? '-' : '+' }}{{ number_format(abs($invoice->details['difference'] ?? $invoice->amount), 2, ',', '.') }} €
+                                    </td>
+                                </tr>
+                                @endif
                             </tbody>
                             <tfoot class="border-t" style="border-color: rgba(var(--color-border-rgb), 0.1); font-size:1rem;">
                                 <tr>
                                     <td colspan="3" class="py-3 font-medium text-left" style="color: var(--color-text-secondary);">Total</td>
-                                    <td class="py-3 text-right font-bold" style="color: var(--color-text-primary);">{{ number_format($invoice->amount,2,',','.') }} €</td>
+                                    <td class="py-3 text-right font-bold" style="color: var(--color-text-primary);">
+                                      {{ number_format($isRect && !empty($invoice->details['new_total']) ? $invoice->details['new_total'] : $invoice->amount, 2, ',', '.') }} €
+                                    </td>
                                 </tr>
                             </tfoot>
                         </table>
-                    </div>
-                </section>
+                        
+                        </div>
+                    </section>
 
                 @if($res->notes)
                 <section class="invoice-card p-6" style="border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.8); backdrop-filter: blur(10px);">

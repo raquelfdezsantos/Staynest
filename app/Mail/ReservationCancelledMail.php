@@ -8,6 +8,8 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Attachment;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
  * Mailable para notificar al usuario sobre la cancelación de una reserva.
@@ -22,9 +24,13 @@ class ReservationCancelledMail extends Mailable
      * Constructor del mailable.
      *
      * @param mixed $reservation Instancia de la reserva cancelada.
+     * @param bool $isAdmin Si es true, usa la vista para admin.
+     * @param mixed|null $invoice Factura rectificativa (opcional).
      */
     public function __construct(
-        public $reservation
+        public $reservation,
+        public bool $isAdmin = false,
+        public $invoice = null
     ) {}
 
     /**
@@ -46,10 +52,13 @@ class ReservationCancelledMail extends Mailable
      */
     public function content(): Content
     {
+        $view = $this->isAdmin ? 'emails.admin_reservation_cancelled' : 'emails.reservation_cancelled';
+        
         return new Content(
-            view: 'emails.reservation_cancelled',
+            view: $view,
             with: [
                 'reservation' => $this->reservation->loadMissing(['user','property']),
+                'invoice' => $this->invoice
             ],
         );
     }
@@ -61,6 +70,18 @@ class ReservationCancelledMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+        if ($this->invoice) {
+            if (!empty($this->invoice->pdf_path)) {
+                $attachments[] = Attachment::fromStorage($this->invoice->pdf_path)
+                    ->as($this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            } else {
+                $pdf = PDF::loadView('invoices.pdf', ['invoice' => $this->invoice]);
+                $attachments[] = Attachment::fromData(fn () => $pdf->output(), $this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            }
+        }
+        return $attachments;
     }
 }

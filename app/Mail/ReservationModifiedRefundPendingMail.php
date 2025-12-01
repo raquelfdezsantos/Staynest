@@ -7,6 +7,8 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Attachment;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
  * Mailable para notificar al usuario sobre la modificación de la reserva y devolución pendiente.
@@ -27,7 +29,8 @@ class ReservationModifiedRefundPendingMail extends Mailable
     public function __construct(
         public $reservation,
         public $newTotal,
-        public $refundAmount
+        public $refundAmount,
+        public $invoice = null
     ) {}
 
     /**
@@ -55,6 +58,7 @@ class ReservationModifiedRefundPendingMail extends Mailable
                 'reservation' => $this->reservation->loadMissing(['user', 'property']),
                 'newTotal' => $this->newTotal,
                 'refundAmount' => $this->refundAmount,
+                'invoice' => $this->invoice,
             ],
         );
     }
@@ -66,6 +70,18 @@ class ReservationModifiedRefundPendingMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+        if ($this->invoice) {
+            if (!empty($this->invoice->pdf_path)) {
+                $attachments[] = Attachment::fromStorage($this->invoice->pdf_path)
+                    ->as($this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            } else {
+                $pdf = PDF::loadView('invoices.pdf', ['invoice' => $this->invoice]);
+                $attachments[] = Attachment::fromData(fn () => $pdf->output(), $this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            }
+        }
+        return $attachments;
     }
 }

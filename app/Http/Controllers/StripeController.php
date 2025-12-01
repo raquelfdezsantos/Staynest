@@ -215,7 +215,7 @@ class StripeController extends Controller
         }
 
         try {
-            Mail::to(config('mail.admin_to', env('MAIL_ADMIN', 'admin@vut.test')))->queue(
+            Mail::to($reservation->property->user->email)->queue(
                 new AdminPaymentNotificationMail($reservation, $invoice)
             );
         } catch (Throwable $e) {
@@ -274,9 +274,9 @@ class StripeController extends Controller
             Log::error('Fallo enviando PaymentBalanceSettledMail: ' . $e->getMessage());
         }
         
-        Log::info('Enviando email pago diferencia al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+        Log::info('Enviando email pago diferencia al admin', ['email' => $reservation->property->user->email]);
         try {
-            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(
+            Mail::to($reservation->property->user->email)->send(
                 new AdminPaymentBalanceSettledMail($reservation, $amount)
             );
             Log::info('AdminPaymentBalanceSettledMail enviado correctamente');

@@ -165,7 +165,7 @@ class ProfileController extends Controller
                 }
 
                 try {
-                    Mail::to($reservation->property->user->email)->send(new ReservationCancelledMail($reservation));
+                    Mail::to($reservation->property->user->email)->send(new ReservationCancelledMail($reservation, true));
                 } catch (\Throwable $e) {
                     Log::error('Error enviando email de cancelación al admin: ' . $e->getMessage());
                 }

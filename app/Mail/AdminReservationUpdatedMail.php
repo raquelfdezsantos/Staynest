@@ -8,6 +8,8 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Attachment;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
  * Mailable para notificar al administrador sobre la actualización de una reserva.
@@ -21,12 +23,17 @@ class AdminReservationUpdatedMail extends Mailable
     /**
      * Constructor del mailable.
      *
-     * Inicializa el correo de actualización de reserva para el administrador.
+     * @param \App\Models\Reservation $reservation Instancia de la reserva modificada.
+     * @param float $previousTotal Importe total anterior.
+     * @param float $difference Diferencia entre el total anterior y el nuevo.
+     * @param mixed|null $invoice Factura actualizada (opcional).
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        public \App\Models\Reservation $reservation,
+        public float $previousTotal = 0,
+        public float $difference = 0,
+        public $invoice = null
+    ) {}
 
     /**
      * Define el sobre del correo (asunto, destinatario, etc).
@@ -36,7 +43,7 @@ class AdminReservationUpdatedMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Admin Reservation Updated Mail',
+            subject: 'Reserva modificada en tu propiedad · #' . $this->reservation->id,
         );
     }
 
@@ -48,7 +55,13 @@ class AdminReservationUpdatedMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.admin_reservation_updated',
+            with: [
+                'reservation' => $this->reservation->loadMissing(['user', 'property']),
+                'previousTotal' => $this->previousTotal,
+                'difference' => $this->difference,
+                'invoice' => $this->invoice
+            ],
         );
     }
 
@@ -59,6 +72,18 @@ class AdminReservationUpdatedMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+        if ($this->invoice) {
+            if (!empty($this->invoice->pdf_path)) {
+                $attachments[] = Attachment::fromStorage($this->invoice->pdf_path)
+                    ->as($this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            } else {
+                $pdf = PDF::loadView('invoices.pdf', ['invoice' => $this->invoice]);
+                $attachments[] = Attachment::fromData(fn () => $pdf->output(), $this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            }
+        }
+        return $attachments;
     }
 }

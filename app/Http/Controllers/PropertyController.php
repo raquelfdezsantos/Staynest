@@ -169,12 +169,15 @@ class PropertyController extends Controller
             ->min('price');
 
         // Pasar todas las tarifas como objeto fecha => precio
-        $rates = RateCalendar::where('property_id', $property->id)
+        $ratesCollection = RateCalendar::where('property_id', $property->id)
             ->where('is_available', true)
-            ->get()
-            ->pluck('price', 'date')
-            ->mapWithKeys(fn($price, $date) => [Carbon::parse($date)->format('Y-m-d') => $price])
-            ->toArray();
+            ->get();
+        
+        $rates = [];
+        foreach ($ratesCollection as $rate) {
+            $dateKey = Carbon::parse($rate->date)->format('Y-m-d');
+            $rates[$dateKey] = (float) $rate->price;
+        }
 
         // Datos preseleccionados guardados en sesión al forzar login
         $prefill = session('pending_reservation', []);

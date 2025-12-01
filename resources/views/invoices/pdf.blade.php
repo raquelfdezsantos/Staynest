@@ -91,9 +91,44 @@
     $logoPath = public_path('images/logos/logo-light.png');
     $hasLogo = is_file($logoPath);
     $p = $invoice->reservation->property;
-  @endphp
-  @php
     $res = $invoice->reservation;
+    
+    // Para facturas rectificativas, mostrar siempre las fechas ORIGINALES en la línea principal
+    $isRectificative = ($invoice->amount < 0 || (is_array($invoice->details ?? null) && in_array($invoice->details['context'] ?? '', ['decrease_update', 'increase_update'])));
+    
+    if ($isRectificative && is_array($invoice->details ?? null)) {
+      // Fechas originales de la reserva
+      $displayCheckIn = !empty($invoice->details['previous_check_in']) 
+        ? \Carbon\Carbon::parse($invoice->details['previous_check_in']) 
+        : $res->check_in;
+      $displayCheckOut = !empty($invoice->details['previous_check_out']) 
+        ? \Carbon\Carbon::parse($invoice->details['previous_check_out']) 
+        : $res->check_out;
+      $displayAmount = $invoice->details['previous_total'] ?? abs($invoice->amount);
+      
+      // Calcular cambios
+      $newCheckIn = !empty($invoice->details['new_check_in']) 
+        ? \Carbon\Carbon::parse($invoice->details['new_check_in']) 
+        : $res->check_in;
+      $newCheckOut = !empty($invoice->details['new_check_out']) 
+        ? \Carbon\Carbon::parse($invoice->details['new_check_out']) 
+        : $res->check_out;
+      $datesChanged = $displayCheckIn->format('Y-m-d') !== $newCheckIn->format('Y-m-d') 
+                   || $displayCheckOut->format('Y-m-d') !== $newCheckOut->format('Y-m-d');
+      $guestsChanged = isset($invoice->details['previous_guests']) 
+                    && isset($invoice->details['new_guests']) 
+                    && $invoice->details['previous_guests'] !== $invoice->details['new_guests'];
+    } else {
+      // Factura normal: usar fechas actuales de la reserva
+      $displayCheckIn = $res->check_in;
+      $displayCheckOut = $res->check_out;
+      $displayAmount = $invoice->amount;
+      $datesChanged = false;
+      $guestsChanged = false;
+      $newCheckIn = $res->check_in;
+      $newCheckOut = $res->check_out;
+    }
+    
     $parts = [];
     $ad = (int) ($res->adults ?? 0);
     $ch = (int) ($res->children ?? 0);
@@ -101,6 +136,8 @@
     if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
     if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
     if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
+    
+    $status = strtolower($invoice->reservation->status ?? '');
   @endphp
   <div class="header">
     <div class="brand">
@@ -113,7 +150,6 @@
     <div class="meta">
       <div style="font-size:14px; font-weight:700; color:#181818;">Factura {{ $invoice->number }}</div>
       <div>Emitida: {{ optional($invoice->issued_at)->format('d/m/Y') }}</div>
-      @php($status = strtolower($invoice->reservation->status ?? ''))
       @if($status === 'paid')
         <div class="pill" style="border-color:#8FBC8F; color:#000000;">Pagada</div>
       @elseif($status === 'pending')
@@ -161,18 +197,45 @@
           <div><strong>Reserva {{ $res->code }}</strong></div>
           <div class="muted">{{ $invoice->reservation->property->name ?? 'Alojamiento' }}</div>
         </td>
-        <td>{{ $invoice->reservation->check_in->format('d/m/Y') }} → {{ $invoice->reservation->check_out->format('d/m/Y') }}</td>
-        <td class="right">{{ number_format($invoice->amount, 2, ',', '.') }} €</td>
+        <td>{{ $displayCheckIn->format('d/m/Y') }} → {{ $displayCheckOut->format('d/m/Y') }}</td>
+        <td class="right">{{ number_format($displayAmount, 2, ',', '.') }} €</td>
       </tr>
+      @if($isRectificative && is_array($invoice->details))
+      <tr>
+        <td><span class="muted">Cambios aplicados</span></td>
+        <td>
+          @if($datesChanged && $guestsChanged)
+            {{ $newCheckIn->format('d/m/Y') }} → {{ $newCheckOut->format('d/m/Y') }}, {{ $invoice->details['new_guests'] }} {{ $invoice->details['new_guests'] === 1 ? 'huésped' : 'huéspedes' }}
+          @elseif($datesChanged)
+            {{ $newCheckIn->format('d/m/Y') }} → {{ $newCheckOut->format('d/m/Y') }}
+          @elseif($guestsChanged)
+            {{ $invoice->details['new_guests'] }} {{ $invoice->details['new_guests'] === 1 ? 'huésped' : 'huéspedes' }}
+          @endif
+        </td>
+        <td class="right" style="color:{{ $invoice->amount < 0 ? '#dc3545' : '#28a745' }}">
+          {{ $invoice->amount < 0 ? '-' : '+' }}{{ number_format(abs($invoice->details['difference'] ?? $invoice->amount), 2, ',', '.') }} €
+        </td>
+      </tr>
+      @endif
     </tbody>
     <tfoot>
       <tr class="total-row">
         <td class="left" colspan="2"><span class="total-label">Total</span></td>
-        <td class="right"><span class="total-amount">{{ number_format($invoice->amount, 2, ',', '.') }} €</span></td>
+        <td class="right">
+          <span class="total-amount">
+            @if($isRectificative && is_array($invoice->details))
+              {{ number_format($invoice->details['new_total'] ?? $invoice->reservation->total_price, 2, ',', '.') }} €
+            @else
+              {{ number_format($invoice->amount, 2, ',', '.') }} €
+            @endif
+          </span>
+        </td>
       </tr>
     </tfoot>
   </table>
   </div>
+
+  
 
   <p style="margin-top:8px;">
     <strong>Huéspedes:</strong>

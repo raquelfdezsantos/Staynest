@@ -1,13 +1,14 @@
-<!doctype html>
-<html lang="es">
-<head><meta charset="utf-8"><title>Reserva modificada</title></head>
-<body style="font-family: Arial, sans-serif; color:#222; line-height:1.5; max-width:600px; margin:0 auto; padding:20px;">
-	<h2 style="margin:0 0 20px; color:#2c5aa0;">✓ Reserva modificada exitosamente</h2>
-	<p>Hola <strong>{{ $reservation->user->name }}</strong>,</p>
-	<p>Tu reserva <strong>#{{ $reservation->code ?? $reservation->id }}</strong> en <strong>{{ $reservation->property->name }}</strong> ha sido actualizada.</p>
-	
-	<div style="background:#f5f5f5; border-radius:8px; padding:16px; margin:24px 0;">
-		<h3 style="margin:0 0 12px; font-size:16px; color:#333;">📋 Datos actualizados de tu reserva:</h3>
+@extends('emails.layouts.staynest')
+
+@section('title', 'Reserva modificada')
+
+@section('content')
+<h2 style="margin: 0 0 20px 0; color: #2c5aa0; font-size: 20px;">Reserva modificada exitosamente</h2>
+<p style="margin: 0 0 16px 0;">Hola <strong>{{ $reservation->user->name }}</strong>,</p>
+<p style="margin: 0 0 20px 0;">Tu reserva <strong>#{{ $reservation->code ?? $reservation->id }}</strong> en <strong>{{ $reservation->property->name }}</strong> ha sido actualizada.</p>
+
+<div style="background:#f5f5f5; border-radius:2px; padding:16px; margin:24px 0;">
+		<h3 style="margin:0 0 12px; font-size:16px; color:#333;">Datos actualizados de tu reserva:</h3>
 		<table style="width:100%; border-collapse:collapse;">
 			<tr>
 				<td style="padding:6px 0; color:#666;"><strong>Fechas:</strong></td>
@@ -47,8 +48,8 @@
 		</table>
 	</div>
 
-	<div style="background:#fff; border:2px solid #e0e0e0; border-radius:8px; padding:16px; margin:24px 0;">
-		<h3 style="margin:0 0 12px; font-size:16px; color:#333;">💰 Resumen económico:</h3>
+	<div style="background:#fff; border:2px solid #e0e0e0; border-radius:2px; padding:16px; margin:24px 0;">
+		<h3 style="margin:0 0 12px; font-size:16px; color:#333;">Resumen económico:</h3>
 		
 		@if($previousTotal > 0 && abs($difference) > 0.01)
 			<table style="width:100%; border-collapse:collapse; margin-bottom:12px;">
@@ -63,15 +64,15 @@
 			</table>
 
 			@if($difference > 0)
-				<div style="background:#d32f2f; color:white; border-radius:6px; padding:12px; margin-top:12px;">
-					<strong style="font-size:15px;">✓ Cargo adicional aplicado</strong>
+				<div style="background:#ffc107; color:#000; border-radius:2px; padding:12px; margin-top:12px;">
+					<strong style="font-size:15px;">Pago adicional requerido</strong>
 					<p style="margin:8px 0 0 0; font-size:14px;">
-						Se ha cobrado <strong>{{ number_format($difference, 2, ',', '.') }} €</strong> adicionales mediante el método de pago registrado para cubrir el incremento del costo de tu reserva.
+						Debes abonar <strong>{{ number_format($difference, 2, ',', '.') }} €</strong> adicionales para completar el pago de tu reserva. Accede a la plataforma para realizar el pago de la diferencia.
 					</p>
 				</div>
 			@elseif($difference < 0)
-				<div style="background:#388e3c; color:white; border-radius:6px; padding:12px; margin-top:12px;">
-					<strong style="font-size:15px;">✓ Reembolso procesado</strong>
+				<div style="background:#388e3c; color:white; border-radius:2px; padding:12px; margin-top:12px;">
+					<strong style="font-size:15px;">Reembolso procesado</strong>
 					<p style="margin:8px 0 0 0; font-size:14px;">
 						Se ha devuelto <strong>{{ number_format(abs($difference), 2, ',', '.') }} €</strong> a tu método de pago original por la reducción del costo de la reserva.
 					</p>
@@ -90,17 +91,19 @@
 		@endif
 	</div>
 
-	<div style="background:#e8f5e9; border-left:4px solid #4caf50; padding:12px; margin:24px 0; border-radius:4px;">
+	<div style="background:#e8f5e9; border-left:4px solid #4caf50; padding:12px; margin:24px 0; border-radius:2px;">
 		<p style="margin:0; color:#2e7d32; font-size:14px;">
-			<strong>Todo está en orden.</strong> Tu reserva ha sido actualizada correctamente. Recibirás un correo de confirmación con todos los detalles.
+			<strong>Todo está en orden.</strong> Tu reserva ha sido actualizada correctamente.
 		</p>
 	</div>
 
-	<hr style="border:none; border-top:1px solid #e0e0e0; margin:24px 0;">
-	
-	<p style="color:#666; font-size:13px; margin:0;">
-		Si tienes alguna pregunta o necesitas realizar más cambios, no dudes en contactarnos.<br>
-		<strong>Staynest</strong> - Tu alojamiento perfecto
+	@if($invoice)
+	<div style="text-align: center; margin: 24px 0;">
+		<p style="color:#666; font-size:14px; margin:0;">La factura actualizada está adjunta en este correo en formato PDF.</p>
+	</div>
+	@endif
+
+	<p style="color:#666; font-size:13px; margin: 20px 0 0 0;">
+		Si tienes alguna pregunta o necesitas realizar más cambios, no dudes en contactarnos.
 	</p>
-</body>
-</html>
+@endsection

@@ -32,6 +32,7 @@ class Invoice extends Model
         'pdf_path',
         'issued_at',
         'amount',
+        'details',
     ];
 
     /**
@@ -42,6 +43,7 @@ class Invoice extends Model
     protected $casts = [
         'issued_at' => 'datetime',
         'amount'    => 'decimal:2',
+        'details'   => 'array',
     ];
 
     /**

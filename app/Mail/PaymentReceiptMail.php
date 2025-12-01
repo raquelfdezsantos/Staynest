@@ -10,6 +10,8 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Reservation;
 use App\Models\Invoice;
+use Illuminate\Mail\Mailables\Attachment;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
  * Mailable para enviar el recibo de pago al usuario.
@@ -66,6 +68,20 @@ class PaymentReceiptMail extends Mailable implements ShouldQueue
      */
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+
+        if ($this->invoice) {
+            if (!empty($this->invoice->pdf_path)) {
+                $attachments[] = Attachment::fromStorage($this->invoice->pdf_path)
+                    ->as($this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            } else {
+                $pdf = PDF::loadView('invoices.pdf', ['invoice' => $this->invoice]);
+                $attachments[] = Attachment::fromData(fn () => $pdf->output(), $this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            }
+        }
+
+        return $attachments;
     }
 }

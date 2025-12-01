@@ -83,7 +83,7 @@ class PaymentController extends Controller
         }
 
         try {
-            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(
+            Mail::to($reservation->property->user->email)->send(
                 new AdminPaymentNotificationMail($reservation, $invoice)
             );
         } catch (\Throwable $e) {
@@ -112,7 +112,7 @@ class PaymentController extends Controller
             return back()->with('status', 'No hay importe pendiente.');
         }
 
-        DB::transaction(function () use ($reservation, $balance) {
+        $invoice = DB::transaction(function () use ($reservation, $balance) {
             Payment::create([
                 'reservation_id' => $reservation->id,
                 'amount'        => $balance,
@@ -120,19 +120,31 @@ class PaymentController extends Controller
                 'status'        => 'succeeded',
                 'provider_ref'  => 'SIM-ADD-' . Str::upper(Str::random(6)),
             ]);
+
+            // Generar factura actualizada con el total completo
+            $count = Invoice::count() + 1;
+            $invoiceNumber = 'INV-' . now()->year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+
+            return Invoice::create([
+                'reservation_id' => $reservation->id,
+                'number'         => $invoiceNumber,
+                'pdf_path'       => null,
+                'issued_at'      => now(),
+                'amount'         => $reservation->total_price,
+            ]);
         });
 
         // Emails (cliente y admin), no romper si falla
         try {
             Mail::to($reservation->user->email)->send(
-                new PaymentBalanceSettledMail($reservation, $balance)
+                new PaymentBalanceSettledMail($reservation, $balance, $invoice)
             );
         } catch (\Throwable $e) {
             Log::error('Fallo enviando PaymentBalanceSettledMail', ['msg' => $e->getMessage()]);
         }
         try {
-            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(
-                new AdminPaymentBalanceSettledMail($reservation, $balance)
+            Mail::to($reservation->property->user->email)->send(
+                new AdminPaymentBalanceSettledMail($reservation, $balance, $invoice)
             );
         } catch (\Throwable $e) {
             Log::error('Fallo enviando AdminPaymentBalanceSettledMail', ['msg' => $e->getMessage()]);

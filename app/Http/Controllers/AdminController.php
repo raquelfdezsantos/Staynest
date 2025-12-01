@@ -280,10 +280,10 @@ class AdminController extends Controller
             Log::error('Fallo ReservationCancelledMail cliente', ['msg' => $e->getMessage()]);
             report($e);
         }
-        Log::info('Intentando enviar ReservationCancelledMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+        Log::info('Intentando enviar ReservationCancelledMail al admin', ['email' => $reservation->property->user->email]);
         try {
-            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationCancelledMail($reservation));
-            Log::info('ReservationCancelledMail enviado al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+            Mail::to($reservation->property->user->email)->send(new ReservationCancelledMail($reservation, true));
+            Log::info('ReservationCancelledMail enviado al admin', ['email' => $reservation->property->user->email]);
         } catch (\Throwable $e) {
             Log::error('Fallo ReservationCancelledMail admin', ['msg' => $e->getMessage()]);
             report($e);
@@ -446,10 +446,10 @@ class AdminController extends Controller
             Log::error('Fallo ReservationUpdatedMail cliente', ['msg' => $e->getMessage()]);
             report($e);
         }
-        Log::info('Intentando enviar ReservationUpdatedMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+        Log::info('Intentando enviar ReservationUpdatedMail al admin', ['email' => $reservation->property->user->email]);
         try {
-            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationUpdatedMail($reservation));
-            Log::info('ReservationUpdatedMail enviado al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+            Mail::to($reservation->property->user->email)->send(new ReservationUpdatedMail($reservation, 0, 0, true));
+            Log::info('ReservationUpdatedMail enviado al admin', ['email' => $reservation->property->user->email]);
         } catch (\Throwable $e) {
             Log::error('Fallo ReservationUpdatedMail admin', ['msg' => $e->getMessage()]);
             report($e);
@@ -537,12 +537,12 @@ class AdminController extends Controller
 
         // Notificaciones de cancelación y reembolso (cliente y admin)
         try {
-            Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation));
+            Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation, false, $refundInvoice));
         } catch (\Throwable $e) {
             report($e);
         }
         try {
-            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationCancelledMail($reservation));
+            Mail::to($reservation->property->user->email)->send(new ReservationCancelledMail($reservation, true, $refundInvoice));
         } catch (\Throwable $e) {
             report($e);
         }
@@ -566,28 +566,23 @@ class AdminController extends Controller
      *
      * No permite bloquear si existen reservas que solapan el rango. Marca las fechas como no disponibles.
      *
-     * @param Request $request Solicitud HTTP con las fechas y propiedad.
+     * @param Request $request Solicitud HTTP con las fechas.
+     * @param Property $property Propiedad obtenida mediante route model binding
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function blockDates(Request $request)
+    public function blockDates(Request $request, Property $property)
     {
         $data = $request->validate([
             'start'       => ['required', 'date'],
             'end'         => ['required', 'date', 'after_or_equal:start'], // end INCLUSIVO
         ]);
 
-        // Obtener property desde ruta o request
-        $prop = $request->route('property');
-        if (!$prop) {
-            // Fallback para rutas antiguas
-            $request->validate(['property_id' => ['required', 'exists:properties,id']]);
-            $prop = Property::where('user_id', Auth::id())->findOrFail($request->input('property_id'));
-        } else {
-            // Verificar que la propiedad pertenece al admin
-            if ($prop->user_id !== Auth::id()) {
-                abort(403, 'No autorizado');
-            }
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== Auth::id()) {
+            abort(403, 'No autorizado');
         }
+
+        $prop = $property;
         $start  = Carbon::parse($data['start'])->startOfDay();
         $end    = Carbon::parse($data['end'])->startOfDay(); // rango [start, end] INCLUSIVO
 
@@ -625,28 +620,23 @@ class AdminController extends Controller
      *
      * Marca las fechas como disponibles en el calendario.
      *
-     * @param Request $request Solicitud HTTP con las fechas y propiedad.
+     * @param Request $request Solicitud HTTP con las fechas.
+     * @param Property $property Propiedad obtenida mediante route model binding
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function unblockDates(Request $request)
+    public function unblockDates(Request $request, Property $property)
     {
         $data = $request->validate([
             'start'       => ['required', 'date'],
             'end'         => ['required', 'date', 'after_or_equal:start'], // end INCLUSIVO
         ]);
 
-        // Obtener property desde ruta o request
-        $prop = $request->route('property');
-        if (!$prop) {
-            // Fallback para rutas antiguas
-            $request->validate(['property_id' => ['required', 'exists:properties,id']]);
-            $prop = Property::where('user_id', Auth::id())->findOrFail($request->input('property_id'));
-        } else {
-            // Verificar que la propiedad pertenece al admin
-            if ($prop->user_id !== Auth::id()) {
-                abort(403, 'No autorizado');
-            }
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== Auth::id()) {
+            abort(403, 'No autorizado');
         }
+
+        $prop = $property;
         $start = Carbon::parse($data['start'])->startOfDay();
         $end   = Carbon::parse($data['end'])->startOfDay();
 
@@ -1113,9 +1103,10 @@ class AdminController extends Controller
      * Establece el precio por noche para un rango de fechas en una propiedad.
      *
      * @param Request $request Solicitud HTTP con el precio y rango de fechas.
+     * @param Property $property Propiedad obtenida mediante route model binding
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function setPrice(Request $request)
+    public function setPrice(Request $request, Property $property)
     {
         $request->validate([
             'price' => 'required|numeric|min:0',
@@ -1123,19 +1114,9 @@ class AdminController extends Controller
             'end' => 'required|date|after_or_equal:start',
         ]);
 
-        // Obtener property desde ruta o request
-        $property = $request->route('property');
-        if (!$property) {
-            // Fallback para rutas antiguas que usan property_id
-            $propertyId = $request->input('property_id');
-            $property = Property::where('id', $propertyId)
-                ->where('user_id', Auth::id())
-                ->firstOrFail();
-        } else {
-            // Verificar que la propiedad pertenece al admin
-            if ($property->user_id !== Auth::id()) {
-                abort(403, 'No autorizado');
-            }
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== Auth::id()) {
+            abort(403, 'No autorizado');
         }
 
         $propertyId = $property->id;

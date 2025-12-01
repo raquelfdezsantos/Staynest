@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Attachment;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
  * Mailable para notificar al administrador sobre una devolución completada.
@@ -69,10 +70,16 @@ class AdminPaymentRefundIssuedMail extends Mailable
     {
         $attachments = [];
 
-        if ($this->invoice && $this->invoice->pdf_path) {
-            $attachments[] = Attachment::fromStorage($this->invoice->pdf_path)
-                ->as($this->invoice->number . '.pdf')
-                ->withMime('application/pdf');
+        if ($this->invoice) {
+            if (!empty($this->invoice->pdf_path)) {
+                $attachments[] = Attachment::fromStorage($this->invoice->pdf_path)
+                    ->as($this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            } else {
+                $pdf = PDF::loadView('invoices.pdf', ['invoice' => $this->invoice]);
+                $attachments[] = Attachment::fromData(fn () => $pdf->output(), $this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            }
         }
 
         return $attachments;

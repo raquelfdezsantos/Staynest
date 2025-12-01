@@ -259,7 +259,7 @@ class ReservationController extends Controller
         }
 
         try {
-            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))
+            Mail::to($reservation->property->user->email)
                 ->send(new AdminNewReservationMail($reservation));
         } catch (Throwable $e) {
             report($e);
@@ -269,7 +269,7 @@ class ReservationController extends Controller
         try { $request->session()->forget('pending_reservation'); } catch (Throwable $e) { /* no-op */ }
 
         return redirect()->route('reservas.index')
-            ->with('status', 'Reserva creada. Total: ' . number_format($total, 2, ',', '.') . ' €');
+            ->with('success', 'Reserva creada correctamente. Total: ' . number_format($total, 2, ',', '.') . ' €');
     }
 
 
@@ -506,11 +506,19 @@ class ReservationController extends Controller
         $newTotal = $rates->sum('price') * (int)$guests;
         $previousTotal = $reservation->total_price; // Guardar el total anterior
         
+        // IMPORTANTE: Capturar valores originales ANTES de la transacción
+        $originalCheckIn = $reservation->check_in;
+        $originalCheckOut = $reservation->check_out;
+        $originalGuests = $reservation->guests;
+        
         Log::info('[UPDATE] Nuevo total calculado', [
             'rates_sum' => $rates->sum('price'),
-            'guests' => $data['guests'],
+            'guests' => $guests,
             'previousTotal' => $previousTotal,
             'newTotal' => $newTotal,
+            'originalCheckIn' => $originalCheckIn->format('Y-m-d'),
+            'originalCheckOut' => $originalCheckOut->format('Y-m-d'),
+            'originalGuests' => $originalGuests,
             'rates' => $rates->pluck('price', 'date')->toArray(),
         ]);
 
@@ -530,10 +538,7 @@ class ReservationController extends Controller
                 'total_price' => $newTotal,
             ]);
 
-            // Sincronizar importe de la factura (si existe) con el nuevo total
-            if ($reservation->invoice) {
-                $reservation->invoice->update(['amount' => $newTotal]);
-            }
+            // No modificar la factura original aquí para no sobreescribir importes previos
         });
 
         // Refrescar modelo después de la transacción
@@ -553,9 +558,48 @@ class ReservationController extends Controller
             
             // 1. Enviar email "Reserva modificada - devolución pendiente" (cliente y admin)
             Log::info('Enviando ReservationModifiedRefundPendingMail al cliente', ['email' => $reservation->user->email]);
+            // Generar factura rectificativa y devolución
+            $refundInvoice = null;
+            try {
+                $refundInvoice = \DB::transaction(function () use ($reservation, $refund, $previousTotal, $originalCheckIn, $originalCheckOut, $originalGuests) {
+                    Payment::create([
+                        'reservation_id' => $reservation->id,
+                        'amount'        => -$refund, // negativo = devolución
+                        'method'        => 'simulated',
+                        'status'        => 'refunded',
+                        'provider_ref'  => 'SIM-REF-' . Str::upper(Str::random(6)),
+                    ]);
+
+                    $count = \App\Models\Invoice::count() + 1;
+                    $invoiceNumber = 'RECT-' . now()->year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+                    return \App\Models\Invoice::create([
+                        'reservation_id' => $reservation->id,
+                        'number'         => $invoiceNumber,
+                        'pdf_path'       => null,
+                        'issued_at'      => now(),
+                        'amount'         => -$refund,
+                        'details'        => [
+                            'context'           => 'decrease_update',
+                            'previous_total'    => round((float)$previousTotal, 2),
+                            'difference'        => -round((float)$refund, 2),
+                            'new_total'         => round((float)$reservation->total_price, 2),
+                            'previous_check_in' => $originalCheckIn->format('Y-m-d'),
+                            'previous_check_out'=> $originalCheckOut->format('Y-m-d'),
+                            'new_check_in'      => $reservation->check_in->format('Y-m-d'),
+                            'new_check_out'     => $reservation->check_out->format('Y-m-d'),
+                            'previous_guests'   => (int)$originalGuests,
+                            'new_guests'        => (int)$reservation->guests,
+                        ],
+                    ]);
+                });
+            } catch (\Throwable $e) {
+                Log::error('Error generando refund e invoice rectificativa', ['msg' => $e->getMessage()]);
+                report($e);
+            }
+
             try {
                 Mail::to($reservation->user->email)->send(
-                    new ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund)
+                    new ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund, $refundInvoice)
                 );
                 Log::info('ReservationModifiedRefundPendingMail enviado al cliente');
             } catch (Throwable $e) {
@@ -563,42 +607,31 @@ class ReservationController extends Controller
                 report($e);
             }
             
-            Log::info('Enviando ReservationModifiedRefundPendingMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+            Log::info('Enviando ReservationModifiedRefundPendingMail al admin', ['email' => $reservation->property->user->email]);
             try {
-                Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(
-                    new ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund)
+                Mail::to($reservation->property->user->email)->send(
+                    new ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund, $refundInvoice)
                 );
                 Log::info('ReservationModifiedRefundPendingMail enviado al admin');
             } catch (Throwable $e) {
                 Log::error('Fallo ReservationModifiedRefundPendingMail admin', ['msg' => $e->getMessage()]);
                 report($e);
             }
-            
-            // 2. Procesar la devolución
-            DB::transaction(function () use ($reservation, $refund) {
-                Payment::create([
-                    'reservation_id' => $reservation->id,
-                    'amount'        => -$refund, // negativo = devolución
-                    'method'        => 'simulated',
-                    'status'        => 'refunded',
-                    'provider_ref'  => 'SIM-REF-' . Str::upper(Str::random(6)),
-                ]);
-            });
 
-            // 3. Enviar email "Devolución completada" (cliente y admin)
+            // 2. Enviar email "Devolución completada" (cliente y admin) con enlace a factura
             Log::info('Enviando PaymentRefundIssuedMail al cliente', ['email' => $reservation->user->email, 'refund' => $refund]);
             try {
-                Mail::to($reservation->user->email)->send(new PaymentRefundIssuedMail($reservation, $refund));
+                Mail::to($reservation->user->email)->send(new PaymentRefundIssuedMail($reservation, $refund, $refundInvoice));
                 Log::info('PaymentRefundIssuedMail enviado al cliente');
             } catch (Throwable $e) {
                 Log::error('Fallo enviando PaymentRefundIssuedMail cliente', ['msg' => $e->getMessage()]);
                 report($e);
             }
             
-            Log::info('Enviando AdminPaymentRefundIssuedMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test'), 'refund' => $refund]);
+            Log::info('Enviando AdminPaymentRefundIssuedMail al admin', ['email' => $reservation->property->user->email, 'refund' => $refund]);
             try {
-                Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(
-                    new AdminPaymentRefundIssuedMail($reservation, $refund)
+                Mail::to($reservation->property->user->email)->send(
+                    new AdminPaymentRefundIssuedMail($reservation, $refund, $refundInvoice)
                 );
                 Log::info('AdminPaymentRefundIssuedMail enviado al admin');
             } catch (Throwable $e) {
@@ -607,53 +640,81 @@ class ReservationController extends Controller
             }
         } else {
             // No hay devolución - puede ser incremento o sin cambio
-            // Si hay incremento (diff > 0), crear registro de pago por la diferencia
+            // Si hay incremento (diff > 0), crear registro de pago por la diferencia y factura rectificativa
+            $updateInvoice = null;
             if ($diff > 0) {
-                DB::transaction(function () use ($reservation, $diff) {
-                    Payment::create([
-                        'reservation_id' => $reservation->id,
-                        'amount'        => $diff, // positivo = pago adicional
-                        'method'        => 'simulated',
-                        'status'        => 'completed',
-                        'provider_ref'  => 'SIM-PAY-' . Str::upper(Str::random(6)),
-                    ]);
-                });
-                Log::info('Pago adicional registrado', ['amount' => $diff]);
+                try {
+                    $updateInvoice = DB::transaction(function () use ($reservation, $diff, $previousTotal, $originalCheckIn, $originalCheckOut, $originalGuests) {
+                        Payment::create([
+                            'reservation_id' => $reservation->id,
+                            'amount'        => $diff, // positivo = pago adicional
+                            'method'        => 'simulated',
+                            'status'        => 'completed',
+                            'provider_ref'  => 'SIM-PAY-' . Str::upper(Str::random(6)),
+                        ]);
+                        
+                        // Generar factura rectificativa por el incremento
+                        $count = \App\Models\Invoice::count() + 1;
+                        $invoiceNumber = 'RECT-' . now()->year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+                        return \App\Models\Invoice::create([
+                            'reservation_id' => $reservation->id,
+                            'number'         => $invoiceNumber,
+                            'pdf_path'       => null,
+                            'issued_at'      => now(),
+                            'amount'         => $diff,
+                            'details'        => [
+                                'context'           => 'increase_update',
+                                'previous_total'    => round((float)$previousTotal, 2),
+                                'difference'        => round((float)$diff, 2),
+                                'new_total'         => round((float)$reservation->total_price, 2),
+                                'previous_check_in' => $originalCheckIn->format('Y-m-d'),
+                                'previous_check_out'=> $originalCheckOut->format('Y-m-d'),
+                                'new_check_in'      => $reservation->check_in->format('Y-m-d'),
+                                'new_check_out'     => $reservation->check_out->format('Y-m-d'),
+                                'previous_guests'   => (int)$originalGuests,
+                                'new_guests'        => (int)$reservation->guests,
+                            ],
+                        ]);
+                    });
+                    Log::info('Pago adicional y factura generados', ['amount' => $diff, 'invoice' => $updateInvoice->number]);
+                } catch (\Throwable $e) {
+                    Log::error('Error generando pago adicional e invoice', ['msg' => $e->getMessage()]);
+                    report($e);
+                }
                 
-                // Enviar email de recibo de pago adicional
-                if ($reservation->invoice) {
-                    try {
-                        Mail::to($reservation->user->email)->send(
-                            new PaymentReceiptMail($reservation, $reservation->invoice)
-                        );
-                        Log::info('PaymentReceiptMail enviado al cliente por pago adicional');
-                    } catch (Throwable $e) {
-                        Log::error('Fallo PaymentReceiptMail cliente', ['msg' => $e->getMessage()]);
-                        report($e);
-                    }
+                // Enviar email de recibo de pago adicional con la nueva factura
+                try {
+                    Mail::to($reservation->user->email)->send(
+                        new PaymentReceiptMail($reservation, $updateInvoice)
+                    );
+                    Log::info('PaymentReceiptMail enviado al cliente por pago adicional');
+                } catch (Throwable $e) {
+                    Log::error('Fallo PaymentReceiptMail cliente', ['msg' => $e->getMessage()]);
+                    report($e);
                 }
             }
             
             // Enviar email de actualización con información de la diferencia
             Log::info('Intentando enviar ReservationUpdatedMail al cliente', ['email' => $reservation->user->email]);
             try {
-                Mail::to($reservation->user->email)->send(new ReservationUpdatedMail($reservation, $previousTotal, $diff));
+                Mail::to($reservation->user->email)->send(new ReservationUpdatedMail($reservation, $previousTotal, $diff, false, $updateInvoice));
                 Log::info('ReservationUpdatedMail enviado al cliente', ['email' => $reservation->user->email]);
             } catch (Throwable $e) {
                 Log::error('Fallo ReservationUpdatedMail cliente', ['msg' => $e->getMessage()]);
                 report($e);
             }
-            Log::info('Intentando enviar ReservationUpdatedMail al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+            Log::info('Intentando enviar ReservationUpdatedMail al admin', ['email' => $reservation->property->user->email]);
             try {
-                Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationUpdatedMail($reservation, $previousTotal, $diff));
-                Log::info('ReservationUpdatedMail enviado al admin', ['email' => env('MAIL_ADMIN', 'admin@vut.test')]);
+                Mail::to($reservation->property->user->email)->send(new ReservationUpdatedMail($reservation, $previousTotal, $diff, true, $updateInvoice));
+                Log::info('ReservationUpdatedMail enviado al admin', ['email' => $reservation->property->user->email]);
             } catch (Throwable $e) {
                 Log::error('Fallo ReservationUpdatedMail admin', ['msg' => $e->getMessage()]);
                 report($e);
             }
         }
 
-        return redirect()->route('reservas.index')->with('success', 'Reserva actualizada correctamente.');
+        return redirect()->route('reservas.index')
+            ->with('success', 'Reserva actualizada correctamente.');
     }
 
     /**
@@ -678,7 +739,7 @@ class ReservationController extends Controller
             $refundAmount = round(min($paid, $reservation->total_price) * ($percent / 100), 2);
         }
 
-        DB::transaction(function () use ($reservation, $refundAmount) {
+        $refundInvoice = DB::transaction(function () use ($reservation, $refundAmount) {
             $dates = $this->rangeDates($reservation->check_in->toDateString(), $reservation->check_out->toDateString());
             $this->setAvailability($reservation->property_id, $dates, true);
             $reservation->update(['status' => 'cancelled']);
@@ -690,21 +751,34 @@ class ReservationController extends Controller
                     'status'        => 'refunded',
                     'provider_ref'  => 'POL-REF-' . Str::upper(Str::random(6)),
                 ]);
+
+                // Generar factura rectificativa asociada a la cancelación
+                $count = \App\Models\Invoice::count() + 1;
+                $invoiceNumber = 'RECT-' . now()->year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+
+                return \App\Models\Invoice::create([
+                    'reservation_id' => $reservation->id,
+                    'number'         => $invoiceNumber,
+                    'pdf_path'       => null,
+                    'issued_at'      => now(),
+                    'amount'         => -$refundAmount,
+                ]);
             }
+            return null;
         });
 
         // Emails de cancelación
         try {
-            Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation));
+            Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation, false, $refundInvoice));
         } catch (Throwable $e) { report($e); }
         try {
-            Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new ReservationCancelledMail($reservation));
+            Mail::to($reservation->property->user->email)->send(new ReservationCancelledMail($reservation, true, $refundInvoice));
         } catch (Throwable $e) { report($e); }
 
         // Email de reembolso si aplica
         if ($refundAmount > 0) {
-            try { Mail::to($reservation->user->email)->send(new PaymentRefundIssuedMail($reservation, $refundAmount)); } catch (Throwable $e) { report($e); }
-            try { Mail::to(env('MAIL_ADMIN', 'admin@vut.test'))->send(new PaymentRefundIssuedMail($reservation, $refundAmount)); } catch (Throwable $e) { report($e); }
+            try { Mail::to($reservation->user->email)->send(new PaymentRefundIssuedMail($reservation, $refundAmount, $refundInvoice)); } catch (Throwable $e) { report($e); }
+            try { Mail::to($reservation->property->user->email)->send(new AdminPaymentRefundIssuedMail($reservation, $refundAmount, $refundInvoice)); } catch (Throwable $e) { report($e); }
         }
 
         $msg = 'Reserva cancelada y noches liberadas.';

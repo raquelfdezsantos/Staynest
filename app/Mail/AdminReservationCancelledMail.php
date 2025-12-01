@@ -8,6 +8,8 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Attachment;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
  * Mailable para notificar al administrador sobre la cancelación de una reserva.
@@ -21,12 +23,13 @@ class AdminReservationCancelledMail extends Mailable
     /**
      * Constructor del mailable.
      *
-     * Inicializa el correo de cancelación de reserva para el administrador.
+     * @param mixed $reservation Instancia de la reserva cancelada.
+     * @param mixed|null $invoice Factura rectificativa (opcional).
      */
-    public function __construct()
-    {
-        //
-    }
+    public function __construct(
+        public $reservation,
+        public $invoice = null
+    ) {}
 
     /**
      * Define el sobre del correo (asunto, destinatario, etc).
@@ -36,7 +39,7 @@ class AdminReservationCancelledMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Admin Reservation Cancelled Mail',
+            subject: 'Reserva cancelada en tu propiedad · #' . $this->reservation->id,
         );
     }
 
@@ -48,7 +51,11 @@ class AdminReservationCancelledMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'view.name',
+            view: 'emails.admin_reservation_cancelled',
+            with: [
+                'reservation' => $this->reservation->loadMissing(['user', 'property']),
+                'invoice' => $this->invoice
+            ],
         );
     }
 
@@ -59,6 +66,18 @@ class AdminReservationCancelledMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+        if ($this->invoice) {
+            if (!empty($this->invoice->pdf_path)) {
+                $attachments[] = Attachment::fromStorage($this->invoice->pdf_path)
+                    ->as($this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            } else {
+                $pdf = PDF::loadView('invoices.pdf', ['invoice' => $this->invoice]);
+                $attachments[] = Attachment::fromData(fn () => $pdf->output(), $this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            }
+        }
+        return $attachments;
     }
 }

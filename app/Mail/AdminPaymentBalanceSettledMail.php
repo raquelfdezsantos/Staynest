@@ -8,6 +8,8 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Attachment;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
  * Mailable para notificar al administrador que el pago de la diferencia ha sido completado.
@@ -23,10 +25,12 @@ class AdminPaymentBalanceSettledMail extends Mailable
      *
      * @param mixed $reservation Instancia de la reserva.
      * @param mixed $amount Importe pagado.
+     * @param mixed|null $invoice Factura actualizada (opcional).
      */
     public function __construct(
         public $reservation,
-        public $amount
+        public $amount,
+        public $invoice = null
     ) {}
 
     /**
@@ -53,6 +57,7 @@ class AdminPaymentBalanceSettledMail extends Mailable
             with: [
                 'reservation' => $this->reservation->loadMissing(['user','property']),
                 'amount' => $this->amount,
+                'invoice' => $this->invoice,
             ],
         );
     }
@@ -64,6 +69,18 @@ class AdminPaymentBalanceSettledMail extends Mailable
      */
     public function attachments(): array
     {
-        return [];
+        $attachments = [];
+        if ($this->invoice) {
+            if (!empty($this->invoice->pdf_path)) {
+                $attachments[] = Attachment::fromStorage($this->invoice->pdf_path)
+                    ->as($this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            } else {
+                $pdf = PDF::loadView('invoices.pdf', ['invoice' => $this->invoice]);
+                $attachments[] = Attachment::fromData(fn () => $pdf->output(), $this->invoice->number . '.pdf')
+                    ->withMime('application/pdf');
+            }
+        }
+        return $attachments;
     }
 }

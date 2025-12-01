@@ -1,5 +1,35 @@
 <x-app-layout>
-    <div class="max-w-5xl mx-auto px-4" style="padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl);">
+    <div class="max-w-5xl mx-auto px-4 admin-slim-badges" style="padding-top: var(--spacing-2xl); padding-bottom: var(--spacing-2xl);">
+        <style>
+            /* Badges discretos con diseño consistente */
+            .admin-slim-badges .badge {
+                font-size: 0.6875rem; /* 11px */
+                padding: 0.25rem 0.5rem;
+                border-radius: 2px;
+                font-weight: 600;
+                color: var(--color-text-primary);
+                letter-spacing: 0.05em;
+                height: 25.64px;
+                box-sizing: border-box;
+                text-transform: none;
+            }
+            .admin-slim-badges .badge-success {
+                background: transparent !important;
+                border: 1px solid var(--color-success);
+            }
+            .admin-slim-badges .badge-warning {
+                background: transparent !important;
+                border: 1px solid var(--color-warning);
+            }
+            .admin-slim-badges .badge-error {
+                background: transparent !important;
+                border: 1px solid var(--color-error);
+            }
+            .admin-slim-badges .badge-info {
+                background: transparent !important;
+                border: 1px solid var(--color-accent);
+            }
+        </style>
         
         {{-- Header centrado como otras páginas públicas --}}
         <header class="mb-16 text-center">
@@ -31,7 +61,7 @@
                                 <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Alojamiento</th>
                                 <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Estancia</th>
                                 <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Importe</th>
-                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);"></th>
+                                <th style="padding: 1rem; text-align: left; font-weight: 600; font-size: var(--text-sm); text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-text-secondary);">Estado</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -39,6 +69,9 @@
                                 <tr style="border-bottom: none;">
                                     <td style="padding: 1rem;">
                                         <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin: 0; font-family: monospace; font-weight: 600;">{{ $inv->number }}</p>
+                                        @if($inv->amount < 0 || str_starts_with($inv->number, 'RECT-'))
+                                            <p style="font-size: var(--text-xs); color: var(--color-text-muted); margin: 0; font-style: italic;">Rectificativa</p>
+                                        @endif
                                     </td>
                                     <td style="padding: 1rem; color: var(--color-text-secondary);">
                                         {{ optional($inv->issued_at)->format('d/m/Y') }}
@@ -47,15 +80,33 @@
                                         {{ $inv->reservation->property->name ?? '—' }}
                                     </td>
                                     <td style="padding: 1rem; color: var(--color-text-secondary); font-size: var(--text-sm);">
-                                        {{ $inv->reservation->check_in->format('d/m/Y') }} → {{ $inv->reservation->check_out->format('d/m/Y') }}
+                                        @php($ci = is_array($inv->details ?? null) && !empty($inv->details['new_check_in']) ? \Carbon\Carbon::parse($inv->details['new_check_in']) : $inv->reservation->check_in)
+                                        @php($co = is_array($inv->details ?? null) && !empty($inv->details['new_check_out']) ? \Carbon\Carbon::parse($inv->details['new_check_out']) : $inv->reservation->check_out)
+                                        {{ $ci->format('d/m/Y') }} → {{ $co->format('d/m/Y') }}
                                     </td>
                                     <td style="padding: 1rem; color: var(--color-text-primary); font-weight: 600; font-size: var(--text-lg);">
-                                        {{ number_format($inv->amount, 2, ',', '.') }} €
+                                        @php($isRect = ($inv->amount < 0 || str_starts_with($inv->number, 'RECT-')))
+                                        @if($isRect && is_array($inv->details))
+                                            {{ number_format(($inv->details['new_total'] ?? ($inv->reservation->total_price ?? 0)), 2, ',', '.') }} €
+                                        @else
+                                            {{ number_format($inv->amount, 2, ',', '.') }} €
+                                        @endif
                                     </td>
-                                    <td style="padding: 1rem;"></td>
+                                    <td style="padding: 1rem;">
+                                        @php($status = strtolower($inv->reservation->status ?? ''))
+                                        @if($status === 'paid')
+                                            <span class="badge badge-success">Pagada</span>
+                                        @elseif($status === 'cancelled')
+                                            <span class="badge badge-error">Cancelada</span>
+                                        @elseif($status === 'pending')
+                                            <span class="badge badge-warning">Pendiente</span>
+                                        @else
+                                            <span class="badge badge-info">{{ ucfirst($inv->reservation->status ?? '—') }}</span>
+                                        @endif
+                                    </td>
                                 </tr>
                                 <tr style="border-bottom: 1px solid var(--color-border-light);">
-                                    <td colspan="6" style="padding: 0;">
+                                    <td colspan="7" style="padding: 0;">
                                         <div style="border-top: 1px solid var(--color-border-light); margin: 0 2rem; padding: 1rem 0 2rem 0;">
                                             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; justify-content: center;">
                                                 <a href="{{ route('invoices.show', $inv->number) }}" class="btn-action btn-action-secondary"><span class="sn-sentence">Ver</span></a>
