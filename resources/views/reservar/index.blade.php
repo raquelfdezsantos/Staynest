@@ -247,16 +247,16 @@
                             id="pets"
                             name="pets"
                             class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-[1px] focus:ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)]"
-                            @if(!$property->allows_pets) disabled @endif
+                            @if(!in_array('pets_allowed', $property->services ?? [])) disabled @endif
                         >
                             @php($pt = old('pets', $prefill['pets'] ?? 0))
                             <option value="0" @selected($pt==0)>No</option>
-                            @if($property->allows_pets)
+                            @if(in_array('pets_allowed', $property->services ?? []))
                                 <option value="1" @selected($pt==1)>1</option>
                                 <option value="2" @selected($pt==2)>2</option>
                             @endif
                         </select>
-                        @if($property->allows_pets)
+                        @if(in_array('pets_allowed', $property->services ?? []))
                             <p id="pets-free-message" class="hidden" style="font-size: var(--text-xs); color: var(--color-success); margin-top: 0.25rem;">¡Las mascotas se alojan gratis!</p>
                         @endif
                     </div>
