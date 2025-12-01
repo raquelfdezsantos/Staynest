@@ -58,14 +58,8 @@ class ReservationController extends Controller
         // Flag para auto-crear tras login
         $request->session()->put('pending_reservation_auto', true);
 
-        // Asegurar el retorno a /reservar tras login
-        session(['url.intended' => route('properties.reservar', $property->slug)]);
-
-        // Si ya está logueado, volver a /reservar directamente; si no, a login
-        if (Auth::check()) {
-            return redirect()->route('properties.reservar', $property->slug);
-        }
-
+        // NO guardar url.intended porque los Auth controllers ya tienen su lógica
+        // Simplemente redirigir al login
         return redirect()->guest(route('login'));
     }
     /**
@@ -268,7 +262,7 @@ class ReservationController extends Controller
         // Limpiar datos temporales de selección tras crear la reserva
         try { $request->session()->forget('pending_reservation'); } catch (Throwable $e) { /* no-op */ }
 
-        return redirect()->route('reservas.index')
+        return redirect()->route('properties.reservas.index', $property->slug)
             ->with('success', 'Reserva creada correctamente. Total: ' . number_format($total, 2, ',', '.') . ' €');
     }
 
@@ -650,7 +644,7 @@ class ReservationController extends Controller
                 report($e);
             }
             
-            return redirect()->route('reservas.index')
+            return redirect()->route('properties.reservas.index', $reservation->property->slug)
                 ->with('success', 'Reserva actualizada. Se ha procesado una devolución de ' . number_format($refund, 2, ',', '.') . ' €');
         } else {
             // No hay devolución - puede ser incremento o sin cambio
@@ -704,7 +698,7 @@ class ReservationController extends Controller
             }
         }
 
-        return redirect()->route('reservas.index')
+        return redirect()->route('properties.reservas.index', $reservation->property->slug)
             ->with('success', 'Reserva actualizada correctamente.');
     }
 

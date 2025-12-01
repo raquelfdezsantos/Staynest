@@ -244,18 +244,21 @@ class AdminController extends Controller
         
         $reservation = Reservation::query()
             ->where('id', $reservationId)
-            ->with('property')
+            ->with('property', 'user')
             ->whereHas('property', function($q) use ($adminId) {
                 $q->where('user_id', $adminId);
             })
             ->firstOrFail();
 
-        // Solo cancelamos si está pendiente
-        if ($reservation->status !== 'pending') {
-            return back()->with('error', 'Solo es posible cancelar reservas pendientes.');
+        // Solo cancelamos si está pendiente o pagada
+        if (!in_array($reservation->status, ['pending', 'paid'])) {
+            return back()->with('error', 'Solo es posible cancelar reservas pendientes o pagadas.');
         }
 
-        DB::transaction(function () use ($reservation) {
+        $invoice = null;
+        $wasPaid = $reservation->status === 'paid';
+
+        DB::transaction(function () use ($reservation, &$invoice, $wasPaid) {
             // 1) Actualiza estado de la reserva
             $reservation->update(['status' => 'cancelled']);
 
@@ -269,12 +272,41 @@ class AdminController extends Controller
                     ->where('date', $date->toDateString())
                     ->update(['is_available' => true, 'blocked_by' => null]);
             }
+
+            // 3) Si estaba pagada, crear factura rectificativa
+            if ($wasPaid) {
+                $lastInvoice = Invoice::where('reservation_id', $reservation->id)
+                    ->where('type', 'invoice')
+                    ->latest()
+                    ->first();
+
+                $invoice = Invoice::create([
+                    'number' => Invoice::generateNumber(),
+                    'user_id' => $reservation->user_id,
+                    'reservation_id' => $reservation->id,
+                    'property_id' => $reservation->property_id,
+                    'type' => 'rectificative',
+                    'amount' => -$reservation->total_price,
+                    'date' => now(),
+                    'context' => 'admin_cancellation',
+                    'details' => [
+                        'original_invoice' => $lastInvoice?->number,
+                        'reason' => 'Cancelación por administrador',
+                        'check_in' => $reservation->check_in->toDateString(),
+                        'check_out' => $reservation->check_out->toDateString(),
+                        'guests' => $reservation->guests,
+                        'adults' => $reservation->adults,
+                        'children' => $reservation->children,
+                        'pets' => $reservation->pets,
+                    ],
+                ]);
+            }
         });
 
         // Notificaciones de cancelación (cliente y admin)
         Log::info('Intentando enviar ReservationCancelledMail al cliente', ['email' => $reservation->user->email]);
         try {
-            Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation));
+            Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation, false, $invoice));
             Log::info('ReservationCancelledMail enviado al cliente', ['email' => $reservation->user->email]);
         } catch (\Throwable $e) {
             Log::error('Fallo ReservationCancelledMail cliente', ['msg' => $e->getMessage()]);
@@ -282,7 +314,7 @@ class AdminController extends Controller
         }
         Log::info('Intentando enviar ReservationCancelledMail al admin', ['email' => $reservation->property->user->email]);
         try {
-            Mail::to($reservation->property->user->email)->send(new ReservationCancelledMail($reservation, true));
+            Mail::to($reservation->property->user->email)->send(new ReservationCancelledMail($reservation, true, $invoice));
             Log::info('ReservationCancelledMail enviado al admin', ['email' => $reservation->property->user->email]);
         } catch (\Throwable $e) {
             Log::error('Fallo ReservationCancelledMail admin', ['msg' => $e->getMessage()]);

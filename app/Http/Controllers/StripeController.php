@@ -140,7 +140,8 @@ class StripeController extends Controller
         // 1) Recuperar session_id que Stripe añade al return_url
         $sessionId = $request->query('session_id');
         if (!$sessionId) {
-            return redirect()->route('reservas.index')->with('error', 'Pago inválido.');
+            // Sin session_id, redirigir a home ya que no sabemos la propiedad
+            return redirect()->route('home')->with('error', 'Pago inválido.');
         }
 
         // Configurar clave secreta de Stripe
@@ -151,13 +152,14 @@ class StripeController extends Controller
 
         // 3) Validar estado
         if (($session->payment_status ?? '') !== 'paid') {
-            return redirect()->route('reservas.index')->with('error', 'Pago no completado.');
+            // Sin reserva aún, redirigir a home
+            return redirect()->route('home')->with('error', 'Pago no completado.');
         }
 
         // 4) Sacar la reserva desde metadata
         $reservationId = $session->metadata->reservation_id ?? null;
         if (!$reservationId) {
-            return redirect()->route('reservas.index')->with('error', 'Reserva no encontrada en el pago.');
+            return redirect()->route('home')->with('error', 'Reserva no encontrada en el pago.');
         }
 
         $reservation = Reservation::with(['user', 'property', 'payments'])->findOrFail($reservationId);
@@ -175,7 +177,7 @@ class StripeController extends Controller
         // Pago completo inicial
         // Idempotencia: si ya está paid y existe un pago "succeeded", no repetir
         if ($reservation->status === 'paid' && $reservation->payments()->where('status', 'succeeded')->exists()) {
-            return redirect()->route('reservas.index')->with('success', 'Pago confirmado.');
+            return redirect()->route('properties.reservas.index', $reservation->property->slug)->with('success', 'Pago confirmado.');
         }
 
         // 5) Escribir en BD: Payment + Invoice + marcar reserva paid
@@ -230,7 +232,7 @@ class StripeController extends Controller
             Log::error('Fallo enviando AdminPaymentNotificationMail (Stripe success): ' . $e->getMessage());
         }
 
-        return redirect()->route('reservas.index')->with('success', 'Pago realizado correctamente.');
+        return redirect()->route('properties.reservas.index', $reservation->property->slug)->with('success', 'Pago realizado correctamente.');
     }
 
     /**
@@ -253,7 +255,7 @@ class StripeController extends Controller
             ->first();
             
         if ($existingPayment) {
-            return redirect()->route('reservas.index')->with('success', 'Pago de diferencia ya registrado.');
+            return redirect()->route('properties.reservas.index', $reservation->property->slug)->with('success', 'Pago de diferencia ya registrado.');
         }
         
         // Crear registro de pago y factura rectificativa
@@ -330,7 +332,7 @@ class StripeController extends Controller
             Log::error('Fallo enviando AdminPaymentBalanceSettledMail: ' . $e->getMessage());
         }
         
-        return redirect()->route('reservas.index')->with('success', 'Diferencia pagada correctamente.');
+        return redirect()->route('properties.reservas.index', $reservation->property->slug)->with('success', 'Diferencia pagada correctamente.');
     }
 
     /**
@@ -340,6 +342,7 @@ class StripeController extends Controller
      */
     public function cancel()
     {
-        return redirect()->route('reservas.index')->with('error', 'Pago cancelado por el usuario.');
+        // Sin contexto de reserva, redirigir a home
+        return redirect()->route('home')->with('error', 'Pago cancelado por el usuario.');
     }
 }

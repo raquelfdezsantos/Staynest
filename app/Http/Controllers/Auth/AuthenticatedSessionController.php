@@ -67,9 +67,9 @@ class AuthenticatedSessionController extends Controller
                     'check_in' => $pendingData['check_in'],
                     'check_out' => $pendingData['check_out'],
                     'guests' => $pendingData['guests'],
-                    'adults' => $pendingData['adults'] ?? null,
-                    'children' => $pendingData['children'] ?? null,
-                    'pets' => $pendingData['pets'] ?? null,
+                    'adults' => $pendingData['adults'] ?? 0,
+                    'children' => $pendingData['children'] ?? 0,
+                    'pets' => $pendingData['pets'] ?? 0,
                     'notes' => $pendingData['notes'] ?? null,
                     'status' => 'pending',
                     'total_price' => $totalPrice,
@@ -86,11 +86,24 @@ class AuthenticatedSessionController extends Controller
                 // Limpiar sesión
                 session()->forget(['pending_reservation', 'pending_reservation_auto', 'url.intended']);
 
-                // Redirigir a mis reservas
-                return redirect()->route('reservas.index')->with('success', 'Tu reserva ha sido creada.');
+                // Redirigir a mis reservas de la propiedad específica
+                return redirect()->route('properties.reservas.index', $property->slug)->with('success', 'Tu reserva ha sido creada.');
             } catch (\Exception $e) {
-                // Si falla la creación de la reserva, continuar con el flujo normal
-                session()->forget(['pending_reservation', 'pending_reservation_auto']);
+                // Registrar el error para debugging
+                \Illuminate\Support\Facades\Log::error('Error creando reserva tras login: ' . $e->getMessage(), [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'pending_data' => $pendingData ?? null,
+                ]);
+                
+                // Si falla la creación de la reserva, aún así redirigir a mis reservas
+                $property = \App\Models\Property::find($pendingData['property_id'] ?? null);
+                session()->forget(['pending_reservation', 'pending_reservation_auto', 'url.intended']);
+                
+                if ($property) {
+                    return redirect()->route('properties.reservas.index', $property->slug)
+                        ->with('error', 'Hubo un problema al crear la reserva. Por favor, inténtalo de nuevo.');
+                }
             }
         }
         
