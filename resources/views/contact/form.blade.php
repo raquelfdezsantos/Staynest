@@ -176,16 +176,19 @@
                             });
                         }
 
-                        const syncMapHeight = () => {
-                            const ta = document.getElementById('message');
-                            if (!ta) return;
-                            const taRect = ta.getBoundingClientRect();
-                            const mapRect = mapEl.getBoundingClientRect();
-                            const desired = Math.max(260, Math.round(taRect.bottom - mapRect.top));
-                            mapEl.style.height = desired + 'px';
-                        };
-                        syncMapHeight();
-                        window.addEventListener('resize', () => requestAnimationFrame(syncMapHeight));
+                        // Sincronizar altura del mapa
+                        requestAnimationFrame(() => {
+                            const syncMapHeight = () => {
+                                const ta = document.getElementById('message');
+                                if (!ta) return;
+                                const taRect = ta.getBoundingClientRect();
+                                const mapRect = mapEl.getBoundingClientRect();
+                                const desired = Math.max(260, Math.round(taRect.bottom - mapRect.top));
+                                mapEl.style.height = desired + 'px';
+                            };
+                            syncMapHeight();
+                            window.addEventListener('resize', () => requestAnimationFrame(syncMapHeight));
+                        });
 
                     @else
                         const address = @json($fullAddress);
@@ -203,6 +206,20 @@
                                     map,
                                     position: loc,
                                     title: @json($property->name),
+                                });
+
+                                // Sincronizar altura del mapa
+                                requestAnimationFrame(() => {
+                                    const syncMapHeight = () => {
+                                        const ta = document.getElementById('message');
+                                        if (!ta) return;
+                                        const taRect = ta.getBoundingClientRect();
+                                        const mapRect = mapEl.getBoundingClientRect();
+                                        const desired = Math.max(260, Math.round(taRect.bottom - mapRect.top));
+                                        mapEl.style.height = desired + 'px';
+                                    };
+                                    syncMapHeight();
+                                    window.addEventListener('resize', () => requestAnimationFrame(syncMapHeight));
                                 });
                             } else {
                                 mapEl.innerHTML = 'No se pudo mostrar el mapa.';
