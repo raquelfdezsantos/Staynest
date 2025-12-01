@@ -52,7 +52,11 @@ class ContactController extends Controller
             'message.max' => 'El mensaje no puede superar los 2000 caracteres.',
         ]);
 
-        Mail::to(config('mail.admin_to', env('MAIL_ADMIN', 'admin@vut.test')))
+        // Agregar el nombre de la propiedad a los datos para mostrarlo en el email
+        $data['property_name'] = $property->name;
+
+        // Enviar el email al propietario de la propiedad
+        Mail::to($property->user->email)
             ->send(new ContactMessageMail($data));
 
         return back()->with('success', '¡Gracias! Te responderemos pronto.');

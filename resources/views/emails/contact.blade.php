@@ -7,6 +7,10 @@
 
 <table style="width: 100%; margin: 20px 0; border-collapse: collapse; background: #f8f9fa; border-radius: 2px; overflow: hidden;">
     <tr>
+        <td style="padding: 12px; border-bottom: 1px solid #e9ecef; width: 30%;"><strong>Propiedad:</strong></td>
+        <td style="padding: 12px; border-bottom: 1px solid #e9ecef;">{{ $data['property_name'] ?? 'No especificada' }}</td>
+    </tr>
+    <tr>
         <td style="padding: 12px; border-bottom: 1px solid #e9ecef; width: 30%;"><strong>Nombre:</strong></td>
         <td style="padding: 12px; border-bottom: 1px solid #e9ecef;">{{ $data['name'] }}</td>
     </tr>
