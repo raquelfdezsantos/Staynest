@@ -831,22 +831,13 @@ class AdminController extends Controller
      * @param Request $request Solicitud HTTP con las fotos y propiedad.
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function photosStore(Request $request)
+    public function photosStore(Request $request, Property $property)
     {
         $adminId = Auth::id();
         
-        // Obtener property desde route binding o request
-        $property = $request->route('property');
-        $propertyId = $property ? $property->id : $request->input('property_id');
-        
-        if ($propertyId) {
-            $property = Property::where('user_id', $adminId)->findOrFail($propertyId);
-        } else {
-            $property = Property::where('user_id', $adminId)->first();
-        }
-        
-        if (!$property) {
-            return back()->with('error', 'No hay ninguna propiedad en el sistema.');
+        // Verificar que la propiedad pertenece al admin autenticado
+        if ($property->user_id !== $adminId) {
+            abort(403, 'No tienes permiso para gestionar esta propiedad.');
         }
 
         $request->validate([
