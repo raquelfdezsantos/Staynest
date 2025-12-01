@@ -115,27 +115,45 @@
         : $res->check_out;
       $datesChanged = $displayCheckIn->format('Y-m-d') !== $newCheckIn->format('Y-m-d') 
                    || $displayCheckOut->format('Y-m-d') !== $newCheckOut->format('Y-m-d');
-      $guestsChanged = isset($invoice->details['previous_guests']) 
-                    && isset($invoice->details['new_guests']) 
-                    && $invoice->details['previous_guests'] !== $invoice->details['new_guests'];
     } else {
       // Factura normal: usar fechas actuales de la reserva
       $displayCheckIn = $res->check_in;
       $displayCheckOut = $res->check_out;
       $displayAmount = $invoice->amount;
       $datesChanged = false;
-      $guestsChanged = false;
       $newCheckIn = $res->check_in;
       $newCheckOut = $res->check_out;
     }
     
+    // Calcular huéspedes ORIGINALES (primera fila) - siempre los datos previos para rectificativas
+    if ($isRectificative && !empty($invoice->details['previous_adults'])) {
+        $displayAdults = (int)$invoice->details['previous_adults'];
+        $displayChildren = (int)($invoice->details['previous_children'] ?? 0);
+        $displayPets = (int)($invoice->details['previous_pets'] ?? 0);
+    } elseif (!empty($invoice->details['adults'])) {
+        $displayAdults = (int)$invoice->details['adults'];
+        $displayChildren = (int)($invoice->details['children'] ?? 0);
+        $displayPets = (int)($invoice->details['pets'] ?? 0);
+    } else {
+        $displayAdults = (int)($res->adults ?? 0);
+        $displayChildren = (int)($res->children ?? 0);
+        $displayPets = (int)($res->pets ?? 0);
+    }
+    
     $parts = [];
-    $ad = (int) ($res->adults ?? 0);
-    $ch = (int) ($res->children ?? 0);
-    $pt = (int) ($res->pets ?? 0);
-    if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
-    if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
-    if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
+    if ($displayAdults > 0) { $parts[] = $displayAdults.' '.($displayAdults === 1 ? 'adulto' : 'adultos'); }
+    if ($displayChildren > 0) { $parts[] = $displayChildren.' '.($displayChildren === 1 ? 'niño' : 'niños'); }
+    if ($displayPets > 0) { $parts[] = $displayPets.' '.($displayPets === 1 ? 'mascota' : 'mascotas'); }
+    
+    // Para la fila de cambios - NUEVOS valores en rectificativas
+    $newAdults = (int)($invoice->details['new_adults'] ?? 0);
+    $newChildren = (int)($invoice->details['new_children'] ?? 0);
+    $newPets = (int)($invoice->details['new_pets'] ?? 0);
+    $newParts = [];
+    if ($newAdults > 0) { $newParts[] = $newAdults.' '.($newAdults === 1 ? 'adulto' : 'adultos'); }
+    if ($newChildren > 0) { $newParts[] = $newChildren.' '.($newChildren === 1 ? 'niño' : 'niños'); }
+    if ($newPets > 0) { $newParts[] = $newPets.' '.($newPets === 1 ? 'mascota' : 'mascotas'); }
+    $guestsChanged = $displayAdults !== $newAdults || $displayChildren !== $newChildren || $displayPets !== $newPets;
     
     $status = strtolower($invoice->reservation->status ?? '');
   @endphp
@@ -188,6 +206,7 @@
       <tr>
         <th>Concepto</th>
         <th>Fechas</th>
+        <th>Huéspedes</th>
         <th class="center">Importe</th>
       </tr>
     </thead>
@@ -198,18 +217,34 @@
           <div class="muted">{{ $invoice->reservation->property->name ?? 'Alojamiento' }}</div>
         </td>
         <td>{{ $displayCheckIn->format('d/m/Y') }} → {{ $displayCheckOut->format('d/m/Y') }}</td>
+        <td class="center">
+          @if(!empty($parts))
+            {{ implode(', ', $parts) }}
+          @else
+            {{ $invoice->details['guests'] ?? $res->guests }}
+          @endif
+        </td>
         <td class="right">{{ number_format($displayAmount, 2, ',', '.') }} €</td>
       </tr>
       @if($isRectificative && is_array($invoice->details))
       <tr>
         <td><span class="muted">Cambios aplicados</span></td>
         <td>
-          @if($datesChanged && $guestsChanged)
-            {{ $newCheckIn->format('d/m/Y') }} → {{ $newCheckOut->format('d/m/Y') }}, {{ $invoice->details['new_guests'] }} {{ $invoice->details['new_guests'] === 1 ? 'huésped' : 'huéspedes' }}
-          @elseif($datesChanged)
+          @if($datesChanged)
             {{ $newCheckIn->format('d/m/Y') }} → {{ $newCheckOut->format('d/m/Y') }}
-          @elseif($guestsChanged)
-            {{ $invoice->details['new_guests'] }} {{ $invoice->details['new_guests'] === 1 ? 'huésped' : 'huéspedes' }}
+          @else
+            —
+          @endif
+        </td>
+        <td class="center">
+          @if($guestsChanged)
+            @if(!empty($newParts))
+              {{ implode(', ', $newParts) }}
+            @else
+              {{ $invoice->details['new_guests'] ?? '—' }}
+            @endif
+          @else
+            —
           @endif
         </td>
         <td class="right" style="color:{{ $invoice->amount < 0 ? '#dc3545' : '#28a745' }}">
@@ -220,7 +255,7 @@
     </tbody>
     <tfoot>
       <tr class="total-row">
-        <td class="left" colspan="2"><span class="total-label">Total</span></td>
+        <td class="left" colspan="3"><span class="total-label">Total</span></td>
         <td class="right">
           <span class="total-amount">
             @if($isRectificative && is_array($invoice->details))

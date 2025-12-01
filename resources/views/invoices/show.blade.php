@@ -3,24 +3,44 @@
 @section('content')
     @php
         $res = $invoice->reservation;
-        $isRect = ($invoice->amount < 0 || (is_array($invoice->details ?? null) && isset($invoice->details['context'])));
+        $details = $invoice->details ?? [];
+        $isRect = ($invoice->amount < 0 || (is_array($details) && in_array($details['context'] ?? '', ['decrease_update', 'increase_update', 'balance_payment'])));
         
-        if ($isRect && !empty($invoice->details['previous_check_in'])) {
-            $displayCheckIn = \Carbon\Carbon::parse($invoice->details['previous_check_in']);
-            $displayCheckOut = \Carbon\Carbon::parse($invoice->details['previous_check_out']);
-            $displayAmount = $invoice->details['previous_total'] ?? abs($invoice->amount);
-            $displayGuests = $invoice->details['previous_guests'] ?? $res->guests;
-        } else {
+        // Para facturas rectificativas con cambios, mostrar datos previos
+        if ($isRect && !empty($details['previous_check_in'])) {
+            $displayCheckIn = \Carbon\Carbon::parse($details['previous_check_in']);
+            $displayCheckOut = \Carbon\Carbon::parse($details['previous_check_out']);
+            $displayAmount = $details['previous_total'] ?? abs($invoice->amount);
+            $displayGuests = $details['previous_guests'] ?? $res->guests;
+            $displayAdults = $details['previous_adults'] ?? ($res->adults ?? 0);
+            $displayChildren = $details['previous_children'] ?? ($res->children ?? 0);
+            $displayPets = $details['previous_pets'] ?? ($res->pets ?? 0);
+        } 
+        // Para facturas iniciales o de balance, usar los datos guardados en details
+        elseif (!empty($details['check_in'])) {
+            $displayCheckIn = \Carbon\Carbon::parse($details['check_in']);
+            $displayCheckOut = \Carbon\Carbon::parse($details['check_out']);
+            $displayAmount = $invoice->amount;
+            $displayGuests = $details['guests'] ?? $res->guests;
+            $displayAdults = $details['adults'] ?? ($res->adults ?? 0);
+            $displayChildren = $details['children'] ?? ($res->children ?? 0);
+            $displayPets = $details['pets'] ?? ($res->pets ?? 0);
+        }
+        // Fallback: usar datos actuales de la reserva (facturas antiguas sin details)
+        else {
             $displayCheckIn = $res->check_in;
             $displayCheckOut = $res->check_out;
             $displayAmount = $invoice->amount;
             $displayGuests = $res->guests;
+            $displayAdults = $res->adults ?? 0;
+            $displayChildren = $res->children ?? 0;
+            $displayPets = $res->pets ?? 0;
         }
         
         $parts = [];
-        $ad = (int)($res->adults ?? 0);
-        $ch = (int)($res->children ?? 0);
-        $pt = (int)($res->pets ?? 0);
+        $ad = (int)$displayAdults;
+        $ch = (int)$displayChildren;
+        $pt = (int)$displayPets;
         if($ad>0) $parts[] = $ad.' '.($ad===1?'adulto':'adultos');
         if($ch>0) $parts[] = $ch.' '.($ch===1?'niño':'niños');
         if($pt>0) $parts[] = $pt.' '.($pt===1?'mascota':'mascotas');
@@ -37,7 +57,9 @@
                 @endif
             </h1>
             <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Emitida: {{ optional($invoice->issued_at)->format('d/m/Y H:i') }}</p>
-            @php($status = strtolower($invoice->reservation->status ?? ''))
+            @php
+                $status = strtolower($invoice->reservation->status ?? '');
+            @endphp
             @if($status === 'paid')
                 <span class="badge badge-success">Pagada</span>
             @elseif($status === 'pending')
@@ -65,7 +87,9 @@
                         </div>
                         <div>
                             <p class="mb-3" style="font-size: var(--text-base); color: var(--color-text-primary); font-weight: 500;">Alojamiento</p>
-                            @php($p = $invoice->reservation->property)
+                            @php
+                                $p = $invoice->reservation->property;
+                            @endphp
                             <div class="text-sm" style="color: var(--color-text-secondary);">
                                 <div class="mb-2"><strong>Nombre:</strong> {{ $p->name }}</div>
                                 <div class="mb-2"><strong>Licencia turística:</strong> {{ $p->tourism_license ?? '—' }}</div>
@@ -98,10 +122,10 @@
                                      </td>
                                      <td class="py-3 text-center" style="color: var(--color-text-secondary);">{{ $displayCheckIn->format('d/m/Y') }} → {{ $displayCheckOut->format('d/m/Y') }}</td>
                                      <td class="py-3 text-center" style="color: var(--color-text-secondary);">
-                                       @if($isRect)
-                                         {{ $displayGuests }} {{ $displayGuests === 1 ? 'huésped' : 'huéspedes' }}
+                                       @if(count($parts))
+                                         {{ implode(', ',$parts) }} (total: {{ $displayGuests }})
                                        @else
-                                         @if(count($parts)) {{ implode(', ',$parts) }} (total: {{ $res->guests }}) @else {{ $res->guests }} @endif
+                                         {{ $displayGuests }} {{ $displayGuests === 1 ? 'huésped' : 'huéspedes' }}
                                        @endif
                                      </td>
                                      <td class="py-3 text-right font-semibold" style="color: var(--color-text-secondary);">{{ number_format($displayAmount, 2, ',', '.') }} €</td>
@@ -117,8 +141,24 @@
                                       @endif
                                     </td>
                                     <td class="py-3 text-center" style="color: var(--color-text-secondary);">
-                                      @if(!empty($invoice->details['previous_guests']) && !empty($invoice->details['new_guests']) && $invoice->details['previous_guests'] !== $invoice->details['new_guests'])
-                                        {{ $invoice->details['new_guests'] }} {{ $invoice->details['new_guests'] === 1 ? 'huésped' : 'huéspedes' }}
+                                      @php
+                                        $newAdults = (int)($invoice->details['new_adults'] ?? 0);
+                                        $newChildren = (int)($invoice->details['new_children'] ?? 0);
+                                        $newPets = (int)($invoice->details['new_pets'] ?? 0);
+                                        $newGuests = (int)($invoice->details['new_guests'] ?? 0);
+                                        $guestsChanged = ($displayAdults !== $newAdults || $displayChildren !== $newChildren || $displayPets !== $newPets);
+                                        
+                                        $newParts = [];
+                                        if($newAdults>0) $newParts[] = $newAdults.' '.($newAdults===1?'adulto':'adultos');
+                                        if($newChildren>0) $newParts[] = $newChildren.' '.($newChildren===1?'niño':'niños');
+                                        if($newPets>0) $newParts[] = $newPets.' '.($newPets===1?'mascota':'mascotas');
+                                      @endphp
+                                      @if($guestsChanged)
+                                        @if(count($newParts))
+                                          {{ implode(', ', $newParts) }} (total: {{ $newGuests }})
+                                        @else
+                                          {{ $newGuests }} {{ $newGuests === 1 ? 'huésped' : 'huéspedes' }}
+                                        @endif
                                       @else
                                         —
                                       @endif
@@ -154,7 +194,9 @@
                 <div class="p-6" style="border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.8); backdrop-filter: blur(10px);">
                     <h3 style="font-size: var(--text-lg); font-weight:600; margin:0 0 1rem; text-transform: uppercase; letter-spacing:0.05em; color: var(--color-text-primary);">Acciones</h3>
                     <div class="flex flex-col gap-3 invoice-actions">
-                        @php($backUrl = Auth::check() && Auth::user()->role === 'admin' ? route('admin.dashboard') : route('invoices.index'))
+                        @php
+                            $backUrl = Auth::check() && Auth::user()->role === 'admin' ? route('admin.dashboard') : route('invoices.index');
+                        @endphp
                         <a href="{{ $backUrl }}" class="btn-action btn-action-secondary">Volver</a>
                         <a href="{{ route('invoices.show', $invoice->number) }}?download=1" class="btn-action btn-action-primary">Descargar PDF</a>
                     </div>

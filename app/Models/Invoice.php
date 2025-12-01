@@ -55,4 +55,30 @@ class Invoice extends Model
     {
         return $this->belongsTo(Reservation::class);
     }
+
+    /**
+     * Genera un número de factura único.
+     * 
+     * @param string $prefix Prefijo del número de factura (INV, RECT, REFUND)
+     * @return string Número de factura único
+     */
+    public static function generateUniqueNumber(string $prefix = 'INV'): string
+    {
+        $year = now()->year;
+        
+        // Obtener el último número usado para este año y prefijo
+        $lastInvoice = static::where('number', 'like', "{$prefix}-{$year}-%")
+            ->orderByRaw('CAST(SUBSTRING(number, ' . (strlen($prefix) + strlen($year) + 3) . ') AS UNSIGNED) DESC')
+            ->first();
+        
+        if ($lastInvoice) {
+            // Extraer el número secuencial del último registro
+            $lastNumber = (int) substr($lastInvoice->number, strlen($prefix) + strlen($year) + 2);
+            $nextNumber = $lastNumber + 1;
+        } else {
+            $nextNumber = 1;
+        }
+        
+        return $prefix . '-' . $year . '-' . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+    }
 }

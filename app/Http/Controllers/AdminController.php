@@ -523,8 +523,7 @@ class AdminController extends Controller
             ]);
 
             // 3) Generar factura rectificativa
-            $count = Invoice::count() + 1;
-            $invoiceNumber = 'RECT-' . now()->year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+            $invoiceNumber = Invoice::generateUniqueNumber('RECT');
             
             return Invoice::create([
                 'reservation_id' => $reservation->id,

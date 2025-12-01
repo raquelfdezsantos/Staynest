@@ -80,8 +80,26 @@
                                         {{ $inv->reservation->property->name ?? '—' }}
                                     </td>
                                     <td style="padding: 1rem; color: var(--color-text-secondary); font-size: var(--text-sm);">
-                                        @php($ci = is_array($inv->details ?? null) && !empty($inv->details['new_check_in']) ? \Carbon\Carbon::parse($inv->details['new_check_in']) : $inv->reservation->check_in)
-                                        @php($co = is_array($inv->details ?? null) && !empty($inv->details['new_check_out']) ? \Carbon\Carbon::parse($inv->details['new_check_out']) : $inv->reservation->check_out)
+                                        @php
+                                            $details = $inv->details ?? [];
+                                            $context = $details['context'] ?? '';
+                                            
+                                            // Para facturas rectificativas (INCREMENTO o DISMINUCIÓN), mostrar fechas NUEVAS
+                                            if (in_array($context, ['increase_update', 'decrease_update']) && !empty($details['new_check_in'])) {
+                                                $ci = \Carbon\Carbon::parse($details['new_check_in']);
+                                                $co = \Carbon\Carbon::parse($details['new_check_out']);
+                                            }
+                                            // Para facturas iniciales, usar datos guardados en details
+                                            elseif (!empty($details['check_in'])) {
+                                                $ci = \Carbon\Carbon::parse($details['check_in']);
+                                                $co = \Carbon\Carbon::parse($details['check_out']);
+                                            }
+                                            // Fallback: facturas antiguas sin details
+                                            else {
+                                                $ci = $inv->reservation->check_in;
+                                                $co = $inv->reservation->check_out;
+                                            }
+                                        @endphp
                                         {{ $ci->format('d/m/Y') }} → {{ $co->format('d/m/Y') }}
                                     </td>
                                     <td style="padding: 1rem; color: var(--color-text-primary); font-weight: 600; font-size: var(--text-lg);">

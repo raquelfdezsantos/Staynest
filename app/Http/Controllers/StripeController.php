@@ -192,9 +192,8 @@ class StripeController extends Controller
             // marcar paid
             $reservation->update(['status' => 'paid']);
 
-            // generar nº de factura
-            $count = Invoice::count() + 1;
-            $number = 'INV-' . now()->year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+            // generar nº de factura único
+            $number = Invoice::generateUniqueNumber('INV');
 
             return Invoice::create([
                 'reservation_id' => $reservation->id,
@@ -202,6 +201,15 @@ class StripeController extends Controller
                 'pdf_path'       => null,
                 'issued_at'      => now(),
                 'amount'         => $reservation->total_price,
+                'details'        => [
+                    'context'     => 'initial_payment',
+                    'check_in'    => $reservation->check_in->format('Y-m-d'),
+                    'check_out'   => $reservation->check_out->format('Y-m-d'),
+                    'guests'      => (int)$reservation->guests,
+                    'adults'      => (int)($reservation->adults ?? 0),
+                    'children'    => (int)($reservation->children ?? 0),
+                    'pets'        => (int)($reservation->pets ?? 0),
+                ],
             ]);
         });
 
@@ -248,26 +256,64 @@ class StripeController extends Controller
             return redirect()->route('reservas.index')->with('success', 'Pago de diferencia ya registrado.');
         }
         
-        // Crear registro de pago
-        Payment::create([
-            'reservation_id' => $reservation->id,
-            'amount'        => $amount,
-            'method'        => 'stripe',
-            'status'        => 'succeeded',
-            'provider_ref'  => $session->payment_intent ?? ('CS_' . $session->id),
-        ]);
+        // Crear registro de pago y factura rectificativa
+        $invoice = DB::transaction(function () use ($reservation, $amount, $session) {
+            // Calcular el total previo (lo que ya se había pagado)
+            $previousTotal = $reservation->paidAmount();
+            
+            Payment::create([
+                'reservation_id' => $reservation->id,
+                'amount'        => $amount,
+                'method'        => 'stripe',
+                'status'        => 'succeeded',
+                'provider_ref'  => $session->payment_intent ?? ('CS_' . $session->id),
+            ]);
 
-        // Sincronizar importe de la factura con el total actual de la reserva (tras modificación)
-        if ($reservation->invoice) {
-            $reservation->invoice->update(['amount' => $reservation->total_price]);
-        }
+            // Generar factura rectificativa por el incremento
+            $invoiceNumber = Invoice::generateUniqueNumber('RECT');
+
+            // Recuperar detalles de la modificación desde la sesión
+            $sessionKey = 'pending_balance_details_' . $reservation->id;
+            $modificationDetails = session()->get($sessionKey, []);
+            
+            // Construir los detalles de la factura
+            $invoiceDetails = [
+                'context'        => 'increase_update',
+                'previous_paid'  => round((float)$previousTotal, 2),
+                'difference'     => round((float)$amount, 2),
+                'new_total'      => round((float)$reservation->total_price, 2),
+            ];
+            
+            // Si hay detalles de modificación guardados, incluirlos
+            if (!empty($modificationDetails)) {
+                $invoiceDetails = array_merge($invoiceDetails, $modificationDetails);
+                // Limpiar la sesión después de usar los datos
+                session()->forget($sessionKey);
+            } else {
+                // Fallback: usar datos actuales
+                $invoiceDetails['check_in'] = $reservation->check_in->format('Y-m-d');
+                $invoiceDetails['check_out'] = $reservation->check_out->format('Y-m-d');
+                $invoiceDetails['guests'] = (int)$reservation->guests;
+                $invoiceDetails['adults'] = (int)($reservation->adults ?? 0);
+                $invoiceDetails['children'] = (int)($reservation->children ?? 0);
+                $invoiceDetails['pets'] = (int)($reservation->pets ?? 0);
+            }
+
+            return Invoice::create([
+                'reservation_id' => $reservation->id,
+                'number'         => $invoiceNumber,
+                'pdf_path'       => null,
+                'issued_at'      => now(),
+                'amount'         => $amount,
+                'details'        => $invoiceDetails,
+            ]);
+        });
         
-        // NO crear invoice - ya existe del pago inicial
-        // Enviar emails de confirmación
+        // Enviar emails de confirmación con la factura rectificativa
         Log::info('Enviando email pago diferencia al cliente', ['email' => $reservation->user->email, 'amount' => $amount]);
         try {
             Mail::to($reservation->user->email)->send(
-                new PaymentBalanceSettledMail($reservation, $amount)
+                new PaymentBalanceSettledMail($reservation, $amount, $invoice)
             );
             Log::info('PaymentBalanceSettledMail enviado correctamente');
         } catch (Throwable $e) {
@@ -277,7 +323,7 @@ class StripeController extends Controller
         Log::info('Enviando email pago diferencia al admin', ['email' => $reservation->property->user->email]);
         try {
             Mail::to($reservation->property->user->email)->send(
-                new AdminPaymentBalanceSettledMail($reservation, $amount)
+                new AdminPaymentBalanceSettledMail($reservation, $amount, $invoice)
             );
             Log::info('AdminPaymentBalanceSettledMail enviado correctamente');
         } catch (Throwable $e) {

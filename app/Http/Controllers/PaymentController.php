@@ -58,8 +58,7 @@ class PaymentController extends Controller
                 'provider_ref'  => 'SIM-' . Str::upper(Str::random(8)),
             ]);
 
-            $count = Invoice::count() + 1;
-            $invoiceNumber = 'INV-' . now()->year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+            $invoiceNumber = Invoice::generateUniqueNumber('INV');
 
             return Invoice::create([
                 'reservation_id' => $reservation->id,
@@ -67,6 +66,15 @@ class PaymentController extends Controller
                 'pdf_path'       => null,
                 'issued_at'      => now(),
                 'amount'         => $reservation->total_price,
+                'details'        => [
+                    'context'     => 'initial_payment',
+                    'check_in'    => $reservation->check_in->format('Y-m-d'),
+                    'check_out'   => $reservation->check_out->format('Y-m-d'),
+                    'guests'      => (int)$reservation->guests,
+                    'adults'      => (int)($reservation->adults ?? 0),
+                    'children'    => (int)($reservation->children ?? 0),
+                    'pets'        => (int)($reservation->pets ?? 0),
+                ],
             ]);
         });
 
@@ -113,6 +121,9 @@ class PaymentController extends Controller
         }
 
         $invoice = DB::transaction(function () use ($reservation, $balance) {
+            // Calcular el total previo (lo que ya se había pagado)
+            $previousTotal = $reservation->paidAmount();
+            
             Payment::create([
                 'reservation_id' => $reservation->id,
                 'amount'        => $balance,
@@ -121,16 +132,43 @@ class PaymentController extends Controller
                 'provider_ref'  => 'SIM-ADD-' . Str::upper(Str::random(6)),
             ]);
 
-            // Generar factura actualizada con el total completo
-            $count = Invoice::count() + 1;
-            $invoiceNumber = 'INV-' . now()->year . '-' . str_pad($count, 5, '0', STR_PAD_LEFT);
+            // Generar factura rectificativa por el incremento (solo por la diferencia pagada)
+            $invoiceNumber = Invoice::generateUniqueNumber('RECT');
+
+            // Recuperar detalles de la modificación desde la sesión
+            $sessionKey = 'pending_balance_details_' . $reservation->id;
+            $modificationDetails = session()->get($sessionKey, []);
+            
+            // Construir los detalles de la factura
+            $invoiceDetails = [
+                'context'        => 'increase_update',
+                'previous_paid'  => round((float)$previousTotal, 2),
+                'difference'     => round((float)$balance, 2),
+                'new_total'      => round((float)$reservation->total_price, 2),
+            ];
+            
+            // Si hay detalles de modificación guardados, incluirlos
+            if (!empty($modificationDetails)) {
+                $invoiceDetails = array_merge($invoiceDetails, $modificationDetails);
+                // Limpiar la sesión después de usar los datos
+                session()->forget($sessionKey);
+            } else {
+                // Fallback: usar datos actuales (menos ideal pero funcional)
+                $invoiceDetails['check_in'] = $reservation->check_in->format('Y-m-d');
+                $invoiceDetails['check_out'] = $reservation->check_out->format('Y-m-d');
+                $invoiceDetails['guests'] = (int)$reservation->guests;
+                $invoiceDetails['adults'] = (int)($reservation->adults ?? 0);
+                $invoiceDetails['children'] = (int)($reservation->children ?? 0);
+                $invoiceDetails['pets'] = (int)($reservation->pets ?? 0);
+            }
 
             return Invoice::create([
                 'reservation_id' => $reservation->id,
                 'number'         => $invoiceNumber,
                 'pdf_path'       => null,
                 'issued_at'      => now(),
-                'amount'         => $reservation->total_price,
+                'amount'         => $balance,
+                'details'        => $invoiceDetails,
             ]);
         });
 
