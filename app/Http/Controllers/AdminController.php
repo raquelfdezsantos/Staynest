@@ -300,6 +300,9 @@ class AdminController extends Controller
                         'pets' => $reservation->pets,
                     ],
                 ]);
+                
+                // Cargar relaciones necesarias para el PDF
+                $invoice->load(['user', 'reservation.property']);
             }
         });
 
