@@ -20,16 +20,8 @@ it('permite reserva que empieza justo el día de checkout de otra', function () 
         'total_price' => 200,
     ]);
 
-    // Calendario libre del 12→14 (12 y 13)
-    foreach ([12,13] as $d) {
-        RateCalendar::factory()->create([
-            'property_id'   => $prop->id,
-            'date'          => now()->addDays($d)->toDateString(),
-            'price'         => 100,
-            'is_available'  => true,
-            'min_stay'      => 2,
-        ]);
-    }
+    // No crear fechas en calendario - dejar que el controlador las cree automáticamente
+    // Esto evita duplicados y simula mejor el comportamiento real
 
     actingAs($user);
     // Crear 12→14 debe ser OK (ajusta si tu store es otra ruta)

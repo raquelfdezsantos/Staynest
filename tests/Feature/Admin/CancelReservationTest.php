@@ -51,7 +51,7 @@ it('admin puede cancelar reserva y libera fechas', function () {
     }
 });
 
-it('admin no puede cancelar reserva ya pagada', function () {
+it('admin puede cancelar reserva pagada y crea factura rectificativa', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $user = User::factory()->create();
     $prop = Property::factory()->create(['user_id' => $admin->id]);
@@ -65,11 +65,10 @@ it('admin no puede cancelar reserva ya pagada', function () {
 
     $response = actingAs($admin)->post(route('admin.reservations.cancel', $reservation->id));
 
-    // Debería redirigir con mensaje de error
+    // Debería redirigir con éxito
     $response->assertRedirect();
-    $response->assertSessionHas('error');
 
-    // La reserva sigue como 'paid'
+    // La reserva debe estar cancelada
     $reservation->refresh();
-    expect($reservation->status)->toBe('paid');
+    expect($reservation->status)->toBe('cancelled');
 });

@@ -10,7 +10,8 @@ uses(RefreshDatabase::class);
 it('envía email de contacto con datos válidos', function () {
     Mail::fake();
 
-    $property = \App\Models\Property::factory()->create();
+    $user = \App\Models\User::factory()->create(['email' => 'owner@example.com']);
+    $property = \App\Models\Property::factory()->for($user)->create();
 
     post(route('properties.contact.store', $property->slug), [
         'name' => 'Juan Pérez',
@@ -19,13 +20,14 @@ it('envía email de contacto con datos válidos', function () {
         'message' => 'Me gustaría saber más sobre las tarifas.',
     ])->assertRedirect();
 
-    Mail::assertQueued(ContactMessageMail::class, function ($mail) {
-        return $mail->hasTo(env('MAIL_ADMIN', 'admin@vut.test'));
+    Mail::assertSent(ContactMessageMail::class, function ($mail) use ($user) {
+        return $mail->hasTo($user->email);
     });
 });
 
 it('bloquea después de 6 intentos (rate limit)', function () {
-    $property = \App\Models\Property::factory()->create();
+    $user = \App\Models\User::factory()->create(['email' => 'owner@example.com']);
+    $property = \App\Models\Property::factory()->for($user)->create();
     for ($i = 0; $i < 5; $i++) {
         post(route('properties.contact.store', $property->slug), [
             'name' => "Usuario $i",

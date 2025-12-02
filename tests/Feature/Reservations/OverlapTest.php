@@ -17,16 +17,8 @@ it('rechaza solapes de [check_in, check_out)', function () {
         'total_price' => 300,
     ]);
 
-    // Sembrar rate calendar libre
-    foreach (range(10,15) as $d) {
-        RateCalendar::factory()->create([
-            'property_id' => $prop->id,
-            'date' => now()->addDays($d)->toDateString(),
-            'price' => 100,
-            'is_available' => true,
-            'min_stay' => 2,
-        ]);
-    }
+    // No sembrar rate calendar - dejar que el controlador maneje la disponibilidad
+    // Esto evita duplicados y simula mejor el comportamiento real
 
     // Intentar nueva que solapa 12→14
     actingAs($user);

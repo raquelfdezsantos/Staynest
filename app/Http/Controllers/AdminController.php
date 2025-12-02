@@ -281,12 +281,13 @@ class AdminController extends Controller
                     ->first();
 
                 $invoice = Invoice::create([
-                    'number' => Invoice::generateNumber(),
+                    'number' => Invoice::generateUniqueNumber('RECT'),
                     'user_id' => $reservation->user_id,
                     'reservation_id' => $reservation->id,
                     'property_id' => $reservation->property_id,
                     'type' => 'rectificative',
                     'amount' => -$reservation->total_price,
+                    'issued_at' => now(),
                     'date' => now(),
                     'context' => 'admin_cancellation',
                     'details' => [
@@ -302,7 +303,7 @@ class AdminController extends Controller
                 ]);
                 
                 // Cargar relaciones necesarias para el PDF
-                $invoice->load(['user', 'reservation.property']);
+                $invoice->load(['reservation.user', 'reservation.property']);
             }
         });
 

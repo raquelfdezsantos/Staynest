@@ -12,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
  *
  * Envía un correo con los datos del formulario de soporte al equipo correspondiente.
  */
-class SupportMessageMail extends Mailable implements ShouldQueue
+class SupportMessageMail extends Mailable
 {
     use Queueable, SerializesModels;
 
