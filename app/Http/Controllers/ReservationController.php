@@ -229,6 +229,7 @@ class ReservationController extends Controller
                 'notes'       => $data['notes'] ?? null,
                 'status'      => 'pending',
                 'total_price' => $total,
+                'expires_at'  => now()->addHours(24),
             ]);
 
             // Bloquear noches [check_in, check_out)

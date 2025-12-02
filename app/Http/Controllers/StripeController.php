@@ -191,8 +191,11 @@ class StripeController extends Controller
                 'provider_ref'  => $session->payment_intent ?? ('CS_' . $session->id),
             ]);
 
-            // marcar paid
-            $reservation->update(['status' => 'paid']);
+            // marcar paid y limpiar expires_at
+            $reservation->update([
+                'status' => 'paid',
+                'expires_at' => null,
+            ]);
 
             // generar nº de factura único
             $number = Invoice::generateUniqueNumber('INV');

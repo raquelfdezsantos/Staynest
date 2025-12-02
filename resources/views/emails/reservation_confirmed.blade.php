@@ -40,6 +40,17 @@
     <tr style="background-color: #ffffff;"><td style="padding: 10px; font-size: 14px; color: #666666;"><strong style="color: #333333;">Estado:</strong></td><td style="padding: 10px; font-size: 14px; color: #4D8D94; font-weight: 500;">{{ ucfirst($reservation->status) }}</td></tr>
   </table>
 
+  @if($reservation->status === 'pending' && $reservation->expires_at)
+    <div style="margin: 24px 0 0; padding: 16px; background-color: #fff3cd; border-left: 3px solid #ff9800; border-radius: 4px; font-size: 14px; line-height: 1.6; color: #333333; display: flex; gap: 12px;">
+      <svg style="width: 20px; height: 20px; flex-shrink: 0; margin-top: 2px;" fill="none" stroke="#ff9800" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <div>
+        <strong>Importante:</strong> Tienes hasta el <strong>{{ $reservation->expires_at->format('d/m/Y \a \l\a\s H:i') }}</strong> (24 horas) para completar el pago de tu reserva. Si no se completa el pago en este plazo, la reserva expirará automáticamente y las fechas quedarán liberadas.
+      </div>
+    </div>
+  @endif
+
   <p style="margin: 24px 0 0; padding: 16px; background-color: #f0f8f9; border-left: 3px solid #4D8D94; border-radius: 4px; font-size: 14px; line-height: 1.6; color: #333333;">
     Cuando completes el pago te enviaremos la factura automáticamente.
   </p>

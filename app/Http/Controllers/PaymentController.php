@@ -48,7 +48,10 @@ class PaymentController extends Controller
 
         // Guardamos la factura que se crea
         $invoice = DB::transaction(function () use ($reservation) {
-            $reservation->update(['status' => 'paid']);
+            $reservation->update([
+                'status' => 'paid',
+                'expires_at' => null,
+            ]);
 
             Payment::create([
                 'reservation_id' => $reservation->id,

@@ -41,7 +41,8 @@ class Reservation extends Model
         'pets',
         'notes',
         'status',
-        'total_price'
+        'total_price',
+        'expires_at'
     ];
 
     /**
@@ -52,6 +53,7 @@ class Reservation extends Model
     protected $casts = [
         'check_in'  => 'date',
         'check_out' => 'date',
+        'expires_at' => 'datetime',
     ];
 
     /**

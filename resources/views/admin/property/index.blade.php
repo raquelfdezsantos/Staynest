@@ -120,9 +120,14 @@
 
         {{-- Alerta si la propiedad está dada de baja --}}
         @if($property->trashed())
-            <div class="alert alert-error" style="margin-bottom: 1.5rem;">
-                <p style="font-weight: 600; margin-bottom: 0.25rem;">⚠️ Esta propiedad está dada de baja</p>
-                <p style="font-size: var(--text-sm);">Fue eliminada el {{ $property->deleted_at->format('d/m/Y H:i') }}</p>
+            <div class="alert alert-error" style="margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 0.5rem;">
+                <svg style="width: 20px; height: 20px; flex-shrink: 0; margin-top: 0.125rem;" fill="none" stroke="var(--color-error)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <div>
+                    <p style="font-weight: 600; margin-bottom: 0.25rem;">Esta propiedad está dada de baja</p>
+                    <p style="font-size: var(--text-sm);">Fue eliminada el {{ $property->deleted_at->format('d/m/Y H:i') }}</p>
+                </div>
             </div>
         @endif
 
@@ -379,7 +384,7 @@
         <div class="danger-zone" style="margin-top: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.9); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.25rem 1.5rem;">
             <h3 class="danger-title">
                 <svg style="width: 20px; height: 20px; flex-shrink: 0;" fill="none" stroke="var(--color-error)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 Zona de peligro
             </h3>
@@ -415,7 +420,7 @@
                         @method('DELETE')
                         <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem;">
                             <svg style="width: 24px; height: 24px; flex-shrink: 0; margin-top: 0.125rem;" fill="none" stroke="var(--color-error)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                             <div style="flex: 1;">
                                 <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">

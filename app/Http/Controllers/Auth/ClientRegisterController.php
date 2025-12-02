@@ -103,6 +103,7 @@ class ClientRegisterController extends Controller
                     'notes' => $pendingData['notes'] ?? null,
                     'status' => 'pending',
                     'total_price' => $totalPrice,
+                    'expires_at' => now()->addHours(24),
                 ]);
 
                 // Enviar emails de confirmación
