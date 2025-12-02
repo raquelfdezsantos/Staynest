@@ -15,7 +15,7 @@
             <!-- Formulario (estrecho) -->
             <div id="contact-form-column"
                  class="md:col-span-2 lg:col-span-2 space-y-6 max-w-xl flex flex-col">
-                
+
                 @if (session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
@@ -81,21 +81,11 @@
             </div>
 
             {{-- MAPA --}}
-            <div class="md:col-span-2 lg:col-span-2 space-y-4">
-                <h2 class="font-serif text-xl mb-2" style="font-weight:500;">Dónde estamos</h2>
-                <div class="text-sm text-neutral-300 leading-relaxed">
-                    {{ optional($property)->address ?? 'Dirección no disponible' }}
-                    @if(!empty(optional($property)->postal_code)) · {{ optional($property)->postal_code }}@endif
-                    @if(!empty(optional($property)->city)) · {{ optional($property)->city }}@endif
-                    @if(!empty(optional($property)->province)) ({{ optional($property)->province }})@endif
-                </div>
-
-                <div id="map" class="w-full"
-                     style="height:460px;border:1px solid var(--color-border-light);border-radius:var(--radius-base);overflow:hidden;"></div>
-            </div>
-
             @php
                 $hasCoords = !empty($property->latitude) && !empty($property->longitude);
+                $lat = $hasCoords ? (float) $property->latitude : 43.545;
+                $lng = $hasCoords ? (float) $property->longitude : -5.661;
+
                 $fullAddress = collect([
                     $property->address,
                     $property->postal_code,
@@ -105,144 +95,158 @@
                 ])->filter()->implode(', ');
             @endphp
 
-            <script>
-                function initMap() {
-                    const mapEl = document.getElementById('map');
+            <div class="md:col-span-2 lg:col-span-2 space-y-4">
+                <h2 class="font-serif text-xl mb-2" style="font-weight:500;">Dónde estamos</h2>
+                <div class="text-sm text-neutral-300 leading-relaxed">
+                    {{ optional($property)->address ?? 'Dirección no disponible' }}
+                    @if(!empty(optional($property)->postal_code)) · {{ optional($property)->postal_code }}@endif
+                    @if(!empty(optional($property)->city)) · {{ optional($property)->city }}@endif
+                    @if(!empty(optional($property)->province)) ({{ optional($property)->province }})@endif
+                </div>
 
-                    @if($hasCoords)
-                        const loc = {
-                            lat: Number(@json((string) $property->latitude)),
-                            lng: Number(@json((string) $property->longitude))
-                        };
-                        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                <div id="map-contact" class="w-full"
+                     style="height:460px;border:1px solid var(--color-border-light);border-radius:var(--radius-base);overflow:hidden;"></div>
+            </div>
 
-                        const darkStylesBase = [
-                            { elementType: 'geometry', stylers: [{ color: '#242f3e' }] },
-                            { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
-                            { elementType: 'labels.text.fill', stylers: [{ color: '#746855' }] },
-                            { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
-                            { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
-                            { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#263c3f' }] },
-                            { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#6b9a76' }] },
-                            { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#38414e' }] },
-                            { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#212a37' }] },
-                            { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9ca5b3' }] },
-                            { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#746855' }] },
-                            { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#1f2835' }] },
-                            { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#f3d19c' }] },
-                            { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#2f3948' }] },
-                            { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#17263c' }] },
-                            { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#515c6d' }] },
-                            { featureType: 'water', elementType: 'labels.text.stroke', stylers: [{ color: '#17263c' }] }
-                        ];
+            @pushOnce('scripts')
+                <script>
+                    function initContactMap() {
+                        const mapEl = document.getElementById('map-contact');
+                        if (!mapEl || !window.google || !google.maps) return;
 
-                        const mapIdDefault = @json(config('services.google_maps.map_id'));
-                        const mapIdLight   = @json(config('services.google_maps.map_id_light'));
-                        const mapIdDark    = @json(config('services.google_maps.map_id_dark'));
+                        const root = document.documentElement;
+                        const isDark =
+                            root.getAttribute('data-theme') === 'dark' ||
+                            root.classList.contains('dark');
 
-                        let mapIdToUse = mapIdDefault;
-                        if (isDark) {
-                            if (mapIdDark) {
-                                mapIdToUse = mapIdDark;
-                            } else if (!mapIdDefault && mapIdLight) {
-                                mapIdToUse = mapIdLight;
-                            }
-                        }
+                        // Map IDs desde config/services.php
+                        const mapIdLight = @json(config('services.google_maps.map_id') ?? config('services.google_maps.map_id_light'));
+                        const mapIdDark  = @json(config('services.google_maps.map_id_dark'));
 
-                        const mapOptions = {
-                            center: loc,
-                            zoom: 16
-                        };
-                        if (mapIdToUse) {
-                            mapOptions.mapId = mapIdToUse;
-                        }
-                        if (isDark && !mapIdDark) {
-                            mapOptions.styles = darkStylesBase;
-                        }
+                        const mapIdToUse = (isDark && mapIdDark) ? mapIdDark : mapIdLight;
 
-                        const map = new google.maps.Map(mapEl, mapOptions);
+                        const baseLoc = { lat: {{ $lat }}, lng: {{ $lng }} };
 
-                        if (google.maps.marker?.AdvancedMarkerElement) {
-                            new google.maps.marker.AdvancedMarkerElement({
-                                map,
-                                position: loc,
-                                title: @json($property->name)
-                            });
-                        } else {
-                            new google.maps.Marker({
-                                map,
-                                position: loc,
-                                title: @json($property->name)
-                            });
-                        }
+                        @if($hasCoords)
+                            // ===== CON COORDENADAS =====
+                            const loc = baseLoc;
 
-                        // Sincronizar altura del mapa
-                        requestAnimationFrame(() => {
-                            const syncMapHeight = () => {
-                                const ta = document.getElementById('message');
-                                if (!ta) return;
-                                const taRect = ta.getBoundingClientRect();
-                                const mapRect = mapEl.getBoundingClientRect();
-                                const desired = Math.max(260, Math.round(taRect.bottom - mapRect.top));
-                                mapEl.style.height = desired + 'px';
+                            const mapOptions = {
+                                center: loc,
+                                zoom: 16,
                             };
-                            syncMapHeight();
-                            window.addEventListener('resize', () => requestAnimationFrame(syncMapHeight));
-                        });
 
-                    @else
-                        const address = @json($fullAddress);
-                        const geocoder = new google.maps.Geocoder();
+                            if (mapIdToUse) {
+                                mapOptions.mapId = mapIdToUse;
+                            }
 
-                        geocoder.geocode({ address }, (results, status) => {
-                            if (status === 'OK' && results[0]) {
-                                const loc = results[0].geometry.location;
-                                const map = new google.maps.Map(mapEl, {
-                                    center: loc,
-                                    zoom: 15,
-                                    mapId: 'f8dd0379fb4feadfc2e9ae6d',
-                                });
+                            const map = new google.maps.Map(mapEl, mapOptions);
+
+                            if (google.maps.marker?.AdvancedMarkerElement) {
                                 new google.maps.marker.AdvancedMarkerElement({
                                     map,
                                     position: loc,
-                                    title: @json($property->name),
-                                });
-
-                                // Sincronizar altura del mapa
-                                requestAnimationFrame(() => {
-                                    const syncMapHeight = () => {
-                                        const ta = document.getElementById('message');
-                                        if (!ta) return;
-                                        const taRect = ta.getBoundingClientRect();
-                                        const mapRect = mapEl.getBoundingClientRect();
-                                        const desired = Math.max(260, Math.round(taRect.bottom - mapRect.top));
-                                        mapEl.style.height = desired + 'px';
-                                    };
-                                    syncMapHeight();
-                                    window.addEventListener('resize', () => requestAnimationFrame(syncMapHeight));
+                                    title: @json($property->name ?? 'Staynest'),
                                 });
                             } else {
-                                mapEl.innerHTML = 'No se pudo mostrar el mapa.';
+                                new google.maps.Marker({
+                                    map,
+                                    position: loc,
+                                    title: @json($property->name ?? 'Staynest'),
+                                });
                             }
-                        });
-                    @endif
-                }
 
-                (function () {
-                    const params = new URLSearchParams({
-                        key: "{{ config('services.google_maps.api_key') }}",
-                        v: "weekly",
-                        libraries: "marker",
-                        callback: "initMap",
-                        loading: "async",
-                    });
-                    const s = document.createElement('script');
-                    s.src = "https://maps.googleapis.com/maps/api/js?" + params.toString();
-                    s.async = true;
-                    s.defer = true;
-                    document.head.appendChild(s);
-                })();
-            </script>
+                            // Sincronizar altura del mapa
+                            requestAnimationFrame(() => {
+                                const syncMapHeight = () => {
+                                    const ta = document.getElementById('message');
+                                    if (!ta) return;
+                                    const taRect = ta.getBoundingClientRect();
+                                    const mapRect = mapEl.getBoundingClientRect();
+                                    const desired = Math.max(260, Math.round(taRect.bottom - mapRect.top));
+                                    mapEl.style.height = desired + 'px';
+                                };
+                                syncMapHeight();
+                                window.addEventListener('resize', () => requestAnimationFrame(syncMapHeight));
+                            });
+
+                        @else
+                            // ===== SIN COORDENADAS → GEOCODER =====
+                            const address = @json($fullAddress);
+                            const geocoder = new google.maps.Geocoder();
+
+                            geocoder.geocode({ address }, (results, status) => {
+                                if (status === 'OK' && results[0]) {
+                                    const loc = results[0].geometry.location;
+
+                                    const mapOptions = {
+                                        center: loc,
+                                        zoom: 15,
+                                    };
+
+                                    if (mapIdToUse) {
+                                        mapOptions.mapId = mapIdToUse;
+                                    }
+
+                                    const map = new google.maps.Map(mapEl, mapOptions);
+
+                                    if (google.maps.marker?.AdvancedMarkerElement) {
+                                        new google.maps.marker.AdvancedMarkerElement({
+                                            map,
+                                            position: loc,
+                                            title: @json($property->name ?? 'Staynest'),
+                                        });
+                                    } else {
+                                        new google.maps.Marker({
+                                            map,
+                                            position: loc,
+                                            title: @json($property->name ?? 'Staynest'),
+                                        });
+                                    }
+
+                                    // Sincronizar altura del mapa
+                                    requestAnimationFrame(() => {
+                                        const syncMapHeight = () => {
+                                            const ta = document.getElementById('message');
+                                            if (!ta) return;
+                                            const taRect = ta.getBoundingClientRect();
+                                            const mapRect = mapEl.getBoundingClientRect();
+                                            const desired = Math.max(260, Math.round(taRect.bottom - mapRect.top));
+                                            mapEl.style.height = desired + 'px';
+                                        };
+                                        syncMapHeight();
+                                        window.addEventListener('resize', () => requestAnimationFrame(syncMapHeight));
+                                    });
+                                } else {
+                                    mapEl.innerHTML = 'No se pudo mostrar el mapa.';
+                                }
+                            });
+                        @endif
+                    }
+
+                    (function loadGoogleMapsForContact() {
+                        if (window.google && window.google.maps) {
+                            initContactMap();
+                            return;
+                        }
+
+                        const params = new URLSearchParams({
+                            key: "{{ config('services.google_maps.api_key') }}",
+                            v: "beta",
+                            libraries: "marker",
+                            callback: "initContactMap",
+                            loading: "async",
+                            map_ids: "{{ config('services.google_maps.map_id') ?? config('services.google_maps.map_id_light') }},{{ config('services.google_maps.map_id_dark') }}",
+                        });
+
+                        const s = document.createElement('script');
+                        s.src = "https://maps.googleapis.com/maps/api/js?" + params.toString();
+                        s.async = true;
+                        s.defer = true;
+                        document.head.appendChild(s);
+                    })();
+                </script>
+            @endPushOnce
         </div>
     </div>
 @endsection
