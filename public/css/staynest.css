@@ -2074,6 +2074,9 @@ footer {
     display: grid;
 }
 
+.footer-col-2 ul li:last-child {
+    margin-bottom: var(--spacing-md);
+}
 
 @media (max-width: 639px) {
     .footer-grid {
