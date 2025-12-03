@@ -15,7 +15,10 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}" />
     <link rel="manifest" href="{{ asset('site.webmanifest') }}" />
 
-    <!-- Staynest Styles -->
+    <!-- Scripts (Vite carga Tailwind primero) -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <!-- Staynest Styles (después para que no sobrescriba responsive de Tailwind) -->
     <link rel="stylesheet" href="{{ asset('css/staynest.css') }}">
 
     <script>
@@ -39,9 +42,6 @@
             window.addEventListener('resize', function () { setSW(); setTimeout(setSW, 100); });
         })();
     </script>
-
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
@@ -130,7 +130,7 @@
                         @if($footerProperty->rental_registration)
                             <p>
                                 <span style="font-weight:500;">España — Registro nacional</span><br>
-                                {{ $footerProperty->rental_registration }}
+                                <span class="reg-nacional">{{ $footerProperty->rental_registration }}</span>
                             </p>
                         @endif
                     @endif
@@ -152,20 +152,22 @@
 
                 {{-- Columna 3: Navegación --}}
                 <div class="footer-col-3">
-                    <h3
-                        style="font-family:var(--font-serif); font-size:var(--text-lg); color:var(--color-text-primary); margin-bottom:var(--spacing-md);">
-                        Staynest</h3>
-                    <ul style="list-style:none; padding:0;">
-                        <li style="margin-bottom:var(--spacing-xs);">
-                            <a href="{{ route('discover') }}" class="sn-link">Descubre Staynest</a>
-                        </li>
-                        <li style="margin-bottom:var(--spacing-xs);">
-                            <a href="{{ route('soporte.index') }}" class="sn-link">Soporte</a>
-                        </li>
-                    </ul>
-                    @if(isset($footerProperty) && $footerProperty)
-                        <p style="color:var(--color-text-secondary); margin-top:var(--spacing-md);">&copy; {{ date('Y') }} Todos los derechos reservados.</p>
-                    @endif
+                    <div class="footer-col-3-inner">
+                        <h3
+                            style="font-family:var(--font-serif); font-size:var(--text-lg); color:var(--color-text-primary); margin-bottom:var(--spacing-md);">
+                            Staynest</h3>
+                        <ul style="list-style:none; padding:0;">
+                            <li style="margin-bottom:var(--spacing-xs);">
+                                <a href="{{ route('discover') }}" class="sn-link">Descubre Staynest</a>
+                            </li>
+                            <li style="margin-bottom:var(--spacing-xs);">
+                                <a href="{{ route('soporte.index') }}" class="sn-link">Soporte</a>
+                            </li>
+                        </ul>
+                        @if(isset($footerProperty) && $footerProperty)
+                            <p style="color:var(--color-text-secondary); margin-top:var(--spacing-md);">&copy; {{ date('Y') }} Todos los derechos <span class="break-here">reservados.</p>
+                        @endif
+                    </div>
                 </div>
             </div>
 

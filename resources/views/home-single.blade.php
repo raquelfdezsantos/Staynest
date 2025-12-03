@@ -38,7 +38,7 @@
                     </div>
                     <div>
                         <small>España — Registro nacional</small>
-                        <strong>{{ $property->rental_registration ?? '—' }}</strong>
+                        <strong class="hero-reg-nacional">{{ $property->rental_registration ?? '—' }}</strong>
                     </div>
                 </div>
             </div>
