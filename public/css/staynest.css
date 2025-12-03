@@ -2216,7 +2216,19 @@ footer {
 }
 
 
+@media (max-width: 480px) {
+    .footer-cookie-inner {
+        display: inline-block;       /* dejamos de usar flex */
+        max-width: 100%;
+        text-align: center;          /* texto centrado */
+    }
 
+    .footer-cookie-icon {
+        display: inline-block;       /* el icono se comporta como texto */
+        margin-right: 4px;
+        vertical-align: middle;      /* alinea mejor con la primera línea de texto */
+    }
+}
 
 
 /* ============================================================================
