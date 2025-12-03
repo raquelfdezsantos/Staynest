@@ -728,8 +728,6 @@ html[data-theme="light"] .nav-header--transparent {
 
 
 .nav-logo {
-    height: 44px;
-    /* reducido ligeramente */
     width: auto;
     transition: opacity var(--transition-fast);
 }
@@ -2271,11 +2269,6 @@ footer {
     opacity: 0;
 }
 
-.nav-logo-hero .nav-logo {
-    height: 88px;
-    /* reducido ligeramente desde 96px */
-}
-
 /* Mostrar logo hero solo en modo transparente */
 .nav-header--transparent .nav-logo-hero {
     opacity: 1;
@@ -2289,11 +2282,14 @@ footer {
 /* Logo del nav-container */
 .nav-logo-wrapper {
     opacity: 0;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center; /* centra verticalmente el svg dentro */
 }
 
-.nav-logo-wrapper .nav-logo {
-    height: 44px;
-    /* mantener coherente con la regla global */
+/* En admin, el enlace del logo tampoco se encoge */
+.nav-logo-link {
+    flex-shrink: 0;
 }
 
 /* Ocultar logo del nav-container en modo transparente */
@@ -2329,3 +2325,63 @@ body.sn-has-fixed-header.sn-hero-mode {
     padding-top: 0 !important;
 }
 
+
+/* ==== TAMAÑOS FINALES DEL LOGO  ==== */
+
+/* Logo normal del header (público + admin) */
+header .nav-logo {
+    height: 40px !important;   /* tamaño en escritorio grande */
+    width: auto !important;
+}
+
+/* Logo grande del hero (el que flota sobre la foto) */
+.nav-logo-hero .nav-logo {
+    height: 80px !important;
+    width: auto !important;
+}
+
+/* Ajustes responsivos: a medida que baja el ancho, un pelín más pequeño */
+@media (min-width: 768px) and  (max-width: 1200px) {
+    header .nav-logo {
+        height: 35px !important;
+    }
+
+    .nav-logo-hero .nav-logo {
+        height: 70px !important;
+    }
+}
+
+@media (max-width: 767px) {
+    header .nav-logo {
+        height: 32px !important;
+    }
+
+    .nav-logo-hero .nav-logo {
+        height: 64px !important;
+    }
+}
+
+/* Ajustes menú */
+
+@media (min-width: 768px) and (max-width: 1200px) {
+      
+    .nav-menu {
+        gap: var(--spacing-lg); /* antes xl → un poco menos separación */
+    }
+
+    .nav-link {
+        padding: var(--spacing-xs) var(--spacing-sm); /* menos padding horizontal */
+        font-size: 1rem;                           /* un pelín más pequeño */
+    }
+
+    .nav-actions {
+        gap: var(--spacing-sm); /* acercar Login al resto un poco */
+    }
+}
+
+
+@media (min-width: 768px) and (max-width: 1500px) {
+    .nav-container {
+        padding-right: calc(var(--spacing-xl) * 1.3);  /* mueve menú + login a la izquierda */
+    }
+}
