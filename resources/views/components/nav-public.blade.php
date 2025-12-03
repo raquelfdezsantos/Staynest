@@ -47,6 +47,14 @@
                     <li><a href="{{ route('home') }}"
                             class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Inicio</a></li>
                 @endif
+                
+                {{-- Login para móvil (solo visible en hamburguesa) --}}
+                @guest
+                    <li class="nav-menu-login-mobile">
+                        <a href="{{ route('login') }}{{ $property ? '?property=' . $property->slug : '' }}"
+                            class="nav-link {{ request()->routeIs('login') ? 'active' : '' }}">Login</a>
+                    </li>
+                @endguest
             </ul>
 
             {{-- Acciones de usuario --}}

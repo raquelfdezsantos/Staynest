@@ -743,6 +743,11 @@ html[data-theme="light"] .nav-header--transparent {
     list-style: none;
 }
 
+/* Ocultar login móvil en desktop */
+.nav-menu-login-mobile {
+    display: none;
+}
+
 .nav-link {
     font-family: var(--font-sans);
     font-size: var(--text-base);
@@ -1960,6 +1965,16 @@ body.sn-hero-mode .sn-hero--flush-top {
         bottom: 2px;
         width: 24px;
         height: 2px;
+    }
+
+    /* Mostrar login móvil solo en hamburguesa */
+    .nav-menu-login-mobile {
+        display: block !important;
+    }
+
+    /* Ocultar login de desktop en móvil */
+    .nav-actions > a[href*="login"] {
+        display: none !important;
     }
 
     /* Dropdown de usuario en móvil */
