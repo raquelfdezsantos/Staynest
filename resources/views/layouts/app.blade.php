@@ -172,8 +172,7 @@
             </div>
 
             {{-- Crédito --}}
-            <div
-                style="margin-top:var(--spacing-xl); padding-top:var(--spacing-md); border-top:1px solid var(--color-border-light); text-align:center;">
+            <div class="footer-credit-block">
                 <p style="font-size:var(--text-xs); color:var(--color-text-muted);">
                     Desarrollado por <span style="font-weight:500; color:var(--color-text-secondary);">Raquel Fernández
                         Santos</span> ·

@@ -2218,17 +2218,27 @@ footer {
 
 @media (max-width: 480px) {
     .footer-cookie-inner {
-        display: inline-block;       /* dejamos de usar flex */
+        display: inline-block;       
         max-width: 100%;
-        text-align: center;          /* texto centrado */
+        text-align: center;         
     }
 
     .footer-cookie-icon {
-        display: inline-block;       /* el icono se comporta como texto */
+        display: inline-block;     
         margin-right: 4px;
-        vertical-align: middle;      /* alinea mejor con la primera línea de texto */
+        vertical-align: middle;      
     }
 }
+
+
+/* LÍNEA DIVISORIA FOOTER */
+.footer-credit-block {
+    margin-top: var(--spacing-sm);   
+    padding-top: var(--spacing-md); 
+    border-top: 1px solid var(--color-border-light);
+    text-align: center;
+}
+
 
 
 /* ============================================================================
