@@ -2257,7 +2257,7 @@ footer {
 
 
 
-/* ============================================================================
+/* ============================================================================  
    HEADER CON LOGO ANIMADO (Hero Mode)
    ============================================================================ */
 
@@ -2275,13 +2275,13 @@ footer {
     line-height: 0;
 }
 
-/* Logo grande del hero (fuera del nav-container) */
+/* --- POSICIÓN DEL LOGO DEL HERO (MISMA FILOSOFÍA QUE TENÍAS) --- */
 .nav-logo-hero {
     position: absolute;
-    top: 15vh;
-    left: 8cm;
+    top: 18vh;                             /* altura base */
+    left: clamp(2.25rem, 12vw, 7rem);      /* nunca pegado, nunca demasiado lejos */
     z-index: 1001;
-    opacity: 0;
+    opacity: 0;                            /* solo visible en header transparente */
 }
 
 /* Mostrar logo hero solo en modo transparente */
@@ -2294,12 +2294,12 @@ footer {
     pointer-events: none;
 }
 
-/* Logo del nav-container */
+/* Logo del nav-container (header sólido) */
 .nav-logo-wrapper {
     opacity: 0;
     flex-shrink: 0;
     display: flex;
-    align-items: center; /* centra verticalmente el svg dentro */
+    align-items: center;
 }
 
 /* En admin, el enlace del logo tampoco se encoge */
@@ -2340,43 +2340,78 @@ body.sn-has-fixed-header.sn-hero-mode {
     padding-top: 0 !important;
 }
 
-
-/* ==== TAMAÑOS FINALES DEL LOGO  ==== */
+/* ============================================================================  
+   TAMAÑOS FINALES DEL LOGO (HEADER + HERO)
+   ============================================================================ */
 
 /* Logo normal del header (público + admin) */
 header .nav-logo {
-    height: 40px !important;   /* tamaño en escritorio grande */
-    width: auto !important;
+    height: 40px;
+    width: auto;
 }
 
-/* Logo grande del hero (el que flota sobre la foto) */
+/* Logo grande del hero (desktop base) */
 .nav-logo-hero .nav-logo {
-    height: 80px !important;
-    width: auto !important;
+    display: block;
+    height: 80px;
+    width: auto;
 }
 
-/* Ajustes responsivos: a medida que baja el ancho, un pelín más pequeño */
-@media (min-width: 768px) and  (max-width: 1200px) {
+/* --------- BREAKPOINTS SOLO PARA TAMAÑOS --------- */
+
+/* Pantallas grandes (≥ 1400px): alinear el logo exactamente al contenedor */
+@media (min-width: 1350px) {
+
+    .nav-logo-hero {
+        left: calc((100vw - 1400px) / 2 + 7rem);
+        /* 2.25rem = mismo margen que usas en el resto */
+    }
+}
+
+/* Hasta 1400px: portátiles / tablets paisaje */
+@media (max-width: 1350px) {
     header .nav-logo {
-        height: 35px !important;
+        height: 35px;
     }
 
     .nav-logo-hero .nav-logo {
-        height: 70px !important;
+        height: 72px;
     }
 }
 
+/* Móviles y tablets pequeñas (≤ 767px) */
 @media (max-width: 767px) {
+    .nav-logo-hero {
+        top: 20vh;              /* un pelín más abajo para que respire respecto al header */
+        /* left se mantiene con el clamp de arriba */
+    }
+
     header .nav-logo {
-        height: 32px !important;
+        height: 32px;
     }
 
     .nav-logo-hero .nav-logo {
-        height: 64px !important;
+        height: 64px;
+        max-width: 80vw;        /* por si acaso en pantallas muy estrechas */
     }
 }
 
+/* Móviles muy pequeños (≤ 500px) */
+@media (max-width: 500px) {
+    .nav-logo-hero {
+        top: 21vh;
+    }
+
+    .nav-logo-hero .nav-logo {
+        height: 56px;
+    }
+}
+
+
+
+/* ************************************ */
 /* Ajustes menú */
+/* ************************************ */
 
 @media (min-width: 768px) and (max-width: 1200px) {
       

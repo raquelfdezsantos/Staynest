@@ -10,7 +10,7 @@
     data-sn-transparent="{{ $transparent ? '1' : '0' }}" style="border-bottom: {{ $initialBorder }};">
 
     {{-- Logo grande en hero (solo visible en modo transparente) --}}
-    <div class="nav-logo-hero" style="transform: translate(-90px, 30px);">
+    <div class="nav-logo-hero">
         <a href="{{ $property ? route('properties.show', $property) : route('home') }}">
             <x-logo />
         </a>
@@ -320,8 +320,13 @@
         });
         
         window.addEventListener('resize', function () {
-            updateHeaderMode();
-            setTimeout(updateHeaderMode, 100);
+            const IS_TRANSPARENT_PAGE = @json(request()->routeIs('home') || request()->routeIs('properties.show'));
+
+            if (!IS_TRANSPARENT_PAGE) {
+                // Páginas normales: aquí sí queremos recalcular el modo sólido
+                updateHeaderMode();
+                setTimeout(updateHeaderMode, 100);
+            }
         });
     })();
 </script>
