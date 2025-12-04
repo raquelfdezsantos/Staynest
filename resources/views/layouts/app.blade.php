@@ -21,27 +21,7 @@
     <!-- Staynest Styles (después para que no sobrescriba responsive de Tailwind) -->
     <link rel="stylesheet" href="{{ asset('css/staynest.css') }}">
 
-    <script>
-        // Pre-cálculo temprano del ancho de scrollbar (solo si hay scroll vertical)
-        (function () {
-            function setSW() {
-                var docEl = document.documentElement;
-                var hasVScroll = (docEl.scrollHeight - 1) > window.innerHeight;
-                var swMeasured = window.innerWidth - docEl.clientWidth;
-                var prev = parseInt(getComputedStyle(docEl).getPropertyValue('--sn-scrollbar-w')) || 0;
-                var sw = 0;
-                if (hasVScroll) {
-                    sw = swMeasured >= 8 ? swMeasured : (prev > 0 ? prev : 14);
-                } else {
-                    sw = 0;
-                }
-                docEl.style.setProperty('--sn-scrollbar-w', sw + 'px');
-            }
-            setSW();
-            window.addEventListener('load', function () { setSW(); setTimeout(setSW, 200); setTimeout(setSW, 800); });
-            window.addEventListener('resize', function () { setSW(); setTimeout(setSW, 100); });
-        })();
-    </script>
+
 </head>
 
 <body>

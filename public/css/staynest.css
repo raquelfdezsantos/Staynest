@@ -154,6 +154,9 @@
     /* Radio estándar para elementos interactivos y contenedores
          (igual que la galería: 2px) */
     --radius-base: 2px;
+
+    /* SCROLLBAR */
+    
     /* Fallback de ancho de scrollbar (Windows clásico aprox 14px) */
     --sn-scrollbar-fallback: 14px;
 }
@@ -622,17 +625,39 @@ input[type="checkbox"]:not(.sn-auth input[type="checkbox"]):hover {
    ============================================================================ */
 
 .nav-header {
-    /* Fondo a ancho visual completo y recorte antes de la scrollbar (fallback fijo) */
+    /* Fondo a ancho visual completo y recorte antes de la scrollbar */
     position: fixed;
     top: 0;
     left: 0;
-    right: 10px;
+    right: 0; /* Sin compensación por defecto (scrollbar overlay en móviles) */
     z-index: 1000;
     background-color: var(--color-bg-primary);
     border-bottom: 1px solid var(--color-border-light);
     transition: background-color var(--transition-base), border-color var(--transition-base);
 }
 
+/* SCROLLBAR */
+
+/* Tablets: scrollbar pequeña */
+@media (min-width: 641px) and (max-width: 900px) {
+    .nav-header {
+        right: 4px;
+    }
+}
+
+/* Desktop: scrollbar estándar */
+@media (min-width: 901px) {
+    .nav-header {
+        right: 10px;
+    }
+}
+
+/* Móviles: scrollbar más pequeña */
+@media (max-width: 640px) {
+    .nav-header {
+        right: 5px;
+    }
+}
 
 /* El body se desplaza hacia abajo según la altura real del header */
 body.sn-has-fixed-header {
@@ -2433,5 +2458,27 @@ header .nav-logo {
 @media (min-width: 768px) and (max-width: 1500px) {
     .nav-container {
         padding-right: calc(var(--spacing-xl) * 1.3);  /* mueve menú + login a la izquierda */
+    }
+}
+
+/* ============================================================================
+   TIPOGRAFÍA RESPONSIVE GLOBAL
+   ============================================================================ */
+/* Tamaño base "normal" */
+:root {
+    font-size: 16px;
+}
+
+/* Pantallas grandes (tele, 1600px en adelante) */
+@media (min-width: 1600px) {
+    :root {
+        font-size: 17px;   /* +6% aprox */
+    }
+}
+
+/* Pantallas MUY grandes (tele 4K, 2200px en adelante) */
+@media (min-width: 2200px) {
+    :root {
+        font-size: 18px;   /* +12–15% respecto a 16px */
     }
 }
