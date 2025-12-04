@@ -1959,6 +1959,8 @@ body.sn-hero-mode .sn-hero--flush-top {
         top: 100%;
         right: calc(var(--spacing-xl) + 44px);
         min-width: 200px;
+        max-width: 280px;
+        width: max-content;
         background: var(--color-bg-primary);
         border: 1px solid var(--color-border-light);
         border-radius: 4px;
@@ -2038,6 +2040,13 @@ body.sn-hero-mode .sn-hero--flush-top {
 
     .nav-header .theme-toggle--corner {
         right: calc(var(--spacing-xl) + var(--sn-scrollbar-w, var(--sn-scrollbar-fallback))) !important;
+    }
+}
+
+/* Tablets: reducir espacios entre botones del dropdown */
+@media (min-width: 641px) and (max-width: 900px) {
+    .nav-menu li + li {
+        margin-top: -15px !important;
     }
 }
 
