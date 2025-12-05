@@ -46,7 +46,8 @@
         if($pt>0) $parts[] = $pt.' '.($pt===1?'mascota':'mascotas');
     @endphp
 
-    <div class="invoice-page max-w-5xl mx-auto px-4 py-10">
+    <div class="invoice-page max-w-5xl mx-auto px-4 py-10" style="overflow-x: hidden; width: 100%;">
+
         {{-- Header centrado --}}
         <header class="mb-16 text-center">
             <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">
@@ -71,11 +72,11 @@
             @endif
         </header>
 
-        <div class="grid md:grid-cols-3 gap-6 mb-10">
+        <div class="invoice-detail-grid grid md:grid-cols-3 gap-6 mb-10">
             <div class="md:col-span-2 space-y-6">
                 <section class="invoice-card p-6" style="border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.8); backdrop-filter: blur(10px);">
                     <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary); margin:0 0 1rem; text-transform: uppercase; letter-spacing:0.05em;">Datos</h2>
-                    <div class="grid sm:grid-cols-2 gap-5 text-sm">
+                    <div class="invoice-data-grid grid sm:grid-cols-2 gap-5 text-sm">
                         <div>
                             <p class="mb-3" style="font-size: var(--text-base); color: var(--color-text-primary); font-weight: 500;">Cliente</p>
                             <div class="text-sm" style="color: var(--color-text-secondary);">
@@ -104,7 +105,9 @@
 
                 <section class="invoice-card p-6" style="border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.8); backdrop-filter: blur(10px);">
                     <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary); margin:0 0 1rem; text-transform: uppercase; letter-spacing:0.05em;">Resumen</h2>
-                    <div class="overflow-hidden text-sm">
+                    
+                    {{-- Tabla para desktop --}}
+                    <div class="invoice-summary-table overflow-hidden text-sm">
                          <table class="w-full text-sm" style="border-collapse: collapse;">
                             <thead>
                                 <tr class="text-center">
@@ -178,9 +181,97 @@
                                 </tr>
                             </tfoot>
                         </table>
-                        
+                    </div>
+
+                    {{-- Cards para móvil/tablet --}}
+                    <div class="invoice-summary-cards" style="display: none;">
+                        <div style="background: rgba(var(--color-bg-card-rgb), 0.5); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem;">
+                            <div style="margin-bottom: 1rem;">
+                                <div style="color: var(--color-text-primary); font-weight: 500; margin-bottom: 0.25rem;">Reserva {{ $res->code }}</div>
+                                <div style="color: var(--color-text-primary); font-weight: 500;">{{ $res->property->name }}</div>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: var(--text-sm);">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--color-text-secondary);">Fechas:</span>
+                                    <span style="color: var(--color-text-secondary); text-align: right;">{{ $displayCheckIn->format('d/m/Y') }} &rarr; {{ $displayCheckOut->format('d/m/Y') }}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--color-text-secondary);">Huéspedes:</span>
+                                    <span style="color: var(--color-text-secondary); text-align: right;">
+                                        @if(count($parts))
+                                            {{ implode(', ',$parts) }} (total: {{ $displayGuests }})
+                                        @else
+                                            {{ $displayGuests }} {{ $displayGuests === 1 ? 'huésped' : 'huéspedes' }}
+                                        @endif
+                                    </span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid rgba(var(--color-border-rgb), 0.1);">
+                                    <span style="color: var(--color-text-secondary); font-weight: 500;">Importe:</span>
+                                    <span style="color: var(--color-text-secondary); font-weight: 600;">{{ number_format($displayAmount, 2, ',', '.') }} €</span>
+                                </div>
+                            </div>
                         </div>
-                    </section>
+
+                        @if($isRect && !empty($invoice->details['new_check_in']))
+                        <div style="background: rgba(var(--color-bg-card-rgb), 0.5); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-sm); padding: 1rem; margin-bottom: 1rem;">
+                            <div style="color: var(--color-text-secondary); font-weight: 500; margin-bottom: 0.75rem;">Cambios aplicados</div>
+                            <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: var(--text-sm);">
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--color-text-secondary);">Nuevas fechas:</span>
+                                    <span style="color: var(--color-text-secondary); text-align: right;">
+                                        @if($invoice->details['previous_check_in'] !== $invoice->details['new_check_in'] || $invoice->details['previous_check_out'] !== $invoice->details['new_check_out'])
+                                            {{ \Carbon\Carbon::parse($invoice->details['new_check_in'])->format('d/m/Y') }} &rarr; {{ \Carbon\Carbon::parse($invoice->details['new_check_out'])->format('d/m/Y') }}
+                                        @else
+                                            —
+                                        @endif
+                                    </span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span style="color: var(--color-text-secondary);">Nuevos huéspedes:</span>
+                                    <span style="color: var(--color-text-secondary); text-align: right;">
+                                        @php
+                                            $newAdults = (int)($invoice->details['new_adults'] ?? 0);
+                                            $newChildren = (int)($invoice->details['new_children'] ?? 0);
+                                            $newPets = (int)($invoice->details['new_pets'] ?? 0);
+                                            $newGuests = (int)($invoice->details['new_guests'] ?? 0);
+                                            $guestsChanged = ($displayAdults !== $newAdults || $displayChildren !== $newChildren || $displayPets !== $newPets);
+                                            
+                                            $newParts = [];
+                                            if($newAdults>0) $newParts[] = $newAdults.' '.($newAdults===1?'adulto':'adultos');
+                                            if($newChildren>0) $newParts[] = $newChildren.' '.($newChildren===1?'niño':'niños');
+                                            if($newPets>0) $newParts[] = $newPets.' '.($newPets===1?'mascota':'mascotas');
+                                        @endphp
+                                        @if($guestsChanged)
+                                            @if(count($newParts))
+                                                {{ implode(', ', $newParts) }} (total: {{ $newGuests }})
+                                            @else
+                                                {{ $newGuests }} {{ $newGuests === 1 ? 'huésped' : 'huéspedes' }}
+                                            @endif
+                                        @else
+                                            —
+                                        @endif
+                                    </span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding-top: 0.5rem; border-top: 1px solid rgba(var(--color-border-rgb), 0.1);">
+                                    <span style="color: var(--color-text-secondary); font-weight: 500;">Diferencia:</span>
+                                    <span style="font-weight: 600; color: {{ $invoice->amount < 0 ? '#dc3545' : '#28a745' }};">
+                                        {{ $invoice->amount < 0 ? '-' : '+' }}{{ number_format(abs($invoice->details['difference'] ?? $invoice->amount), 2, ',', '.') }} €
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                        <div style="background: rgba(var(--color-accent-rgb), 0.1); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-sm); padding: 1rem;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: var(--color-text-primary); font-weight: 600; font-size: var(--text-lg);">Total</span>
+                                <span style="color: var(--color-text-primary); font-weight: 700; font-size: var(--text-xl);">
+                                    {{ number_format($isRect && !empty($invoice->details['new_total']) ? $invoice->details['new_total'] : $invoice->amount, 2, ',', '.') }} €
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 @if($res->notes)
                 <section class="invoice-card p-6" style="border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.8); backdrop-filter: blur(10px);">
@@ -229,6 +320,56 @@
             }
             .invoice-actions .btn-action::first-letter {
                 text-transform: uppercase !important;
+            }
+
+            /* Evitar desbordamiento en todos los tamaños */
+            .invoice-page {
+                overflow-x: hidden;
+            }
+            
+            .invoice-card,
+            .invoice-card * {
+                max-width: 100%;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+            }
+            
+            .invoice-card div {
+                min-width: 0;
+            }
+
+            /* Responsive: mostrar tabla en desktop, cards en móvil/tablet */
+            @media (min-width: 769px) {
+                .invoice-summary-table {
+                    display: block !important;
+                }
+                .invoice-summary-cards {
+                    display: none !important;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .invoice-summary-table {
+                    display: none !important;
+                }
+                .invoice-summary-cards {
+                    display: block !important;
+                }
+                
+                /* Layout de una columna en móvil */
+                .invoice-detail-grid {
+                    grid-template-columns: 1fr !important;
+                }
+                
+                /* Datos en una columna también */
+                .invoice-data-grid {
+                    grid-template-columns: 1fr !important;
+                }
+                
+                /* Reducir padding en cards pequeñas */
+                .invoice-card {
+                    padding: 1rem !important;
+                }
             }
         </style>
     </div>
