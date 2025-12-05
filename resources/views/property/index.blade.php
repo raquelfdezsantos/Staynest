@@ -18,9 +18,15 @@
                     <div class="bg-white rounded-xl shadow p-4">
                         {{-- ENLACE A LA FICHA --}}
                         <a href="{{ route('properties.show', $p->slug) }}">
-                            @if($p->photos->count()) 
+                            @if($p->photos->count())
+                                @php
+                                    $firstPhoto = $p->photos->sortBy('sort_order')->first();
+                                    $photoUrl = str_starts_with($firstPhoto->url, 'http') 
+                                        ? $firstPhoto->url 
+                                        : asset('storage/' . ltrim($firstPhoto->url, '/'));
+                                @endphp
                                 <img
-                                    src="{{ $p->photos->sortBy('sort_order')->first()->url }}"
+                                    src="{{ $photoUrl }}"
                                     alt="{{ $p->name ?? $p->title }}"
                                     class="rounded-lg w-full h-40 object-cover mb-3"
                                 >

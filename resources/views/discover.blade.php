@@ -116,7 +116,13 @@
                         <div class="bg-neutral-800 overflow-hidden transition-all duration-300 h-full flex flex-col" style="border-radius: var(--radius-base); border: 1px solid transparent;" onmouseenter="this.style.borderColor='var(--color-accent)'" onmouseleave="this.style.borderColor='transparent'">
                             @if($property->photos->isNotEmpty())
                                 <div class="aspect-video relative overflow-hidden">
-                                    <img src="{{ $property->photos->first()->url }}" 
+                                    @php
+                                        $firstPhoto = $property->photos->first();
+                                        $photoUrl = str_starts_with($firstPhoto->url, 'http') 
+                                            ? $firstPhoto->url 
+                                            : asset('storage/' . ltrim($firstPhoto->url, '/'));
+                                    @endphp
+                                    <img src="{{ $photoUrl }}" 
                                          alt="{{ $property->name }}"
                                          class="w-full h-full object-cover">
                                 </div>

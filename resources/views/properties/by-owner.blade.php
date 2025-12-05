@@ -25,7 +25,13 @@
                         
                         @if($property->photos->isNotEmpty())
                             <div class="aspect-video relative overflow-hidden">
-                                <img src="{{ $property->photos->first()->url }}" 
+                                @php
+                                    $firstPhoto = $property->photos->first();
+                                    $photoUrl = str_starts_with($firstPhoto->url, 'http') 
+                                        ? $firstPhoto->url 
+                                        : asset('storage/' . ltrim($firstPhoto->url, '/'));
+                                @endphp
+                                <img src="{{ $photoUrl }}" 
                                      alt="{{ $property->name }}"
                                      class="w-full h-full object-cover">
                             </div>
