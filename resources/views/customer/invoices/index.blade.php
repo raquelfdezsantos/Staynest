@@ -50,8 +50,8 @@
                 </a>
             </div>
         @else
-            {{-- Tabla de facturas con glassmorphism --}}
-            <div style="overflow: hidden; margin-top: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px);">
+            {{-- Tabla de facturas en desktop --}}
+            <div class="invoices-table" style="overflow: hidden; margin-top: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px);">
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse; font-size: var(--text-base); background: transparent;">
                         <thead style="border-bottom: 2px solid var(--color-border-light); background: transparent;">
@@ -145,6 +145,77 @@
                     </div>
                 @endif
             </div>
+
+            {{-- Cards de facturas en móvil y tablets --}}
+            <div class="invoices-cards" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 2rem;">
+                @foreach($invoices as $inv)
+                    <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
+                        {{-- Header --}}
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border-light);">
+                            <div>
+                                <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin: 0; font-family: monospace; font-weight: 600;">{{ $inv->number }}</p>
+                                @if($inv->amount < 0 || str_starts_with($inv->number, 'RECT-'))
+                                    <p style="font-size: var(--text-xs); color: var(--color-text-muted); margin: 0; font-style: italic;">Rectificativa</p>
+                                @endif
+                            </div>
+                            <div>
+                                @php($statusCard = strtolower($inv->reservation->status ?? ''))
+                                @if($statusCard === 'paid')
+                                    <span class="badge badge-success">Pagada</span>
+                                @elseif($statusCard === 'cancelled')
+                                    <span class="badge badge-error">Cancelada</span>
+                                @elseif($statusCard === 'pending')
+                                    <span class="badge badge-warning">Pendiente</span>
+                                @else
+                                    <span class="badge badge-info">{{ ucfirst($inv->reservation->status ?? '—') }}</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- Detalles --}}
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem;">
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Fecha:</span>
+                                <span style="color: var(--color-text-primary); font-weight: 500;">{{ optional($inv->issued_at)->format('d/m/Y') }}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Alojamiento:</span>
+                                <span style="color: var(--color-text-primary); font-weight: 500; text-align: right;">{{ $inv->reservation->property->name ?? '—' }}</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between;">
+                                <span style="color: var(--color-text-secondary); font-size: var(--text-sm);">Estancia:</span>
+                                <span style="color: var(--color-text-primary); font-size: var(--text-sm); text-align: right;">
+                                    {{ optional($inv->reservation->check_in)->format('d/m/Y') }} &rarr; {{ optional($inv->reservation->check_out)->format('d/m/Y') }}
+                                </span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding-top: 0.75rem; border-top: 1px solid var(--color-border-light);">
+                                <span style="color: var(--color-text-secondary); font-weight: 600;">Importe:</span>
+                                <span style="color: var(--color-accent); font-weight: 700; font-size: var(--text-xl);">
+                                    @php($isRectCard = ($inv->amount < 0 || str_starts_with($inv->number, 'RECT-')))
+                                    @if($isRectCard && is_array($inv->details))
+                                        {{ number_format(($inv->details['new_total'] ?? ($inv->reservation->total_price ?? 0)), 2, ',', '.') }} €
+                                    @else
+                                        {{ number_format($inv->amount, 2, ',', '.') }} €
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- Acciones --}}
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <a href="{{ route('invoices.show', $inv->number) }}" class="btn-action btn-action-secondary" style="flex: 1;"><span class="sn-sentence">Ver</span></a>
+                            <a href="{{ route('invoices.show', $inv->number) }}?download=1" class="btn-action btn-action-primary" style="flex: 1;"><span class="sn-uppercase">PDF</span></a>
+                        </div>
+                    </div>
+                @endforeach
+
+                {{-- Paginación para móvil --}}
+                @if($invoices->hasPages())
+                    <div style="margin-top: 1rem;">
+                        {{ $invoices->links() }}
+                    </div>
+                @endif
+            </div>
         @endif
     </div>
 
@@ -155,6 +226,25 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+        }
+
+        /* Mostrar tabla en desktop, cards en móvil/tablet */
+        @media (min-width: 769px) {
+            .invoices-table {
+                display: block !important;
+            }
+            .invoices-cards {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .invoices-table {
+                display: none !important;
+            }
+            .invoices-cards {
+                display: flex !important;
+            }
         }
     </style>
 </x-app-layout>
