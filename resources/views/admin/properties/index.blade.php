@@ -31,7 +31,7 @@
         </div>
 
         {{-- Grid de propiedades --}}
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        <div class="properties-grid">
             @forelse($properties as $property)
                 <div style="border: 1px solid var(--color-border-light); border-radius: 2px; overflow: hidden; transition: border-color var(--transition-fast); background-color: var(--color-bg-primary);" class="property-card-hover">
                     {{-- Foto de portada --}}
@@ -130,7 +130,7 @@
                                 La propiedad "{{ $property->name }}" volverá a estar activa y visible en tu listado.
                             </p>
 
-                            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                            <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                                 <button type="button"
                                         @click="$dispatch('close-modal', 'confirm-restore-{{ $property->id }}')"
                                         class="btn-action btn-action-secondary"
@@ -197,6 +197,97 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+        }
+
+        /* Grid de propiedades */
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Responsive - Móviles y tablets */
+        @media (max-width: 768px) {
+            .properties-grid {
+                grid-template-columns: minmax(min(280px, 100%), 1fr);
+                gap: 1.25rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sn-reservar {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+                padding-top: 2rem !important;
+            }
+
+            .sn-reservar header {
+                margin-bottom: 2rem !important;
+            }
+
+            .sn-reservar header h1 {
+                font-size: 1.75rem !important;
+            }
+
+            .sn-reservar header p {
+                font-size: 0.9375rem !important;
+            }
+
+            .properties-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .btn-action {
+                height: 34px;
+                min-height: 34px;
+                font-size: 0.875rem;
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+
+            .btn-action svg {
+                width: 0.875rem !important;
+                height: 0.875rem !important;
+            }
+
+            .btn-action span {
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .btn-action {
+                font-size: 0.8125rem;
+                padding-left: 0.625rem;
+                padding-right: 0.625rem;
+            }
+
+            .btn-action span {
+                font-size: 0.8125rem;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .sn-reservar header h1 {
+                font-size: 1.5rem !important;
+            }
+
+            .sn-reservar header p {
+                font-size: 0.875rem !important;
+            }
+        }
+
+        /* Modal responsive */
+        @media (max-width: 480px) {
+            .modal-buttons {
+                flex-direction: column !important;
+                gap: 0.5rem !important;
+            }
+
+            .modal-buttons button {
+                width: 100% !important;
+            }
         }
     </style>
 </x-app-layout>
