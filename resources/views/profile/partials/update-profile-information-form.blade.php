@@ -92,12 +92,12 @@
         {{-- Dirección fiscal --}}
         <div>
             <x-input-label for="address" value="Dirección (facturación)" />
-            <x-text-input id="address"
-                          name="address"
-                          type="text"
-                          class="block mt-1 w-full"
-                          :value="old('address', $user->address)"
-                          autocomplete="street-address" />
+            <textarea id="address"
+                      name="address"
+                      rows="2"
+                      class="sn-input w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-1 ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)] placeholder:text-neutral-400"
+                      style="resize: vertical; min-height: 60px;"
+                      autocomplete="street-address">{{ old('address', $user->address) }}</textarea>
             <p style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top:0.25rem;">Incluye calle, número, localidad y código postal para la factura.</p>
         </div>
 
