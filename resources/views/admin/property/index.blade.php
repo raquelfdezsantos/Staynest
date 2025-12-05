@@ -29,6 +29,24 @@
             .sn-checkbox {
                 width: 1rem;
                 height: 1rem;
+            }
+            
+            /* Botones de modales responsive */
+            @media (max-width: 480px) {
+                .modal-buttons {
+                    flex-direction: column !important;
+                    width: 100%;
+                }
+                .modal-buttons > button,
+                .modal-buttons > a {
+                    width: 100% !important;
+                }
+            }
+        </style>
+        <style>
+            .sn-checkbox {
+                width: 1rem;
+                height: 1rem;
                 border-radius: 2px;
                 border: 1px solid var(--color-border-light);
                 background: var(--color-bg-elevated);
@@ -283,13 +301,13 @@
                 {{-- Dirección --}}
                 <div>
                     <x-input-label for="address" value="Dirección" />
-                    <x-text-input 
+                    <textarea 
                         id="address"
                         name="address" 
-                        class="block mt-1 w-full"
-                        :value="old('address', $property->address)"
+                        rows="2"
                         maxlength="200"
-                    />
+                        class="sn-input block mt-1 w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-1 ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)] placeholder:text-neutral-400"
+                        style="resize: vertical; min-height: 60px;">{{ old('address', $property->address) }}</textarea>
                 </div>
 
                 {{-- Ciudad --}}
@@ -348,28 +366,28 @@
                 {{-- Licencia turística --}}
                 <div>
                     <x-input-label for="tourism_license" value="Nº Licencia Turística" />
-                    <x-text-input 
+                    <textarea 
                         id="tourism_license"
                         name="tourism_license" 
-                        class="block mt-1 w-full"
-                        :value="old('tourism_license', $property->tourism_license)"
+                        rows="2"
                         maxlength="100"
                         placeholder="VT-28-0001234"
-                    />
+                        class="sn-input block mt-1 w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-1 ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)] placeholder:text-neutral-400"
+                        style="resize: vertical; min-height: 60px;">{{ old('tourism_license', $property->tourism_license) }}</textarea>
                     <p class="form-hint">Número de licencia turística oficial</p>
                 </div>
 
                 {{-- Registro de alquiler --}}
                 <div>
                     <x-input-label for="rental_registration" value="Nº Registro de Alquiler" />
-                    <x-text-input 
+                    <textarea 
                         id="rental_registration"
                         name="rental_registration" 
-                        class="block mt-1 w-full"
-                        :value="old('rental_registration', $property->rental_registration)"
+                        rows="2"
                         maxlength="100"
                         placeholder="ATR-28-001234-2024"
-                    />
+                        class="sn-input block mt-1 w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100 shadow-sm focus:outline-none focus:ring-1 ring-offset-0 focus:ring-[color:var(--color-accent)] focus:border-[color:var(--color-accent)] placeholder:text-neutral-400"
+                        style="resize: vertical; min-height: 60px;">{{ old('rental_registration', $property->rental_registration) }}</textarea>
                     <p class="form-hint">Número de registro único de alquiler</p>
                 </div>
 
@@ -439,7 +457,7 @@
                         <p style="margin-bottom: 1.5rem; font-size: var(--text-sm); color: var(--color-text-secondary);">
                             ¿Estás SEGURO de que quieres continuar?
                         </p>
-                        <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                        <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                             <button type="button"
                                     x-on:click="$dispatch('close-modal', 'confirm-delete-property')"
                                     class="btn-action btn-action-secondary sn-sentence"
