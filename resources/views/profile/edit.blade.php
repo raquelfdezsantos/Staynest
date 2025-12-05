@@ -1,15 +1,16 @@
 <x-app-layout>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <style>
-        html[data-theme="dark"] .profile-card {
-            background: rgba(51, 51, 51, 0.2) !important;
-        }
+    <div class="max-w-5xl mx-auto px-4 py-10">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <style>
+            html[data-theme="dark"] .profile-card {
+                background: rgba(51, 51, 51, 0.2) !important;
+            }
 
-        html[data-theme="light"] .profile-card {
-            background: #e3e3e3 !important;
-        }
+            html[data-theme="light"] .profile-card {
+                background: #e3e3e3 !important;
+            }
 
-        /* Calendario Flatpickr - Modo Oscuro */
+            /* Calendario Flatpickr - Modo Oscuro */
         html[data-theme="dark"] .flatpickr-calendar {
             background: rgb(38, 38, 38);
             border: 1px solid var(--color-border-light);
@@ -107,9 +108,8 @@
         .flatpickr-day.nextMonthDay {
             opacity: 0.4 !important;
         }
-    </style>
+        </style>
 
-    <div class="max-w-5xl mx-auto px-4 py-10">
         {{-- Header centrado --}}
         <header class="mb-16 text-center">
             <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Mi perfil</h1>

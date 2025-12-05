@@ -1,8 +1,9 @@
 <x-guest-layout>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <style>
-        /* Calendario Flatpickr - Modo Oscuro */
-        html[data-theme="dark"] .flatpickr-calendar {
+    <div>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <style>
+            /* Calendario Flatpickr - Modo Oscuro */
+            html[data-theme="dark"] .flatpickr-calendar {
             background: rgb(38, 38, 38);
             border: 1px solid var(--color-border-light);
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
@@ -99,10 +100,10 @@
         .flatpickr-day.nextMonthDay {
             opacity: 0.4 !important;
         }
-    </style>
-    
-    <header class="mb-10 text-center">
-        <h1 class="text-4xl font-serif mb-4">Crear cuenta de Huésped</h1>
+        </style>
+        
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-serif mb-4">Crear cuenta de Huésped</h1>
         <p class="text-neutral-300">Completa el formulario para registrarte como huésped.</p>
     </header>
 
@@ -182,4 +183,5 @@
             });
         });
     </script>
+    </div>
 </x-guest-layout>
