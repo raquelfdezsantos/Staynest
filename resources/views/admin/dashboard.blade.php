@@ -83,6 +83,39 @@
             .admin-slim-badges .badge-error { color: var(--color-text-primary); }
             .admin-slim-badges .badge-warning { color: var(--color-text-primary); }
             .admin-slim-badges .badge-info { color: var(--color-text-primary); }
+            
+            /* Responsive: ocultar tabla y mostrar cards en móvil/tablet */
+            @media (max-width: 768px) {
+                .reservations-table {
+                    display: none !important;
+                }
+                .reservations-cards {
+                    display: flex !important;
+                    flex-direction: column;
+                }
+            }
+            
+            /* Próximos check-in: layout vertical en móviles pequeños */
+            @media (max-width: 440px) {
+                .upcoming-checkin-card {
+                    flex-direction: column !important;
+                    align-items: flex-start !important;
+                }
+                .upcoming-checkin-card > div:first-child {
+                    width: 100%;
+                }
+                .upcoming-checkin-badge {
+                    margin-top: 0.5rem;
+                    align-self: flex-start;
+                }
+                .upcoming-checkin-actions {
+                    flex-direction: column !important;
+                    width: 100%;
+                }
+                .upcoming-checkin-actions > * {
+                    width: 100%;
+                }
+            }
         </style>
         
         {{-- Header centrado como otras páginas públicas --}}
@@ -151,17 +184,39 @@
         {{-- Próximos check-in --}}
         @if($stats['upcomingReservations']->isNotEmpty())
             <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem; margin-top: 4rem;">Próximos check-in</h2>
-            <div style="margin-bottom: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 1rem;">
+            <div style="margin-bottom: 2rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(450px, 100%), 1fr)); gap: 1rem;">
                 @foreach($stats['upcomingReservations'] as $upcoming)
                     <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
                         <div style="display: flex; flex-direction: column; gap: 1rem;">
-                            <div style="display: flex; align-items: center; gap: 0.875rem;">
+                            <div class="upcoming-checkin-card" style="display: flex; align-items: center; gap: 0.875rem;">
                                 <div style="width: 2.5rem; height: 2.5rem; border-radius: 50%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                     <span style="color: var(--color-text-secondary); font-weight: 500; font-size: var(--text-sm);">{{ substr($upcoming->user->name ?? 'U', 0, 1) }}</span>
                                 </div>
-                                <div style="flex: 1;">
-                                    <p style="font-size: var(--text-base); font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.125rem;">
-                                        {{ $upcoming->user->name ?? 'Usuario' }} • {{ $upcoming->property->name ?? 'Propiedad' }}
+                                <div style="flex: 1; display: flex; justify-content: space-between; align-items: center; gap: 0.75rem;">
+                                    <div style="flex: 1; min-width: 0;">
+                                        <p style="font-size: var(--text-base); font-weight: 500; color: var(--color-text-primary); margin-bottom: 0.125rem; word-wrap: break-word; overflow-wrap: break-word;">
+                                            {{ $upcoming->user->name ?? 'Usuario' }} • {{ $upcoming->property->name ?? 'Propiedad' }}
+                                        </p>
+                                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary); word-wrap: break-word; overflow-wrap: break-word;">
+                                            {{ $upcoming->check_in->format('d/m/Y') }} - {{ $upcoming->check_out->format('d/m/Y') }}
+                                            · 
+                                            @php
+                                                $parts = [];
+                                                $ad = (int) ($upcoming->adults ?? 0);
+                                                $ch = (int) ($upcoming->children ?? 0);
+                                                $pt = (int) ($upcoming->pets ?? 0);
+                                                if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
+                                                if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
+                                                if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
+                                            @endphp
+                                            @if(count($parts))
+                                                {{ implode(', ', $parts) }}
+                                            @else
+                                                {{ $upcoming->guests }} {{ $upcoming->guests === 1 ? 'persona' : 'personas' }}
+                                            @endif
+                                        </p>
+                                    </div>
+                                    <div class="upcoming-checkin-badge" style="flex-shrink: 0;">
                                         @if($upcoming->status === 'pending')
                                             <span class="badge badge-warning">Pendiente</span>
                                         @elseif($upcoming->status === 'paid')
@@ -171,28 +226,10 @@
                                         @else
                                             <span class="badge badge-info">{{ ucfirst($upcoming->status) }}</span>
                                         @endif
-                                    </p>
-                                    <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
-                                        {{ $upcoming->check_in->format('d/m/Y') }} - {{ $upcoming->check_out->format('d/m/Y') }}
-                                        · 
-                                        @php
-                                            $parts = [];
-                                            $ad = (int) ($upcoming->adults ?? 0);
-                                            $ch = (int) ($upcoming->children ?? 0);
-                                            $pt = (int) ($upcoming->pets ?? 0);
-                                            if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
-                                            if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
-                                            if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
-                                        @endphp
-                                        @if(count($parts))
-                                            {{ implode(', ', $parts) }}
-                                        @else
-                                            {{ $upcoming->guests }} {{ $upcoming->guests === 1 ? 'persona' : 'personas' }}
-                                        @endif
-                                    </p>
+                                    </div>
                                 </div>
                             </div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem;">
+                            <div class="upcoming-checkin-actions" style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.75rem; gap: 0.75rem;">
                                 <p style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary);">{{ number_format($upcoming->total_price, 2, ',', '.') }} €</p>
                                 <a href="{{ route('admin.reservations.show', $upcoming->id) }}" class="btn-action btn-action-primary" style="text-transform: none !important;">Ver Reserva</a>
                             </div>
@@ -203,7 +240,9 @@
         @endif
 
         <h2 style="font-size: var(--text-xl); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem; margin-top: 4rem;">Todas las reservas</h2>
-        <div style="overflow: hidden; background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px);">
+        
+        {{-- Tabla para desktop --}}
+        <div class="reservations-table" style="overflow: hidden; background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px);">
             
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; font-size: var(--text-base);">
@@ -420,6 +459,228 @@
 
             @if($reservations->hasPages())
                 <div style="padding: 1rem; border-top: 1px solid var(--color-border-light);">
+                    {{ $reservations->links() }}
+                </div>
+            @endif
+        </div>
+
+        {{-- Cards para móvil/tablet --}}
+        <div class="reservations-cards" style="display: none; gap: 1rem;">
+            @forelse($reservations as $r)
+                <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
+                    <div style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-border-light);">
+                        <div style="display: flex; justify-content: space-between; align-items: start; gap: 1rem; margin-bottom: 0.75rem;">
+                            <div style="flex: 1; min-width: 0;">
+                                <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.25rem; font-family: monospace; font-weight: 600;">#{{ $r->id }}</p>
+                                <p style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); word-wrap: break-word; overflow-wrap: break-word;">{{ $r->user?->name ?? '—' }}</p>
+                            </div>
+                            @if($r->status === 'pending')
+                                <span class="badge badge-warning">Pendiente</span>
+                            @elseif($r->status === 'paid')
+                                <span class="badge badge-success">Pagada</span>
+                            @elseif($r->status === 'cancelled')
+                                <span class="badge badge-error">Cancelada</span>
+                            @else
+                                <span class="badge badge-info">{{ ucfirst($r->status) }}</span>
+                            @endif
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1rem;">
+                            <div>
+                                <strong style="color: var(--color-text-secondary); font-size: var(--text-sm);">Propiedad:</strong>
+                                <p style="color: var(--color-text-primary); margin-top: 0.25rem; word-wrap: break-word; overflow-wrap: break-word;">{{ $r->property?->name ?? '—' }}</p>
+                            </div>
+                            
+                            <div>
+                                <strong style="color: var(--color-text-secondary); font-size: var(--text-sm);">Fechas:</strong>
+                                <p style="color: var(--color-text-primary); margin-top: 0.25rem;">{{ $r->check_in->format('d/m/Y') }} → {{ $r->check_out->format('d/m/Y') }}</p>
+                            </div>
+                            
+                            <div>
+                                <strong style="color: var(--color-text-secondary); font-size: var(--text-sm);">Huéspedes:</strong>
+                                <p style="color: var(--color-text-primary); margin-top: 0.25rem;">
+                                    @php
+                                        $parts = [];
+                                        $ad = (int) ($r->adults ?? 0);
+                                        $ch = (int) ($r->children ?? 0);
+                                        $pt = (int) ($r->pets ?? 0);
+                                        if ($ad > 0) { $parts[] = $ad.' '.($ad === 1 ? 'adulto' : 'adultos'); }
+                                        if ($ch > 0) { $parts[] = $ch.' '.($ch === 1 ? 'niño' : 'niños'); }
+                                        if ($pt > 0) { $parts[] = $pt.' '.($pt === 1 ? 'mascota' : 'mascotas'); }
+                                    @endphp
+                                    @if(count($parts))
+                                        {{ implode(', ', $parts) }}
+                                    @else
+                                        {{ $r->guests }} {{ $r->guests === 1 ? 'persona' : 'personas' }}
+                                    @endif
+                                </p>
+                            </div>
+                            
+                            <div>
+                                <strong style="color: var(--color-text-secondary); font-size: var(--text-sm);">Total:</strong>
+                                <p style="color: var(--color-text-primary); font-weight: 600; font-size: var(--text-xl); margin-top: 0.25rem;">{{ number_format($r->total_price, 2, ',', '.') }} €</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="admin-actions" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <a href="{{ route('admin.reservations.show', $r->id) }}" class="btn-action btn-action-secondary">Ver</a>
+
+                        @if ($r->status === 'pending')
+                            <button type="button"
+                                    x-data=""
+                                    x-on:click.prevent="$dispatch('open-modal', 'confirm-mark-paid-{{ $r->id }}')"
+                                    class="btn-action btn-action-primary">
+                                Marcar pagada
+                            </button>
+
+                            <button type="button"
+                                    x-data=""
+                                    x-on:click.prevent="$dispatch('open-modal', 'confirm-cancel-{{ $r->id }}')"
+                                    class="btn-action btn-action-danger">
+                                Cancelar
+                            </button>
+
+                        @elseif ($r->status === 'paid' && $r->invoice)
+                            <a href="{{ route('admin.invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary">Ver factura</a>
+                            <a href="{{ route('admin.invoices.show', $r->invoice->number) }}?download=1" class="btn-action btn-action-secondary">PDF</a>
+
+                            <button type="button"
+                                    x-data=""
+                                    x-on:click.prevent="$dispatch('open-modal', 'confirm-refund-{{ $r->id }}')"
+                                    class="btn-action btn-action-danger">
+                                Reembolsar
+                            </button>
+
+                        @elseif ($r->status === 'cancelled')
+                            @php
+                                $refundInvoices = $r->invoices->filter(fn($inv) => str_starts_with($inv->number, 'RECT-'));
+                            @endphp
+                            @if($refundInvoices->isNotEmpty())
+                                @foreach($refundInvoices as $refInv)
+                                    <a href="{{ route('admin.invoices.show', $refInv->number) }}" class="btn-action btn-action-danger">Ver factura</a>
+                                    <a href="{{ route('admin.invoices.show', $refInv->number) }}?download=1" class="btn-action btn-action-danger">PDF</a>
+                                @endforeach
+                            @else
+                                <span style="color: var(--color-text-muted); font-size: var(--text-sm);">Cancelada sin factura</span>
+                            @endif
+
+                        @elseif ($r->status === 'paid')
+                            <span style="color: var(--color-text-muted); font-size: var(--text-sm);">Sin factura</span>
+
+                        @else
+                            —
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Modales para esta reserva --}}
+                @if ($r->status === 'pending')
+                    <x-modal name="confirm-mark-paid-{{ $r->id }}" focusable>
+                        <div style="padding: 2rem; border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.9); backdrop-filter: blur(10px);">
+                            <form method="POST" action="{{ route('reservations.pay', $r->id) }}">
+                                @csrf
+
+                                <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
+                                    ¿Marcar como pagada?
+                                </h2>
+
+                                <p style="margin-bottom: 1.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+                                    Se generará automáticamente una factura para esta reserva.
+                                </p>
+
+                                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                    <button type="button"
+                                            x-on:click="$dispatch('close-modal', 'confirm-mark-paid-{{ $r->id }}')"
+                                            class="btn-action btn-action-secondary sn-sentence"
+                                            style="height: 36px; padding: 0 1.25rem;">
+                                        Cancelar
+                                    </button>
+
+                                    <button type="submit" 
+                                            class="btn-action btn-action-primary sn-sentence"
+                                            style="height: 36px; padding: 0 1.25rem;">
+                                        Confirmar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </x-modal>
+
+                    <x-modal name="confirm-cancel-{{ $r->id }}" focusable>
+                        <div style="padding: 2rem; border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.9); backdrop-filter: blur(10px);">
+                            <form method="POST" action="{{ route('admin.reservations.cancel', $r->id) }}">
+                                @csrf
+
+                                <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
+                                    ¿Cancelar esta reserva?
+                                </h2>
+
+                                <p style="margin-bottom: 1.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+                                    Se cancelará la reserva y se repondrán las noches en el calendario. Esta acción no se puede deshacer.
+                                </p>
+
+                                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                    <button type="button"
+                                            x-on:click="$dispatch('close-modal', 'confirm-cancel-{{ $r->id }}')"
+                                            class="btn-action btn-action-secondary sn-sentence"
+                                            style="height: 36px; padding: 0 1.25rem;">
+                                        No, volver
+                                    </button>
+
+                                    <button type="submit" 
+                                            style="height: 36px; padding: 0 1.25rem; font-size: var(--text-sm); font-weight: 600; color: white; background-color: var(--color-error); border: none; border-radius: 2px; cursor: pointer; transition: background-color var(--transition-fast);"
+                                            onmouseover="this.style.backgroundColor='#d87876'"
+                                            onmouseout="this.style.backgroundColor='var(--color-error)'">
+                                        Sí, cancelar reserva
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </x-modal>
+                @endif
+
+                @if ($r->status === 'paid' && $r->invoice)
+                    <x-modal name="confirm-refund-{{ $r->id }}" focusable>
+                        <div style="padding: 2rem; border-radius: var(--radius-base); border: 1px solid rgba(var(--color-border-rgb), 0.1); background: rgba(var(--color-bg-secondary-rgb), 0.9); backdrop-filter: blur(10px);">
+                            <form method="POST" action="{{ route('admin.reservations.refund', $r->id) }}">
+                                @csrf
+
+                                <h2 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 0.5rem;">
+                                    ¿Reembolsar esta reserva?
+                                </h2>
+
+                                <p style="margin-bottom: 1.5rem; font-size: var(--text-base); color: var(--color-text-secondary);">
+                                    Esto marcará la reserva como cancelada y registrará el reembolso. Esta acción no se puede deshacer.
+                                </p>
+
+                                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                    <button type="button"
+                                            @click="$dispatch('close-modal', 'confirm-refund-{{ $r->id }}')"
+                                            class="btn-action btn-action-secondary sn-sentence"
+                                            style="height: 36px; padding: 0 1.25rem;">
+                                        Cancelar
+                                    </button>
+
+                                    <button type="submit" 
+                                            style="height: 36px; padding: 0 1.25rem; font-size: var(--text-sm); font-weight: 600; color: white; background-color: var(--color-error); border: none; border-radius: 2px; cursor: pointer; transition: background-color var(--transition-fast);"
+                                            onmouseover="this.style.backgroundColor='#d87876'"
+                                            onmouseout="this.style.backgroundColor='var(--color-error)'">
+                                        Reembolsar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </x-modal>
+                @endif
+            @empty
+                <div style="padding: 2rem; text-align: center; color: var(--color-text-secondary); background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base);">
+                    No hay reservas.
+                </div>
+            @endforelse
+
+            @if($reservations->hasPages())
+                <div style="padding: 1rem;">
                     {{ $reservations->links() }}
                 </div>
             @endif
