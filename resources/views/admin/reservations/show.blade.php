@@ -36,6 +36,38 @@
                 font-size: var(--text-sm);
                 font-weight: 600;
             }
+            
+            /* Responsive para móviles muy pequeños */
+            @media (max-width: 320px) {
+                .sn-reservar {
+                    padding-left: 0.75rem;
+                    padding-right: 0.75rem;
+                }
+                
+                /* Reducir padding de cards */
+                .admin-card {
+                    padding: 1rem !important;
+                }
+                
+                /* Títulos más pequeños */
+                h1 {
+                    font-size: 1.875rem !important;
+                }
+                
+                h3 {
+                    font-size: 1rem !important;
+                }
+                
+                /* Precio total más compacto */
+                .price-total {
+                    font-size: 1.875rem !important;
+                }
+                
+                /* Grids a una columna */
+                .info-grid {
+                    grid-template-columns: 1fr !important;
+                }
+            }
         </style>
         {{-- Header centrado --}}
         <header class="mb-16 text-center">
@@ -54,9 +86,9 @@
         {{-- Sección de detalles de la reserva --}}
         <div style="display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-bottom: 2rem;">
             {{-- Código y Estado --}}
-            <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
+            <div class="admin-card" style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
                 <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Información General</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div class="info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                     <div>
                         <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">Código de Reserva</p>
                         <p style="font-size: var(--text-base); color: var(--color-text-primary); font-family: monospace; font-weight: 600;">#{{ $reservation->code ?? $reservation->id }}</p>
@@ -81,7 +113,7 @@
             </div>
 
             {{-- Propiedad --}}
-            <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
+            <div class="admin-card" style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
                 <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Propiedad</h3>
                 <div style="display: flex; align-items: center; gap: 1rem;">
                     <div style="width: 3rem; height: 3rem; border-radius: 50%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
@@ -97,9 +129,9 @@
             </div>
 
             {{-- Fechas --}}
-            <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
+            <div class="admin-card" style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
                 <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Fechas</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                <div class="info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
                     <div>
                         <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">Check-in</p>
                         <p style="font-size: var(--text-lg); color: var(--color-text-primary); font-weight: 600;">{{ $reservation->check_in->format('d/m/Y') }}</p>
@@ -118,9 +150,9 @@
             </div>
 
             {{-- Huéspedes --}}
-            <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
+            <div class="admin-card" style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
                 <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Huéspedes</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                <div class="info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
                     @php
                         $parts = [];
                         $ad = (int) ($reservation->adults ?? 0);
@@ -146,16 +178,16 @@
 
             {{-- Notas --}}
             @if($reservation->notes)
-                <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
+                <div class="admin-card" style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
                     <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Notas</h3>
                     <p style="font-size: var(--text-base); color: var(--color-text-primary); line-height: 1.6;">{{ $reservation->notes }}</p>
                 </div>
             @endif
 
             {{-- Datos del Cliente --}}
-            <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
+            <div class="admin-card" style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
                 <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Datos del Cliente</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <div class="info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
                     <div>
                         <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">Nombre</p>
                         <p style="font-size: var(--text-base); color: var(--color-text-primary); font-weight: 500;">{{ $reservation->user->name ?? '—' }}</p>
@@ -174,20 +206,24 @@
             </div>
 
             {{-- Precio --}}
-            <div style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
+            <div class="admin-card" style="background: rgba(var(--color-bg-secondary-rgb), 0.8); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.5rem;">
                 <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Precio Total</h3>
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div>
                         <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.25rem;">Total a pagar</p>
-                        <p style="font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary);">{{ number_format($reservation->total_price, 2, ',', '.') }} €</p>
+                        <p class="price-total" style="font-size: var(--text-3xl); font-weight: 600; color: var(--color-text-primary);">{{ number_format($reservation->total_price, 2, ',', '.') }} €</p>
                     </div>
                     @if($reservation->status === 'paid')
                         <div style="text-align: right;">
-                            <span class="badge badge-success" style="font-size: var(--text-sm);">Pagado</span>
+                            <span class="badge badge-success">Pagada</span>
                         </div>
                     @elseif($reservation->status === 'pending')
                         <div style="text-align: right;">
-                            <span class="badge badge-warning" style="font-size: var(--text-sm);">Pendiente de pago</span>
+                            <span class="badge badge-warning">Pendiente</span>
+                        </div>
+                    @elseif($reservation->status === 'cancelled')
+                        <div style="text-align: right;">
+                            <span class="badge badge-error">Cancelada</span>
                         </div>
                     @endif
                 </div>
