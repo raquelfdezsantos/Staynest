@@ -17,7 +17,9 @@
                     </p>
 
                     <h3>Cookies de sesión (Laravel)</h3>
-                    <table style="width:100%; border-collapse: collapse; margin-top: var(--spacing-md);">
+                    
+                    {{-- Tabla para desktop --}}
+                    <table class="cookies-table" style="width:100%; border-collapse: collapse; margin-top: var(--spacing-md);">
                         <thead>
                             <tr>
                                 <th style="text-align:left; padding:.6rem .8rem; border:1px solid var(--color-border-light); color: var(--color-text-primary);">Cookie</th>
@@ -27,20 +29,54 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light);"><code>{{ config('session.cookie') }}</code></td>
-                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light);">Identificador de sesión del usuario. Necesaria para mantener su sesión iniciada.</td>
-                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light);">Sesión (se elimina al cerrar el navegador)</td>
+                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light); color: var(--color-text-secondary);"><code>{{ config('session.cookie') }}</code></td>
+                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light); color: var(--color-text-secondary);">Identificador de sesión del usuario. Necesaria para mantener su sesión iniciada.</td>
+                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light); color: var(--color-text-secondary);">Sesión (se elimina al cerrar el navegador)</td>
                             </tr>
                             <tr>
-                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light);"><code>XSRF-TOKEN</code></td>
-                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light);">Protección contra ataques CSRF (Cross-Site Request Forgery). Seguridad del sitio.</td>
-                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light);">2 horas</td>
+                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light); color: var(--color-text-secondary);"><code>XSRF-TOKEN</code></td>
+                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light); color: var(--color-text-secondary);">Protección contra ataques CSRF (Cross-Site Request Forgery). Seguridad del sitio.</td>
+                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light); color: var(--color-text-secondary);">2 horas</td>
                             </tr>
                         </tbody>
                     </table>
 
+                    {{-- Cards para móvil/tablet --}}
+                    <div class="cookies-cards" style="display: none; gap: 1rem; margin-top: var(--spacing-md);">
+                        <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1rem;">
+                            <div style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--color-text-primary);">Cookie:</strong>
+                                <code style="display: block; margin-top: 0.25rem;">{{ config('session.cookie') }}</code>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--color-text-primary);">Finalidad:</strong>
+                                <p style="margin-top: 0.25rem;">Identificador de sesión del usuario. Necesaria para mantener su sesión iniciada.</p>
+                            </div>
+                            <div>
+                                <strong style="color: var(--color-text-primary);">Duración:</strong>
+                                <p style="margin-top: 0.25rem;">Sesión (se elimina al cerrar el navegador)</p>
+                            </div>
+                        </div>
+                        <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1rem;">
+                            <div style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--color-text-primary);">Cookie:</strong>
+                                <code style="display: block; margin-top: 0.25rem;">XSRF-TOKEN</code>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--color-text-primary);">Finalidad:</strong>
+                                <p style="margin-top: 0.25rem;">Protección contra ataques CSRF (Cross-Site Request Forgery). Seguridad del sitio.</p>
+                            </div>
+                            <div>
+                                <strong style="color: var(--color-text-primary);">Duración:</strong>
+                                <p style="margin-top: 0.25rem;">2 horas</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <h3>Cookie de consentimiento</h3>
-                    <table style="width:100%; border-collapse: collapse; margin-top: var(--spacing-md);">
+                    
+                    {{-- Tabla para desktop --}}
+                    <table class="cookies-table" style="width:100%; border-collapse: collapse; margin-top: var(--spacing-md);">
                         <thead>
                             <tr>
                                 <th style="text-align:left; padding:.6rem .8rem; border:1px solid var(--color-border-light); color: var(--color-text-primary);">Cookie</th>
@@ -50,12 +86,30 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light);"><code>cookie_consent</code></td>
-                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light);">Almacena su preferencia sobre el uso de cookies para no mostrar el banner repetidamente.</td>
-                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light);">1 año</td>
+                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light); color: var(--color-text-secondary);"><code>cookie_consent</code></td>
+                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light); color: var(--color-text-secondary);">Almacena su preferencia sobre el uso de cookies para no mostrar el banner repetidamente.</td>
+                                <td style="padding:.6rem .8rem; border:1px solid var(--color-border-light); color: var(--color-text-secondary);">1 año</td>
                             </tr>
                         </tbody>
                     </table>
+
+                    {{-- Cards para móvil/tablet --}}
+                    <div class="cookies-cards" style="display: none; gap: 1rem; margin-top: var(--spacing-md);">
+                        <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1rem;">
+                            <div style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--color-text-primary);">Cookie:</strong>
+                                <code style="display: block; margin-top: 0.25rem;">cookie_consent</code>
+                            </div>
+                            <div style="margin-bottom: 0.75rem;">
+                                <strong style="color: var(--color-text-primary);">Finalidad:</strong>
+                                <p style="margin-top: 0.25rem;">Almacena su preferencia sobre el uso de cookies para no mostrar el banner repetidamente.</p>
+                            </div>
+                            <div>
+                                <strong style="color: var(--color-text-primary);">Duración:</strong>
+                                <p style="margin-top: 0.25rem;">1 año</p>
+                            </div>
+                        </div>
+                    </div>
 
                     <hr style="border:0; border-top:1px solid var(--color-border-light); margin: var(--spacing-lg) 0;" />
                     <h2>3. Finalidad de las cookies</h2>
@@ -105,3 +159,15 @@
     </div>
 </div>
 @endsection
+
+<style>
+    @media (max-width: 768px) {
+        .cookies-table {
+            display: none !important;
+        }
+        .cookies-cards {
+            display: flex !important;
+            flex-direction: column;
+        }
+    }
+</style>
