@@ -4,6 +4,106 @@
 
 @section('content')
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Calendario Flatpickr - Modo Oscuro */
+        html[data-theme="dark"] .flatpickr-calendar {
+            background: rgb(38, 38, 38);
+            border: 1px solid var(--color-border-light);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        html[data-theme="dark"] .flatpickr-months {
+            background: rgb(38, 38, 38);
+            color: var(--color-text-primary);
+        }
+
+        html[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months,
+        html[data-theme="dark"] .flatpickr-current-month input.cur-year {
+            background: rgb(38, 38, 38);
+            color: var(--color-text-primary);
+        }
+
+        html[data-theme="dark"] .flatpickr-weekdays {
+            background: rgb(38, 38, 38);
+        }
+
+        html[data-theme="dark"] span.flatpickr-weekday {
+            color: var(--color-text-secondary);
+        }
+
+        html[data-theme="dark"] .flatpickr-day {
+            color: var(--color-text-primary);
+        }
+
+        html[data-theme="dark"] .flatpickr-day:hover {
+            background: rgba(77, 141, 148, 0.2);
+            color: var(--color-text-primary);
+        }
+
+        html[data-theme="dark"] .flatpickr-day.selected {
+            background: var(--color-accent);
+            color: white;
+            border-color: var(--color-accent);
+        }
+
+        html[data-theme="dark"] .flatpickr-day.today {
+            border-color: var(--color-accent);
+        }
+
+        html[data-theme="dark"] .flatpickr-months .flatpickr-prev-month svg,
+        html[data-theme="dark"] .flatpickr-months .flatpickr-next-month svg {
+            fill: var(--color-text-primary);
+        }
+
+        html[data-theme="light"] .flatpickr-calendar {
+            background: white;
+            border: 1px solid #e0e0e0;
+        }
+
+        html[data-theme="light"] .flatpickr-months {
+            background: white;
+        }
+
+        html[data-theme="light"] .flatpickr-weekdays {
+            background: white;
+        }
+
+        html[data-theme="light"] .flatpickr-day.selected {
+            background: var(--color-accent);
+            color: white;
+        }
+
+        html[data-theme="light"] .flatpickr-day.today {
+            border-color: var(--color-accent);
+        }
+
+        .flatpickr-days {
+            width: 308px !important;
+        }
+        
+        .dayContainer {
+            width: 308px !important;
+            min-width: 308px !important;
+            max-width: 308px !important;
+            justify-content: center !important;
+        }
+        
+        .flatpickr-day {
+            max-width: 38px !important;
+            max-height: 38px !important;
+            width: 38px !important;
+            height: 38px !important;
+            line-height: 38px !important;
+            margin: 2px !important;
+            border-radius: 2px !important;
+            border: none !important;
+        }
+        
+        .flatpickr-day.prevMonthDay,
+        .flatpickr-day.nextMonthDay {
+            opacity: 0.4 !important;
+        }
+    </style>
     <div class="sn-reservar max-w-5xl mx-auto px-4 py-10">
         <header class="mb-8 text-center">
             <h1 class="text-4xl font-serif mb-3">Registro de Administrador</h1>
@@ -185,105 +285,6 @@
         }
         html[data-theme="light"] .register-actions .btn-action-secondary {
             color: #000 !important;
-        }
-
-        /* Calendario Flatpickr - Modo Oscuro */
-        html[data-theme="dark"] .flatpickr-calendar {
-            background: rgb(38, 38, 38);
-            border: 1px solid var(--color-border-light);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        html[data-theme="dark"] .flatpickr-months {
-            background: rgb(38, 38, 38);
-            color: var(--color-text-primary);
-        }
-
-        html[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months,
-        html[data-theme="dark"] .flatpickr-current-month input.cur-year {
-            background: rgb(38, 38, 38);
-            color: var(--color-text-primary);
-        }
-
-        html[data-theme="dark"] .flatpickr-weekdays {
-            background: rgb(38, 38, 38);
-        }
-
-        html[data-theme="dark"] span.flatpickr-weekday {
-            color: var(--color-text-secondary);
-        }
-
-        html[data-theme="dark"] .flatpickr-day {
-            color: var(--color-text-primary);
-        }
-
-        html[data-theme="dark"] .flatpickr-day:hover {
-            background: rgba(77, 141, 148, 0.2);
-            color: var(--color-text-primary);
-        }
-
-        html[data-theme="dark"] .flatpickr-day.selected {
-            background: var(--color-accent);
-            color: white;
-            border-color: var(--color-accent);
-        }
-
-        html[data-theme="dark"] .flatpickr-day.today {
-            border-color: var(--color-accent);
-        }
-
-        html[data-theme="dark"] .flatpickr-months .flatpickr-prev-month svg,
-        html[data-theme="dark"] .flatpickr-months .flatpickr-next-month svg {
-            fill: var(--color-text-primary);
-        }
-
-        html[data-theme="light"] .flatpickr-calendar {
-            background: white;
-            border: 1px solid #e0e0e0;
-        }
-
-        html[data-theme="light"] .flatpickr-months {
-            background: white;
-        }
-
-        html[data-theme="light"] .flatpickr-weekdays {
-            background: white;
-        }
-
-        html[data-theme="light"] .flatpickr-day.selected {
-            background: var(--color-accent);
-            color: white;
-        }
-
-        html[data-theme="light"] .flatpickr-day.today {
-            border-color: var(--color-accent);
-        }
-
-        .flatpickr-days {
-            width: 308px !important;
-        }
-        
-        .dayContainer {
-            width: 308px !important;
-            min-width: 308px !important;
-            max-width: 308px !important;
-            justify-content: center !important;
-        }
-        
-        .flatpickr-day {
-            max-width: 38px !important;
-            max-height: 38px !important;
-            width: 38px !important;
-            height: 38px !important;
-            line-height: 38px !important;
-            margin: 2px !important;
-            border-radius: 2px !important;
-            border: none !important;
-        }
-        
-        .flatpickr-day.prevMonthDay,
-        .flatpickr-day.nextMonthDay {
-            opacity: 0.4 !important;
         }
     </style>
 
