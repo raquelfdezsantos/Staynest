@@ -391,6 +391,8 @@
       font-size: var(--text-sm);
       color: var(--color-text-secondary);
       line-height: 1.5;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
 
     .calendar-btn {
@@ -465,6 +467,93 @@
       background: rgba(77, 141, 148, 0.06);
       border-color: rgba(77, 141, 148, 0.15);
       color: var(--color-text-secondary);
+    }
+
+    /* Responsive - Móviles y tablets */
+    @media (max-width: 768px) {
+      .calendar-grid {
+        grid-template-columns: minmax(min(280px, 100%), 1fr);
+        gap: 1.25rem;
+      }
+
+      .calendar-card-header {
+        padding: 1rem 1.25rem;
+      }
+
+      .calendar-card-body {
+        padding: 1.25rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .sn-reservar {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+        padding-top: 2rem !important;
+      }
+
+      .sn-reservar header {
+        margin-bottom: 2rem !important;
+      }
+
+      .sn-reservar header h1 {
+        font-size: 1.75rem !important;
+      }
+
+      .sn-reservar header p {
+        font-size: 0.9375rem !important;
+      }
+
+      .calendar-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .calendar-card-header {
+        padding: 0.875rem 1rem;
+      }
+
+      .calendar-card-body {
+        padding: 1rem;
+      }
+
+      .calendar-section-title {
+        font-size: 0.9375rem;
+      }
+
+      .calendar-label {
+        font-size: 0.8125rem;
+      }
+
+      .calendar-input {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+      }
+
+      .calendar-info-box {
+        padding: 0.625rem;
+        font-size: 0.8125rem;
+      }
+
+      .calendar-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        height: 34px;
+      }
+    }
+
+    @media (max-width: 320px) {
+      .sn-reservar header h1 {
+        font-size: 1.5rem !important;
+      }
+
+      .grid.grid-cols-2.gap-3 {
+        gap: 0.5rem !important;
+      }
+
+      .calendar-input {
+        font-size: 0.8125rem;
+      }
     }
   </style>
 
