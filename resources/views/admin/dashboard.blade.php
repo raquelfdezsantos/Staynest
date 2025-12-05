@@ -133,7 +133,7 @@
         @endif
 
         {{-- Widgets de estadísticas --}}
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
             {{-- Reservas activas --}}
             <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1.5rem;">
                 <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
