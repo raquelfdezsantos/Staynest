@@ -189,88 +189,76 @@
 
         /* Calendario Flatpickr - Modo Oscuro */
         html[data-theme="dark"] .flatpickr-calendar {
-            background: var(--color-bg-card);
+            background: rgb(38, 38, 38);
             border: 1px solid var(--color-border-light);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
-        
+
         html[data-theme="dark"] .flatpickr-months {
-            background: var(--color-bg-card);
-            border-bottom: 1px solid var(--color-border-light);
+            background: rgb(38, 38, 38);
+            color: var(--color-text-primary);
         }
-        
+
         html[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months,
         html[data-theme="dark"] .flatpickr-current-month input.cur-year {
+            background: rgb(38, 38, 38);
             color: var(--color-text-primary);
-            background: var(--color-bg-secondary);
         }
-        
+
         html[data-theme="dark"] .flatpickr-weekdays {
-            background: var(--color-bg-card);
+            background: rgb(38, 38, 38);
         }
-        
+
         html[data-theme="dark"] span.flatpickr-weekday {
             color: var(--color-text-secondary);
         }
-        
+
         html[data-theme="dark"] .flatpickr-day {
             color: var(--color-text-primary);
         }
-        
+
         html[data-theme="dark"] .flatpickr-day:hover {
-            background: rgba(77,141,148,0.10);
-            border-color: var(--color-accent);
+            background: rgba(77, 141, 148, 0.2);
+            color: var(--color-text-primary);
         }
-        
+
         html[data-theme="dark"] .flatpickr-day.selected {
             background: var(--color-accent);
-            border-color: var(--color-accent);
             color: white;
+            border-color: var(--color-accent);
         }
-        
+
         html[data-theme="dark"] .flatpickr-day.today {
             border-color: var(--color-accent);
         }
-        
+
         html[data-theme="dark"] .flatpickr-months .flatpickr-prev-month svg,
         html[data-theme="dark"] .flatpickr-months .flatpickr-next-month svg {
             fill: var(--color-text-primary);
         }
-        
-        /* Modo Claro */
+
         html[data-theme="light"] .flatpickr-calendar {
-            background: #d1d1d1;
+            background: white;
             border: 1px solid #e0e0e0;
         }
-        
+
         html[data-theme="light"] .flatpickr-months {
-            background: #d1d1d1;
+            background: white;
         }
-        
+
         html[data-theme="light"] .flatpickr-weekdays {
-            background: #d1d1d1;
+            background: white;
         }
-        
-        html[data-theme="light"] .flatpickr-day {
-            color: #222;
-        }
-        
-        html[data-theme="light"] .flatpickr-day:hover {
-            background: rgba(77,141,148,0.10);
-            border-color: var(--color-accent);
-        }
-        
+
         html[data-theme="light"] .flatpickr-day.selected {
             background: var(--color-accent);
-            border-color: var(--color-accent);
             color: white;
         }
-        
+
         html[data-theme="light"] .flatpickr-day.today {
             border-color: var(--color-accent);
         }
-        
-        /* Ajustar el grid de días */
+
         .flatpickr-days {
             width: 308px !important;
         }
@@ -282,7 +270,6 @@
             justify-content: center !important;
         }
         
-        /* Hacer los días cuadrados */
         .flatpickr-day {
             max-width: 38px !important;
             max-height: 38px !important;
@@ -294,7 +281,6 @@
             border: none !important;
         }
         
-        /* Días de meses anterior/posterior más apagados */
         .flatpickr-day.prevMonthDay,
         .flatpickr-day.nextMonthDay {
             opacity: 0.4 !important;
