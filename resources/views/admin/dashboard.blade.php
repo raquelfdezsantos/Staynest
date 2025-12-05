@@ -116,6 +116,18 @@
                     width: 100%;
                 }
             }
+            
+            /* Botones de modales responsive */
+            @media (max-width: 480px) {
+                .modal-buttons {
+                    flex-direction: column !important;
+                    width: 100%;
+                }
+                .modal-buttons > button,
+                .modal-buttons > a {
+                    width: 100% !important;
+                }
+            }
         </style>
         
         {{-- Header centrado como otras páginas públicas --}}
@@ -340,7 +352,7 @@
                                                                 Esto marcará la reserva como cancelada y registrará el reembolso. Esta acción no se puede deshacer.
                                                             </p>
 
-                                                            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                                            <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                                                                 <button type="button"
                                                                         @click="$dispatch('close-modal', 'confirm-refund-{{ $r->id }}')"
                                                                         class="btn-action btn-action-secondary sn-sentence"
@@ -398,7 +410,7 @@
                                                 Se generará automáticamente una factura para esta reserva.
                                             </p>
 
-                                            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                            <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                                                 <button type="button"
                                                         x-on:click="$dispatch('close-modal', 'confirm-mark-paid-{{ $r->id }}')"
                                                         class="btn-action btn-action-secondary sn-sentence"
@@ -429,7 +441,7 @@
                                                 Se cancelará la reserva y se repondrán las noches en el calendario. Esta acción no se puede deshacer.
                                             </p>
 
-                                            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                            <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                                                 <button type="button"
                                                         x-on:click="$dispatch('close-modal', 'confirm-cancel-{{ $r->id }}')"
                                                         class="btn-action btn-action-secondary sn-sentence"
@@ -589,7 +601,7 @@
                                     Se generará automáticamente una factura para esta reserva.
                                 </p>
 
-                                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                                     <button type="button"
                                             x-on:click="$dispatch('close-modal', 'confirm-mark-paid-{{ $r->id }}')"
                                             class="btn-action btn-action-secondary sn-sentence"
@@ -620,7 +632,7 @@
                                     Se cancelará la reserva y se repondrán las noches en el calendario. Esta acción no se puede deshacer.
                                 </p>
 
-                                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                                     <button type="button"
                                             x-on:click="$dispatch('close-modal', 'confirm-cancel-{{ $r->id }}')"
                                             class="btn-action btn-action-secondary sn-sentence"
@@ -654,7 +666,7 @@
                                     Esto marcará la reserva como cancelada y registrará el reembolso. Esta acción no se puede deshacer.
                                 </p>
 
-                                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                                     <button type="button"
                                             @click="$dispatch('close-modal', 'confirm-refund-{{ $r->id }}')"
                                             class="btn-action btn-action-secondary sn-sentence"
