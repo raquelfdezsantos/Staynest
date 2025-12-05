@@ -2527,6 +2527,54 @@ header .nav-logo {
     }
 }
 
+/* Rango crítico 901px-911px: ajustes para evitar contracción del menú */
+@media (min-width: 901px) and (max-width: 911px) {
+    .nav-menu {
+        gap: var(--spacing-md); /* reducir gap entre elementos */
+    }
+
+    .nav-link {
+        padding: var(--spacing-xs) var(--spacing-sm); /* padding más compacto */
+        font-size: 0.9375rem; /* ligeramente más pequeño */
+    }
+
+    .nav-user-trigger {
+        padding: var(--spacing-xs) var(--spacing-sm); /* padding reducido */
+        gap: 0.375rem; /* gap más pequeño */
+    }
+
+    .nav-container {
+        padding-left: var(--spacing-lg);
+        padding-right: calc(var(--spacing-xl) * 1.5);
+    }
+}
+
+/* Tablets: ocultar nombre de usuario, solo mostrar avatar y flecha */
+@media (min-width: 901px) and (max-width: 1024px) {
+    .nav-user-trigger span:not(.nav-dropdown-arrow):not(.icon-sun-wrapper):not(.icon-moon-wrapper) {
+        display: none;
+    }
+
+    .nav-user-trigger {
+        gap: 0.375rem; /* gap reducido sin el nombre */
+    }
+}
+
+/* Tablets medianas hasta desktop pequeño: ocultar nombre solo en pantallas ajustadas */
+@media (min-width: 1025px) and (max-width: 1200px) {
+    .nav-user-trigger span:not(.nav-dropdown-arrow):not(.icon-sun-wrapper):not(.icon-moon-wrapper) {
+        display: none;
+    }
+
+    .nav-user-trigger {
+        gap: 0.375rem;
+    }
+
+    .nav-menu {
+        gap: var(--spacing-lg);
+    }
+}
+
 /* ============================================================================
    TIPOGRAFÍA RESPONSIVE GLOBAL
    ============================================================================ */
