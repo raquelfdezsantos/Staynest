@@ -81,7 +81,7 @@
                     @if($photos->isEmpty())
                         <p class="text-center py-8" style="color: var(--color-text-secondary);">No hay fotos subidas. Sube la primera foto usando el formulario de arriba.</p>
                     @else
-                        <div id="photos-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div id="photos-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             @foreach($photos as $photo)
                                 <div class="photo-item photo-card" data-photo-id="{{ $photo->id }}">
                                     {{-- Imagen --}}
@@ -236,6 +236,25 @@
             display: block;
             position: relative;
             z-index: 1;
+        }
+        
+        /* Responsive: imágenes más grandes en móviles */
+        @media (max-width: 768px) {
+            .photo-img {
+                height: 16rem; /* 256px - más espacio en móvil */
+            }
+            .photo-card {
+                min-height: 320px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .photo-img {
+                height: 18rem; /* 288px - aún más espacio en móviles pequeños */
+            }
+            .photo-card {
+                min-height: 360px;
+            }
         }
 
         .photo-badge {
