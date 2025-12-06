@@ -3,13 +3,23 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\AdminNewReservationMail;
+use App\Mail\ReservationConfirmedMail;
+use App\Models\Property;
+use App\Models\RateCalendar;
+use App\Models\Reservation;
 use App\Models\User;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 
@@ -109,7 +119,9 @@ class ClientRegisterController extends Controller
                 
                 // Calcular precio usando rate_calendar
                 $period = CarbonPeriod::create($checkIn, $checkOut)->excludeEndDate();
-                $dates = collect($period)->map(fn($d) => $d->toDateString());
+                $dates = collect($period)->map(function(Carbon $date) {
+                    return $date->toDateString();
+                });
                 $rates = RateCalendar::where('property_id', $property->id)
                     ->whereIn('date', $dates)
                     ->get()
@@ -144,7 +156,7 @@ class ClientRegisterController extends Controller
 
                 // Redirigir a mis reservas de la propiedad específica
                 return redirect()->route('properties.reservas.index', $property->slug)->with('success', 'Registro completado. Tu reserva ha sido creada.');
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Registrar el error para debugging
                 Log::error('Error creando reserva tras registro: ' . $e->getMessage(), [
                     'file' => $e->getFile(),

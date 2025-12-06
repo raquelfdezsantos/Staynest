@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Reservation;
 use App\Models\Payment;
 use App\Models\RateCalendar;
+use App\Models\Invoice;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Throwable;
 use App\Mail\ReservationCancelledMail;
 use App\Mail\PaymentRefundIssuedMail;
 use Illuminate\Support\Str;
@@ -135,7 +139,7 @@ class ProfileController extends Controller
                 }
 
                 $refundInvoice = null;
-                DB::transaction(function () use ($reservation, $refundAmount, $user, &$refundInvoice) {
+                DB::transaction(function () use ($reservation, $refundAmount, $user, $percent, &$refundInvoice) {
                     // Liberar noches
                     $dates = $this->rangeDates(
                         $reservation->check_in->toDateString(),
@@ -157,8 +161,8 @@ class ProfileController extends Controller
                         ]);
 
                         // Crear factura rectificativa de cancelación
-                        $invoiceNumber = \App\Models\Invoice::generateUniqueNumber('RECT');
-                        $refundInvoice = \App\Models\Invoice::create([
+                        $invoiceNumber = Invoice::generateUniqueNumber('RECT');
+                        $refundInvoice = Invoice::create([
                             'reservation_id' => $reservation->id,
                             'number'         => $invoiceNumber,
                             'pdf_path'       => null,
@@ -182,13 +186,13 @@ class ProfileController extends Controller
                 // Enviar emails de cancelación
                 try {
                     Mail::to($user->email)->send(new ReservationCancelledMail($reservation));
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     Log::error('Error enviando email de cancelación al cliente: ' . $e->getMessage());
                 }
 
                 try {
                     Mail::to($reservation->property->user->email)->send(new ReservationCancelledMail($reservation, true));
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     Log::error('Error enviando email de cancelación al admin: ' . $e->getMessage());
                 }
 
@@ -196,7 +200,7 @@ class ProfileController extends Controller
                 if ($refundAmount > 0 && $refundInvoice) {
                     try {
                         Mail::to($user->email)->send(new PaymentRefundIssuedMail($reservation, $refundAmount, $refundInvoice));
-                    } catch (\Throwable $e) {
+                    } catch (Throwable $e) {
                         Log::error('Error enviando email de reembolso: ' . $e->getMessage());
                     }
                 }
@@ -208,7 +212,7 @@ class ProfileController extends Controller
                     'refund_percent' => $percent
                 ]);
 
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::error('Error cancelando reserva en eliminación de cuenta: ' . $e->getMessage(), [
                     'reservation_id' => $reservation->id,
                     'user_id' => $user->id
@@ -226,8 +230,8 @@ class ProfileController extends Controller
      */
     private function rangeDates(string $checkIn, string $checkOut): array
     {
-        $period = \Carbon\CarbonPeriod::create($checkIn, $checkOut)->excludeEndDate();
-        return collect($period)->map(fn($d) => $d->toDateString())->toArray();
+        $period = CarbonPeriod::create($checkIn, $checkOut)->excludeEndDate();
+        return collect($period)->map(fn(Carbon $d) => $d->toDateString())->toArray();
     }
 
     /**

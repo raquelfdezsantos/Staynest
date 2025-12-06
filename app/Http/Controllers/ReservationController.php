@@ -571,8 +571,8 @@ class ReservationController extends Controller
                         'provider_ref'  => 'SIM-REF-' . Str::upper(Str::random(6)),
                     ]);
 
-                    $invoiceNumber = \App\Models\Invoice::generateUniqueNumber('RECT');
-                    return \App\Models\Invoice::create([
+                    $invoiceNumber = Invoice::generateUniqueNumber('RECT');
+                    return Invoice::create([
                         'reservation_id' => $reservation->id,
                         'number'         => $invoiceNumber,
                         'pdf_path'       => null,
@@ -598,7 +598,7 @@ class ReservationController extends Controller
                         ],
                     ]);
                 });
-            } catch (\Throwable $e) {
+            } catch (Throwable $e) {
                 Log::error('Error generando refund e invoice rectificativa', ['msg' => $e->getMessage()]);
                 report($e);
             }

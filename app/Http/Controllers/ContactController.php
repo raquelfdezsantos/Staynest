@@ -101,7 +101,7 @@ class ContactController extends Controller
 
         // Enviar el email al propietario de la propiedad
         Mail::to($property->user->email)
-            ->send(new ContactMessageMail($data));
+            ->send(new ContactMessageMail((array) $data));
 
         return back()->with('success', '¡Gracias! Te responderemos pronto.');
     }
