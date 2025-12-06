@@ -60,6 +60,93 @@
             
             {{-- Menú de usuario --}}
             @auth
+                <li class="nav-menu-user-mobile">
+                    <div class="nav-user-dropdown">
+                        <button class="nav-user-trigger" type="button">
+                        @if(auth()->user()->avatar_path)
+                            <img src="{{ Storage::disk('public')->url(auth()->user()->avatar_path) }}" 
+                                 alt="{{ auth()->user()->name }}"
+                                 style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid var(--color-border-light);">
+                        @else
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="8" r="5"/>
+                                <path d="M3 21c0-5 4-7 9-7s9 2 9 7"/>
+                            </svg>
+                        @endif
+                        <span>{{ auth()->user()->name }}</span>
+                        <svg class="nav-dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                            <path d="M2 4L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                    <ul class="nav-dropdown-menu">
+                        @if($currentProperty)
+                            <li><a href="{{ route('properties.show', $currentProperty->slug) }}" class="nav-dropdown-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                    <path d="M9 22V12h6v10"/>
+                                </svg>
+                                Ver sitio público
+                            </a></li>
+                        @else
+                            @php
+                                $adminPropertiesCount = \App\Models\Property::where('user_id', auth()->id())
+                                    ->whereNull('deleted_at')
+                                    ->count();
+                                $singleProperty = null;
+                                if ($adminPropertiesCount === 1) {
+                                    $singleProperty = \App\Models\Property::where('user_id', auth()->id())
+                                        ->whereNull('deleted_at')
+                                        ->first();
+                                }
+                            @endphp
+                            @if($singleProperty)
+                                <li><a href="{{ route('properties.show', $singleProperty->slug) }}" class="nav-dropdown-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                        <path d="M9 22V12h6v10"/>
+                                    </svg>
+                                    Ver sitio público
+                                </a></li>
+                            @else
+                                <li><a href="{{ route('admin.properties.index') }}" class="nav-dropdown-item">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                        <path d="M9 22V12h6v10"/>
+                                    </svg>
+                                    Ver sitio público
+                                </a></li>
+                            @endif
+                        @endif
+                        <li><a href="{{ route('profile.edit') }}" class="nav-dropdown-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 1v6m0 6v6m7.07-14.07l-4.24 4.24m-5.66 5.66l-4.24 4.24m16.97-4.24l-4.24-4.24M4.93 4.93l4.24 4.24"/>
+                            </svg>
+                            Perfil
+                        </a></li>
+                        <li><hr class="nav-dropdown-divider"></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="nav-dropdown-item nav-dropdown-item--danger">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                                        <polyline points="16 17 21 12 16 7"/>
+                                        <line x1="21" y1="12" x2="9" y2="12"/>
+                                    </svg>
+                                    Cerrar sesión
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                    </div>
+                </li>
+            @endauth
+        </ul>
+
+        {{-- Menú de usuario desktop --}}
+        <div class="nav-actions">
+            @auth
                 <div class="nav-user-dropdown">
                     <button class="nav-user-trigger" type="button">
                         @if(auth()->user()->avatar_path)
@@ -138,9 +225,9 @@
                             </form>
                         </li>
                     </ul>
-                </li>
+                </div>
             @endauth
-        </ul>
+        </div>
 
         <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Menú">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,21 +294,28 @@
             });
         }
 
-        // Dropdown de usuario
-        const userTrigger = document.querySelector('.nav-user-trigger');
-        const userDropdown = document.querySelector('.nav-user-dropdown');
-        if (userTrigger && userDropdown) {
-            userTrigger.addEventListener('click', (e) => {
+        // Dropdown de usuario (desktop y móvil)
+        const userTriggers = document.querySelectorAll('.nav-user-trigger');
+        
+        userTriggers.forEach((trigger) => {
+            trigger.addEventListener('click', (e) => {
                 e.stopPropagation();
-                userDropdown.classList.toggle('is-open');
-            });
-            
-            // Cerrar al hacer click fuera
-            document.addEventListener('click', (e) => {
-                if (!userDropdown.contains(e.target)) {
-                    userDropdown.classList.remove('is-open');
+                // Buscar el dropdown más cercano (padre)
+                const dropdown = trigger.closest('.nav-user-dropdown');
+                if (dropdown) {
+                    dropdown.classList.toggle('is-open');
                 }
             });
-        }
+        });
+        
+        // Cerrar al hacer click fuera
+        document.addEventListener('click', (e) => {
+            const allDropdowns = document.querySelectorAll('.nav-user-dropdown');
+            allDropdowns.forEach((dropdown) => {
+                if (dropdown && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('is-open');
+                }
+            });
+        });
     })();
 </script>

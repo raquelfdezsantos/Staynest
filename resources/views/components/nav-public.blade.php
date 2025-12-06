@@ -326,21 +326,22 @@
 
         // Dropdown de usuario (desktop y móvil)
         const userTriggers = document.querySelectorAll('.nav-user-trigger');
-        const userDropdowns = document.querySelectorAll('.nav-user-dropdown');
         
-        userTriggers.forEach((trigger, index) => {
-            const dropdown = userDropdowns[index];
-            if (trigger && dropdown) {
-                trigger.addEventListener('click', (e) => {
-                    e.stopPropagation();
+        userTriggers.forEach((trigger) => {
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Buscar el dropdown más cercano (padre)
+                const dropdown = trigger.closest('.nav-user-dropdown');
+                if (dropdown) {
                     dropdown.classList.toggle('is-open');
-                });
-            }
+                }
+            });
         });
         
         // Cerrar al hacer click fuera
         document.addEventListener('click', (e) => {
-            userDropdowns.forEach((dropdown) => {
+            const allDropdowns = document.querySelectorAll('.nav-user-dropdown');
+            allDropdowns.forEach((dropdown) => {
                 if (dropdown && !dropdown.contains(e.target)) {
                     dropdown.classList.remove('is-open');
                 }
