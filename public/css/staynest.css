@@ -2096,26 +2096,46 @@ body.sn-hero-mode .sn-hero--flush-top {
 
 }
 
-/* Tablets (641px – 900px): mismo diseño que móvil pero un pelín más compacto */
-@media (min-width: 641px) and (max-width: 900px) {
+/* Tablets pequeños (641px – 767px): separación consistente con el resto */
+@media (min-width: 641px) and (max-width: 767px) {
 
     /* Botones principales del menú hamburguesa */
     .nav-menu .nav-link {
-        line-height: 1.2 !important;      /* compacta la separación vertical */
-        padding-top: 0.1rem;              /* puedes subir a 0.8 si lo quieres más aireado */
-        padding-bottom: 0.1rem;
+        padding: var(--spacing-sm) var(--spacing-md);
     }
 
-    /* Línea azul de la opción activa, un poco separada del texto */
+    /* Línea azul de la opción activa */
     .nav-menu .nav-link.active::after {
-        bottom: -8px !important;
+        bottom: 2px;
+        width: 24px;
+        height: 2px;
     }
 
-    /* Opciones del dropdown de usuario dentro del menú (por si quieres armonizar) */
+    /* Opciones del dropdown de usuario dentro del menú */
     .nav-menu-user-mobile .nav-dropdown-item {
-        line-height: 1.2;
-        padding-top: 0.7rem;
-        padding-bottom: 0.7rem;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+}
+
+/* Tablets (768px – 900px): separación más compacta */
+@media (min-width: 768px) and (max-width: 900px) {
+
+    /* Reducir espaciado entre items del menú principal únicamente */
+    .nav-menu > li:not(.nav-menu-user-mobile) {
+        margin: 0 !important;
+    }
+
+    /* Botones principales del menú hamburguesa */
+    .nav-menu .nav-link {
+        padding: 0.1rem var(--spacing-xs);
+        line-height: 1;
+    }
+
+    /* Línea azul de la opción activa */
+    .nav-menu .nav-link.active::after {
+        bottom: -8px;
+        width: 24px;
+        height: 2px;
     }
 }
 
