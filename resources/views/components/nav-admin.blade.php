@@ -34,11 +34,15 @@
                 ? route('properties.show', $currentProperty->slug)
                 : route('admin.dashboard');
         @endphp
-        <a href="{{ $logoHref }}" aria-label="Ir al inicio de la propiedad" class="nav-logo-link">
-            <x-logo />
-        </a>
+        <div class="nav-logo-wrapper">
+            <a href="{{ $logoHref }}" aria-label="Ir al inicio de la propiedad">
+                <x-logo />
+            </a>
+        </div>
 
-        <ul class="nav-menu">
+        {{-- Grupo: Menú + Acciones (juntos a la derecha) --}}
+        <div class="nav-right-group">
+            <ul class="nav-menu">
             @if($currentProperty)
                 {{-- Si hay propiedad en contexto, Dashboard apunta al dashboard de esa propiedad --}}
                 <li><a href="{{ route('admin.property.dashboard', $currentProperty->slug) }}"
@@ -140,11 +144,11 @@
                         </li>
                     </ul>
                     </div>
-                </li>
+                </div>
             @endauth
         </ul>
 
-        {{-- Menú de usuario desktop --}}
+        {{-- Acciones de usuario --}}
         <div class="nav-actions">
             @auth
                 <div class="nav-user-dropdown">
@@ -227,13 +231,16 @@
                     </ul>
                 </div>
             @endauth
-        </div>
+        </div>{{-- fin nav-actions --}}
+        </div>{{-- fin nav-right-group --}}
 
-        <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Menú">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-        </button>
+        <div class="mobile-menu-anchor">
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Menú">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
     </nav>
 
     <button id="theme-toggle" class="theme-toggle theme-toggle--corner" aria-label="Cambiar tema" title="Cambiar tema">

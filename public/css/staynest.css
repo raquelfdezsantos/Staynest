@@ -2441,6 +2441,7 @@ footer {
     display: flex;
     align-items: center;
     gap: var(--spacing-lg);
+    margin-left: auto;
 }
 
 /* Menú de navegación: a la izquierda en modo transparente, junto a acciones en modo sólido */
@@ -2451,6 +2452,11 @@ footer {
 
 .nav-header--solid .nav-menu {
     /* Flex del nav-right-group lo posiciona automáticamente */
+}
+
+/* Acciones siempre visibles y a la derecha */
+.nav-header--transparent .nav-actions {
+    margin-left: auto;
 }
 
 /* En modo transparente, body sin padding-top */
