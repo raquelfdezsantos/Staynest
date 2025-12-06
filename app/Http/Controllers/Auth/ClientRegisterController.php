@@ -43,17 +43,42 @@ class ClientRegisterController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'phone' => ['nullable', 'string', 'max:20', 'regex:/^[0-9\s\+\-\(\)]+$/'],
-            'birth_date' => ['required', 'date', 'before:today'],
+            'name' => [
+                'required', 
+                'string', 
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value)) {
+                        $fail('El nombre contiene caracteres HTML no permitidos.');
+                    }
+                    if (preg_match('/[0-9]/', $value)) {
+                        $fail('El nombre no puede contener números.');
+                    }
+                    // Permitir letras (incluidas tildes y ñ) y espacios
+                    if (!preg_match('/^[\p{L}\s]+$/u', $value)) {
+                        $fail('El nombre solo puede contener letras y espacios.');
+                    }
+                }
+            ],
+            'email' => ['required', 'string', 'lowercase', 'email:rfc', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', 'min:8', Password::defaults()],
+            'phone' => [
+                'nullable', 
+                'string', 
+                'max:20',
+                function ($attribute, $value, $fail) {
+                    if ($value && !preg_match('/^[0-9\s\+\-\(\)]+$/', $value)) {
+                        $fail('El teléfono solo puede contener números, espacios y los símbolos + - ( )');
+                    }
+                }
+            ],
+            'birth_date' => ['required', 'date', 'before:today', 'after:' . now()->subYears(120)->toDateString()],
         ], [
-            'phone.regex' => 'El teléfono solo puede contener números, espacios y los símbolos + - ( )',
+            'birth_date.after' => 'La fecha de nacimiento no es válida.',
         ]);
 
         // Validar que sea mayor de edad
-        $birthDate = \Carbon\Carbon::parse($request->birth_date);
+        $birthDate = Carbon::parse($request->birth_date);
         $age = $birthDate->age;
         if ($age < 18) {
             return back()->withErrors(['birth_date' => 'Debes ser mayor de 18 años para registrarte.'])->withInput();
@@ -78,20 +103,20 @@ class ClientRegisterController extends Controller
             
             // Crear la reserva automáticamente
             try {
-                $property = \App\Models\Property::findOrFail($pendingData['property_id']);
-                $checkIn = \Carbon\Carbon::parse($pendingData['check_in']);
-                $checkOut = \Carbon\Carbon::parse($pendingData['check_out']);
+                $property = Property::findOrFail($pendingData['property_id']);
+                $checkIn = Carbon::parse($pendingData['check_in']);
+                $checkOut = Carbon::parse($pendingData['check_out']);
                 
                 // Calcular precio usando rate_calendar
-                $period = \Carbon\CarbonPeriod::create($checkIn, $checkOut)->excludeEndDate();
+                $period = CarbonPeriod::create($checkIn, $checkOut)->excludeEndDate();
                 $dates = collect($period)->map(fn($d) => $d->toDateString());
-                $rates = \App\Models\RateCalendar::where('property_id', $property->id)
+                $rates = RateCalendar::where('property_id', $property->id)
                     ->whereIn('date', $dates)
                     ->get()
                     ->keyBy('date');
                 $totalPrice = $rates->sum('price') * (int)($pendingData['guests'] ?? 1);
 
-                $reservation = \App\Models\Reservation::create([
+                $reservation = Reservation::create([
                     'user_id' => $user->id,
                     'property_id' => $pendingData['property_id'],
                     'check_in' => $pendingData['check_in'],
@@ -108,10 +133,10 @@ class ClientRegisterController extends Controller
 
                 // Enviar emails de confirmación
                 try {
-                    \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\ReservationConfirmedMail($reservation));
-                    \Illuminate\Support\Facades\Mail::to($property->user->email)->send(new \App\Mail\AdminNewReservationMail($reservation));
-                } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error('Error enviando emails de confirmación de reserva: ' . $e->getMessage());
+                    Mail::to($user->email)->send(new ReservationConfirmedMail($reservation));
+                    Mail::to($property->user->email)->send(new AdminNewReservationMail($reservation));
+                } catch (Exception $e) {
+                    Log::error('Error enviando emails de confirmación de reserva: ' . $e->getMessage());
                 }
 
                 // Limpiar sesión
@@ -121,14 +146,14 @@ class ClientRegisterController extends Controller
                 return redirect()->route('properties.reservas.index', $property->slug)->with('success', 'Registro completado. Tu reserva ha sido creada.');
             } catch (\Exception $e) {
                 // Registrar el error para debugging
-                \Illuminate\Support\Facades\Log::error('Error creando reserva tras registro: ' . $e->getMessage(), [
+                Log::error('Error creando reserva tras registro: ' . $e->getMessage(), [
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
                     'pending_data' => $pendingData ?? null,
                 ]);
                 
                 // Si falla la creación de la reserva, redirigir a mis reservas con error
-                $property = \App\Models\Property::find($pendingData['property_id']);
+                $property = Property::find($pendingData['property_id']);
                 session()->forget(['pending_reservation', 'pending_reservation_auto', 'url.intended']);
                 
                 if ($property) {
@@ -143,7 +168,7 @@ class ClientRegisterController extends Controller
 
         // Si viene desde una propiedad específica, redirigir a la ficha pública de esa propiedad
         if ($propertySlug) {
-            $property = \App\Models\Property::where('slug', $propertySlug)->whereNull('deleted_at')->first();
+            $property = Property::where('slug', $propertySlug)->whereNull('deleted_at')->first();
             if ($property) {
                 session(['current_property_slug' => $property->slug]);
                 return redirect()->route('properties.show', $property->slug);

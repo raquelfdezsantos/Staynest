@@ -165,6 +165,17 @@
             </style>
             <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1.5rem;">Editar Propiedad</h3>
 
+            @if ($errors->any())
+                <div class="alert alert-error" style="margin-bottom: 1.5rem;">
+                    <strong>Revisa los siguientes campos:</strong>
+                    <ul style="margin-top: 0.5rem; padding-left: 1.25rem; list-style: disc;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('admin.property.update', $property->slug) }}" style="display: flex; flex-direction: column; gap: 1.5rem;">
                 @csrf
                 @method('PUT')

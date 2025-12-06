@@ -34,9 +34,19 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
+            'email' => ['required', 'string', 'email:rfc', 'max:255'],
+            'password' => ['required', 'string', 'min:8', 'max:255'],
         ];
+    }
+
+    /**
+     * Prepara los datos para validación.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'email' => strtolower(trim($this->email)),
+        ]);
     }
 
     /**

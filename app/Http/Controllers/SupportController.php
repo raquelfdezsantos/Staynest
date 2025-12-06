@@ -52,11 +52,55 @@ class SupportController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name'    => ['required', 'string', 'max:100'],
-            'email'   => ['required', 'email', 'max:150'],
-            'subject' => ['required', 'string', 'max:150'],
-            'message' => ['required', 'string', 'max:2000'],
-        ], [
+            'name'    => [
+                'required', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value)) {
+                        $fail('El nombre contiene caracteres HTML no permitidos.');
+                    }
+                    if (preg_match('/[0-9]/', $value)) {
+                        $fail('El nombre no puede contener números.');
+                    }
+                    // Permitir letras (incluidas tildes y ñ) y espacios
+                    if (!preg_match('/^[\p{L}\s]+$/u', $value)) {
+                        $fail('El nombre solo puede contener letras y espacios.');
+                    }
+                }
+            ],
+            'email'   => ['required', 'email:rfc', 'max:150'],
+            'subject' => [
+                'required', 
+                'string', 
+                'max:150',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value)) {
+                        $fail('El asunto contiene código HTML no permitido.');
+                    }
+                    // Permitir letras, números y puntuación básica
+                    if (!preg_match('/^[\p{L}\p{N}\s.,;:!?¿¡()\-]+$/u', $value)) {
+                        $fail('El asunto contiene caracteres no permitidos.');
+                    }
+                }
+            ],
+            'message' => [
+                'required', 
+                'string',
+                'min:10',
+                'max:2000',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value)) {
+                        $fail('El mensaje contiene código HTML o scripts no permitidos.');
+                    }
+                    // Permitir letras, números, espacios, puntuación y saltos de línea
+                    if (!preg_match('/^[\p{L}\p{N}\s.,;:!?¿¡()\'\"\-\n\r]+$/u', $value)) {
+                        $fail('El mensaje contiene caracteres no permitidos.');
+                    }
+                }
+            ],
+            ],
+        [
             'name.required' => 'El nombre es obligatorio.',
             'name.max' => 'El nombre no puede superar los 100 caracteres.',
             'email.required' => 'El email es obligatorio.',
@@ -65,6 +109,7 @@ class SupportController extends Controller
             'subject.required' => 'El asunto es obligatorio.',
             'subject.max' => 'El asunto no puede superar los 150 caracteres.',
             'message.required' => 'El mensaje es obligatorio.',
+            'message.min' => 'El mensaje debe tener al menos 10 caracteres.',
             'message.max' => 'El mensaje no puede superar los 2000 caracteres.',
         ]);
 

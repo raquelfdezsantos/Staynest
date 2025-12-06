@@ -47,28 +47,155 @@ class AdminRegisterController extends Controller
     {
         $request->validate([
             // Datos personales
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'phone' => ['required', 'string', 'max:20', 'regex:/^[0-9\s\+\-\(\)]+$/'],
-            'birth_date' => ['required', 'date', 'before:today'],
-            'address' => ['required', 'string', 'max:255'],
-            'document_id' => ['required', 'string', 'max:20', 'unique:'.User::class.',document_id'],
+            'name' => [
+                'required', 
+                'string', 
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value)) {
+                        $fail('El nombre contiene caracteres HTML no permitidos.');
+                    }
+                    if (preg_match('/[0-9]/', $value)) {
+                        $fail('El nombre no puede contener números.');
+                    }
+                    // Permitir letras (incluidas tildes y ñ) y espacios
+                    if (!preg_match('/^[\p{L}\s]+$/u', $value)) {
+                        $fail('El nombre solo puede contener letras y espacios.');
+                    }
+                }
+            ],
+            'email' => ['required', 'string', 'lowercase', 'email:rfc', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', 'min:8', Rules\Password::defaults()],
+            'phone' => [
+                'required', 
+                'string', 
+                'max:20',
+                function ($attribute, $value, $fail) {
+                    if (!preg_match('/^[0-9\s\+\-\(\)]+$/', $value)) {
+                        $fail('El teléfono solo puede contener números, espacios y los símbolos + - ( )');
+                    }
+                }
+            ],
+            'birth_date' => ['required', 'date', 'before:today', 'after:' . now()->subYears(120)->toDateString()],
+            'address' => [
+                'required', 
+                'string', 
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value)) {
+                        $fail('La dirección contiene caracteres HTML no permitidos.');
+                    }
+                    // Permitir letras, números, espacios y caracteres comunes en direcciones
+                    if (!preg_match('/^[\p{L}\p{N}\s.,ºª\-]+$/u', $value)) {
+                        $fail('La dirección contiene caracteres no permitidos.');
+                    }
+                }
+            ],
+            'document_id' => [
+                'required', 
+                'string', 
+                'max:20', 
+                'unique:'.User::class.',document_id',
+                function ($attribute, $value, $fail) {
+                    if (!preg_match('/^[A-Z0-9\-]+$/i', $value)) {
+                        $fail('El NIF/CIF solo puede contener letras, números y guiones.');
+                    }
+                }
+            ],
 
             // Datos del alojamiento
-            'property_name' => ['required', 'string', 'max:150'],
-            'property_address' => ['required', 'string', 'max:200'],
-            'city' => ['required', 'string', 'max:100'],
-            'postal_code' => ['required', 'string', 'max:10'],
-            'province' => ['required', 'string', 'max:100'],
+            'property_name' => [
+                'required', 
+                'string', 
+                'max:150',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value)) {
+                        $fail('El nombre de la propiedad contiene caracteres HTML no permitidos.');
+                    }
+                    // Permitir letras, números, espacios, puntos y guiones
+                    if (!preg_match('/^[\p{L}\p{N}\s.\-]+$/u', $value)) {
+                        $fail('El nombre de la propiedad contiene caracteres no permitidos.');
+                    }
+                }
+            ],
+            'property_address' => [
+                'required', 
+                'string', 
+                'max:200',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value)) {
+                        $fail('La dirección de la propiedad contiene caracteres HTML no permitidos.');
+                    }
+                    // Permitir letras, números, espacios y caracteres comunes en direcciones
+                    if (!preg_match('/^[\p{L}\p{N}\s.,ºª\-]+$/u', $value)) {
+                        $fail('La dirección de la propiedad contiene caracteres no permitidos.');
+                    }
+                }
+            ],
+            'city' => [
+                'required', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value)) {
+                        $fail('La ciudad contiene caracteres HTML no permitidos.');
+                    }
+                    // Permitir letras, espacios y guiones
+                    if (!preg_match('/^[\p{L}\s\-]+$/u', $value)) {
+                        $fail('La ciudad solo puede contener letras, espacios y guiones.');
+                    }
+                }
+            ],
+            'postal_code' => [
+                'required', 
+                'string', 
+                'max:10',
+                function ($attribute, $value, $fail) {
+                    if (!preg_match('/^[0-9]{5}$/', $value)) {
+                        $fail('El código postal debe tener exactamente 5 dígitos.');
+                    }
+                }
+            ],
+            'province' => [
+                'required', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value)) {
+                        $fail('La provincia contiene caracteres HTML no permitidos.');
+                    }
+                    // Permitir letras, espacios y guiones
+                    if (!preg_match('/^[\p{L}\s\-]+$/u', $value)) {
+                        $fail('La provincia solo puede contener letras, espacios y guiones.');
+                    }
+                }
+            ],
             'capacity' => ['required', 'integer', 'min:1', 'max:50'],
-            'tourism_license' => ['required', 'string', 'max:100'],
-            'rental_registration' => ['required', 'string', 'max:100'],
+            'tourism_license' => [
+                'required', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if (!preg_match('/^[A-Z0-9\/\-]+$/i', $value)) {
+                        $fail('La licencia turística solo puede contener letras, números, barras y guiones.');
+                    }
+                }
+            ],
+            'rental_registration' => [
+                'required', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if (!preg_match('/^[A-Z0-9\/\-]+$/i', $value)) {
+                        $fail('El registro de alquiler solo puede contener letras, números, barras y guiones.');
+                    }
+                }
+            ],
 
             // Método de cobro (fingido)
             'payment_method' => ['required', 'string', 'in:stripe,bank_transfer,paypal'],
         ], [
-            'phone.regex' => 'El teléfono solo puede contener números, espacios y los símbolos + - ( )',
+            'birth_date.after' => 'La fecha de nacimiento no es válida.',
         ]);
 
         // Validar que no sea menor de edad

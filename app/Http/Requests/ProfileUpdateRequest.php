@@ -21,12 +21,28 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => [
+                'required', 
+                'string', 
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value)) {
+                        $fail('El nombre contiene caracteres HTML no permitidos.');
+                    }
+                    if (preg_match('/[0-9]/', $value)) {
+                        $fail('El nombre no puede contener números.');
+                    }
+                    // Permitir letras (incluidas tildes y ñ) y espacios
+                    if (!preg_match('/^[\p{L}\s]+$/u', $value)) {
+                        $fail('El nombre solo puede contener letras y espacios.');
+                    }
+                }
+            ],
             'email' => [
                 'required',
                 'string',
                 'lowercase',
-                'email',
+                'email:rfc',
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
@@ -34,12 +50,44 @@ class ProfileUpdateRequest extends FormRequest
                 'nullable',
                 'image',
                 'mimes:jpg,jpeg,png,webp',
-                'max:2048'
+                'max:2048',
+                'dimensions:min_width=100,min_height=100,max_width=4000,max_height=4000'
             ],
-            'address' => ['nullable','string','max:255'],
-            'document_id' => ['nullable','string','max:50'],
-            'phone' => ['nullable', 'string', 'max:30', 'regex:/^[0-9\s\+\-\(\)]+$/'],
-            'birth_date' => ['nullable', 'date', 'before:today'],
+            'address' => [
+                'nullable', 
+                'string', 
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    if ($value && preg_match('/<[^>]*>/', $value)) {
+                        $fail('La dirección contiene caracteres HTML no permitidos.');
+                    }
+                    // Permitir letras, números, espacios y caracteres comunes en direcciones
+                    if ($value && !preg_match('/^[\p{L}\p{N}\s.,ºª\-]+$/u', $value)) {
+                        $fail('La dirección contiene caracteres no permitidos.');
+                    }
+                }
+            ],
+            'document_id' => [
+                'nullable', 
+                'string', 
+                'max:50',
+                function ($attribute, $value, $fail) {
+                    if ($value && !preg_match('/^[\p{L}0-9\-]+$/u', $value)) {
+                        $fail('El NIF/CIF solo puede contener letras, números y guiones.');
+                    }
+                }
+            ],
+            'phone' => [
+                'nullable', 
+                'string', 
+                'max:30',
+                function ($attribute, $value, $fail) {
+                    if ($value && !preg_match('/^[0-9\s\+\-\(\)]+$/', $value)) {
+                        $fail('El teléfono solo puede contener números, espacios y los símbolos + - ( )');
+                    }
+                }
+            ],
+            'birth_date' => ['nullable', 'date', 'before:today', 'after:' . now()->subYears(120)->toDateString()],
         ];
 
         // Campo adicional solo para administradores
@@ -60,18 +108,23 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'name.required' => 'El nombre es obligatorio.',
             'name.max' => 'El nombre no puede tener más de :max caracteres.',
+            'name.regex' => 'El nombre solo puede contener letras y espacios.',
             'email.required' => 'El email es obligatorio.',
             'email.email' => 'Por favor, introduce un email válido.',
             'email.unique' => 'Este email ya está registrado.',
             'avatar.image' => 'El archivo debe ser una imagen.',
             'avatar.mimes' => 'La imagen debe ser JPG, PNG o WEBP.',
             'avatar.max' => 'La imagen no puede pesar más de 2MB.',
+            'avatar.dimensions' => 'La imagen debe tener entre 100x100 y 4000x4000 píxeles.',
             'address.max' => 'La dirección no puede superar :max caracteres.',
+            'address.regex' => 'La dirección contiene caracteres no permitidos.',
             'document_id.max' => 'El NIF/CIF no puede superar :max caracteres.',
+            'document_id.regex' => 'El NIF/CIF solo puede contener letras, números y guiones.',
             'phone.max' => 'El teléfono no puede superar :max caracteres.',
             'phone.regex' => 'El teléfono solo puede contener números, espacios y los símbolos + - ( )',
             'birth_date.date' => 'La fecha de nacimiento debe ser una fecha válida.',
             'birth_date.before' => 'Debes haber nacido antes de hoy.',
+            'birth_date.after' => 'La fecha de nacimiento no es válida.',
             'payment_method.in' => 'El método de cobro seleccionado no es válido.',
         ];
     }

@@ -824,17 +824,112 @@ class AdminController extends Controller
         }
         
         $validated = $request->validate([
-            'name' => 'required|string|max:150',
-            'description' => 'nullable|string',
-            'address' => 'nullable|string|max:200',
-            'city' => 'nullable|string|max:100',
-            'postal_code' => 'nullable|string|max:10',
-            'province' => 'nullable|string|max:100',
-            'capacity' => 'required|integer|min:1|max:50',
-            'tourism_license' => 'nullable|string|max:100',
-            'rental_registration' => 'nullable|string|max:100',
-            'services' => 'nullable|array',
-            'services.*' => 'string',
+            'name' => [
+                'required', 
+                'string', 
+                'max:150',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value)) {
+                        $fail('El nombre de la propiedad contiene caracteres HTML no permitidos.');
+                    }
+                    // Permitir letras, espacios, puntos y guiones (sin números)
+                    if (!preg_match('/^[\p{L}\s.\-]+$/u', $value)) {
+                        $fail('El nombre de la propiedad contiene caracteres no permitidos. Solo se permiten letras, espacios, puntos y guiones.');
+                    }
+                }
+            ],
+            'description' => [
+                'nullable', 
+                'string', 
+                'max:5000',
+                function ($attribute, $value, $fail) {
+                    if ($value && preg_match('/<[^>]*>/', $value)) {
+                        $fail('La descripción contiene código HTML o scripts no permitidos.');
+                    }
+                    // Permitir letras, números, espacios, puntuación y saltos de línea
+                    if ($value && !preg_match('/^[\p{L}\p{N}\s.,;:!?¿¡()"\'\-\n\r]+$/u', $value)) {
+                        $fail('La descripción contiene caracteres no permitidos.');
+                    }
+                }
+            ],
+            'address' => [
+                'nullable', 
+                'string', 
+                'max:200',
+                function ($attribute, $value, $fail) {
+                    if ($value && preg_match('/<[^>]*>/', $value)) {
+                        $fail('La dirección contiene caracteres HTML no permitidos.');
+                    }
+                    // Permitir letras, números, espacios y caracteres comunes en direcciones
+                    if ($value && !preg_match('/^[\p{L}\p{N}\s.,ºª\-]+$/u', $value)) {
+                        $fail('La dirección contiene caracteres no permitidos.');
+                    }
+                }
+            ],
+            'city' => [
+                'nullable', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if ($value && preg_match('/<[^>]*>/', $value)) {
+                        $fail('La ciudad contiene caracteres HTML no permitidos.');
+                    }
+                    // Permitir letras, espacios y guiones
+                    if ($value && !preg_match('/^[\p{L}\s\-]+$/u', $value)) {
+                        $fail('La ciudad solo puede contener letras, espacios y guiones.');
+                    }
+                }
+            ],
+            'postal_code' => [
+                'nullable', 
+                'string', 
+                'max:10',
+                function ($attribute, $value, $fail) {
+                    if ($value && !preg_match('/^[0-9]{5}$/', $value)) {
+                        $fail('El código postal debe tener exactamente 5 dígitos.');
+                    }
+                }
+            ],
+            'province' => [
+                'nullable', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if ($value && preg_match('/<[^>]*>/', $value)) {
+                        $fail('La provincia contiene caracteres HTML no permitidos.');
+                    }
+                    // Permitir letras, espacios y guiones
+                    if ($value && !preg_match('/^[\p{L}\s\-]+$/u', $value)) {
+                        $fail('La provincia solo puede contener letras, espacios y guiones.');
+                    }
+                }
+            ],
+            'capacity' => ['required', 'integer', 'min:1', 'max:50'],
+            'tourism_license' => [
+                'nullable', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if ($value && !preg_match('/^[A-Z0-9\/\-]+$/i', $value)) {
+                        $fail('La licencia turística solo puede contener letras, números, barras y guiones.');
+                    }
+                }
+            ],
+            'rental_registration' => [
+                'nullable', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if ($value && !preg_match('/^[A-Z0-9\/\-]+$/i', $value)) {
+                        $fail('El registro de alquiler solo puede contener letras, números, barras y guiones.');
+                    }
+                }
+            ],
+            'services' => ['nullable', 'array'],
+            'services.*' => [
+                'string', 
+                'in:wifi,parking,pool,washer,dishwasher,heating,air_conditioning,hairdryer,first_aid_kit,pets_allowed,smoking_allowed,tv,kitchen,towels,bed_linen,terrace,elevator,crib'
+            ],
         ]);
 
         $property->update($validated);

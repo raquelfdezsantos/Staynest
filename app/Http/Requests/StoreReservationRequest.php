@@ -45,7 +45,7 @@ class StoreReservationRequest extends FormRequest
             'children'    => ['nullable', 'integer', 'min:0'],
             'pets'        => ['nullable', 'integer', 'min:0'],
             // Notas del huésped
-            'notes'       => ['nullable', 'string', 'max:1000'],
+            'notes'       => ['nullable', 'string', 'max:1000', 'regex:/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s.,;:!?¿¡()\-]+$/u'],
         ];
     }
 
@@ -58,6 +58,19 @@ class StoreReservationRequest extends FormRequest
     {
         return [
             'check_out.after' => 'La fecha de salida debe ser posterior a la de entrada.',
+            'notes.regex' => 'Las notas contienen caracteres no permitidos. Solo se permiten letras, números y puntuación básica.',
         ];
+    }
+
+    /**
+     * Prepara los datos para validación.
+     */
+    protected function prepareForValidation(): void
+    {
+        if ($this->notes) {
+            $this->merge([
+                'notes' => strip_tags(trim($this->notes)),
+            ]);
+        }
     }
 }
