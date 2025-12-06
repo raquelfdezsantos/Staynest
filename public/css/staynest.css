@@ -157,8 +157,8 @@
 
     /* SCROLLBAR */
     
-    /* Fallback de ancho de scrollbar (Windows clásico aprox 14px) */
-    --sn-scrollbar-fallback: 14px;
+    /* Fallback de ancho de scrollbar */
+    --sn-scrollbar-fallback: 8px;
 }
 
 /* ============================================================================
@@ -596,8 +596,8 @@ input[type="checkbox"]:not(.sn-auth input[type="checkbox"]):hover {
    SCROLLBAR PERSONALIZADA
    ============================================================================ */
 ::-webkit-scrollbar {
-    width: 13px;
-    height: 13px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -611,8 +611,8 @@ input[type="checkbox"]:not(.sn-auth input[type="checkbox"]):hover {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-bg-secondary);
-    border-color: var(--color-accent);
+    background: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
 }
 
 * {
@@ -620,42 +620,47 @@ input[type="checkbox"]:not(.sn-auth input[type="checkbox"]):hover {
     scrollbar-color: var(--color-accent) var(--color-bg-primary);
 }
 
+/* Firefox hover workaround */
+*:hover {
+    scrollbar-color: var(--color-accent-hover) var(--color-bg-primary);
+}
+
 /* ============================================================================
    NAVEGACIÓN PRINCIPAL
    ============================================================================ */
 
 .nav-header {
-    /* Fondo a ancho visual completo y recorte antes de la scrollbar */
+    /* Fondo a ancho visual completo menos la scrollbar */
     position: fixed;
     top: 0;
     left: 0;
-    right: 0; /* Sin compensación por defecto (scrollbar overlay en móviles) */
+    width: 100%; /* Por defecto ocupa todo (móviles con scrollbar overlay) */
     z-index: 1000;
     background-color: var(--color-bg-primary);
     border-bottom: 1px solid var(--color-border-light);
     transition: background-color var(--transition-base), border-color var(--transition-base);
 }
 
-/* SCROLLBAR */
+/* SCROLLBAR - Ajustar ancho del header según tamaño de scrollbar */
 
-/* Tablets: scrollbar pequeña */
+/* Tablets: scrollbar pequeña (4px) */
 @media (min-width: 641px) and (max-width: 900px) {
     .nav-header {
-        right: 4px;
+        width: calc(100% - 4px);
     }
 }
 
 /* Desktop: scrollbar estándar */
 @media (min-width: 901px) {
     .nav-header {
-        right: 10px;
+        width: calc(100% - 8px);
     }
 }
 
-/* Móviles: scrollbar más pequeña */
+/* Móviles: scrollbar pequeña (4px) */
 @media (max-width: 640px) {
     .nav-header {
-        right: 5px;
+        width: calc(100% - 4px);
     }
 }
 
