@@ -179,3 +179,36 @@
     </div>
 @endsection
 
+@push('scripts')
+<script>
+// Actualizar dimensiones reales de las imágenes para PhotoSwipe
+document.addEventListener('DOMContentLoaded', function() {
+    const galleryLinks = document.querySelectorAll('.sn-gallery-compact a');
+    
+    galleryLinks.forEach(link => {
+        const img = link.querySelector('img');
+        if (img) {
+            // Esperar a que la imagen se cargue
+            if (img.complete) {
+                updateDimensions(img, link);
+            } else {
+                img.addEventListener('load', function() {
+                    updateDimensions(img, link);
+                });
+            }
+        }
+    });
+    
+    function updateDimensions(img, link) {
+        // Crear una imagen temporal para obtener dimensiones reales
+        const tempImg = new Image();
+        tempImg.src = img.src;
+        tempImg.onload = function() {
+            link.setAttribute('data-pswp-width', this.naturalWidth);
+            link.setAttribute('data-pswp-height', this.naturalHeight);
+        };
+    }
+});
+</script>
+@endpush
+

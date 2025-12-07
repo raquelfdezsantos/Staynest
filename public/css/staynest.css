@@ -1853,28 +1853,7 @@ body.sn-hero-mode .sn-hero--flush-top {
     font-size: 1rem;
 }
 
-@media (max-width: 1200px) and (min-width: 769px) {
-    .sn-hero__panel {
-        gap: 4rem;
-        font-size: 1.1rem;
-    }
-}
-
-@media (max-width: 900px) {
-    .sn-hero__panel {
-        min-width: 320px;  /* ajusta este valor hasta que veas el panel igual de ancho que antes */
-    }
-
-    .hero-reg-nacional {
-        display: block;
-        overflow-wrap: anywhere;
-        word-break: break-word;
-        white-space: normal;  /* permite romper el número aunque el panel tenga nowrap */
-    }
-}
-
-
-@media (max-width: 768px) {
+@media (max-width: 1200px) {
     .sn-hero__panel {
         grid-template-columns: 1fr;
         white-space: normal;
@@ -1882,8 +1861,15 @@ body.sn-hero-mode .sn-hero--flush-top {
         max-width: 100%;
         box-sizing: border-box;
         gap: 1rem;
-        padding: 1rem 1.25rem;   /* un poco más de aire */
+        padding: 1rem 1.25rem;
         font-size: 1rem;
+    }
+
+    .hero-reg-nacional {
+        display: block;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        white-space: normal;
     }
 }
 
@@ -2276,11 +2262,13 @@ footer {
         }
     }
 
-    @media (min-width: 640px) and (max-width: 1023px) {
+    /* Limitar ancho de columna 1 para que no empuje las demás */
+    @media (min-width: 640px) {
         .footer-col-1 {
-            max-width: 25ch;  /* aprox. el ancho de "Asturias — Registro autonómico" */
+            max-width: 30ch;  /* ancho máximo para evitar empujar col-2 */
         }
 
+        /* Registro nacional se corta siempre */
         .reg-nacional {
             display: block;              /* ocupa el ancho de la columna */
             overflow-wrap: anywhere;     /* rompe dentro de la "palabra" si hace falta */
