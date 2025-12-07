@@ -7,21 +7,16 @@ use Illuminate\Http\Request;
 use App\Models\Property;
 
 /**
- * Middleware para asegurar el contexto de propiedad en la sesión y las vistas.
- *
- * Establece la propiedad actual según la sesión, la query o por defecto, y la comparte con las vistas.
+ * Middleware para asegurar contexto de propiedad.
  */
 class EnsurePropertyContext
 {
     /**
-     * Maneja la verificación y establecimiento del contexto de propiedad.
+     * Maneja contexto de propiedad.
      *
-     * Busca la propiedad en sesión, query o por defecto y la comparte con las vistas.
-     * Redirige si es necesario para establecer la URL canónica.
-     *
-     * @param Request $request Solicitud HTTP.
-     * @param Closure $next Siguiente middleware o controlador.
-     * @return mixed Respuesta HTTP o redirección.
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure $next
+     * @return mixed
      */
     public function handle(Request $request, Closure $next)
     {
@@ -49,7 +44,7 @@ class EnsurePropertyContext
             }
         }
 
-        // Si seguimos sin propiedad y estamos en root y no hay contexto, usar la por defecto
+        // Si seguimos sin propiedad y estamos en root y no hay contexto, usarla por defecto
         if (!$property && $request->is('/')) {
             $property = Property::where('slug', 'piso-turistico-centro')
                 ->whereNull('deleted_at')
