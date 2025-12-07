@@ -7,10 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 /**
- * Modelo User.
- *
- * Representa a los usuarios del sistema, que pueden ser clientes o administradores.
- * Gestiona la autenticación, notificaciones y relaciones con sus reservas.
+ * Modelo que representa un usuario.
  *
  * @property int $id
  * @property string $name
@@ -58,9 +55,9 @@ class User extends Authenticatable
     ];
 
     /**
-     * Relación: un usuario admin puede tener varias propiedades.
+     * Relación con las propiedades.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Property>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Property>
      */
     public function properties()
     {
@@ -68,7 +65,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Conversión automática de atributos a tipos nativos.
+     * Conversión automática de atributos.
      *
      * @return array<string, string>
      */

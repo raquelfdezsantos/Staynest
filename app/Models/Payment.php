@@ -6,11 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Modelo Payment.
+ * Modelo que representa un pago.
  *
- * Gestiona los pagos simulados dentro del sistema.
- * Cada pago está vinculado a una reserva y genera una factura correspondiente.
- * 
  * @property int $reservation_id
  * @property float $amount
  * @property string $method
@@ -21,9 +18,9 @@ class Payment extends Model
 {
     use HasFactory;
     /**
-     * Atributos que pueden asignarse de forma masiva.
-     * 
-     * @var array <int, string>
+     * Atributos asignables masivamente.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
         'reservation_id',
@@ -34,9 +31,9 @@ class Payment extends Model
     ];
 
     /**
-     * Relación: un pago pertenece a una reserva.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Reservation, Payment>
+     * Relación con la reserva.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Reservation, \App\Models\Payment>
      */
     public function reservation()
     {

@@ -6,10 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Modelo Photo.
- *
- * Gestiona las fotografías asociadas a una propiedad.
- * Cada foto pertenece a una única propiedad y contiene su ruta de almacenamiento.
+ * Modelo que representa una foto de propiedad.
  *
  * @property int $id
  * @property int $property_id
@@ -19,6 +16,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Photo extends Model
 {
+    /**
+     * Atributos asignables masivamente.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'property_id',
         'url',
@@ -26,14 +28,19 @@ class Photo extends Model
         'sort_order',
     ];
 
+    /**
+     * Conversión automática de atributos.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'is_cover' => 'boolean',
     ];
 
     /**
-     * Relación: una foto pertenece a una propiedad.
+     * Relación con la propiedad.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Property, Photo>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Property, \App\Models\Photo>
      */
     public function property()
     {

@@ -6,11 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Modelo Reservation.
+ * Modelo que representa una reserva.
  *
- * Representa una reserva realizada por un usuario sobre una propiedad.
- * Contiene información sobre fechas, huéspedes, precio total y estado.
- * 
  * @property \Illuminate\Support\Carbon $check_in
  * @property \Illuminate\Support\Carbon $check_out
  * @property int $user_id
@@ -57,9 +54,9 @@ class Reservation extends Model
     ];
 
     /**
-     * Relación: una reserva pertenece a una propiedad.
+     * Relación con la propiedad.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Property, \App\Models\Reservation>
      */
     public function property()
     {
@@ -67,9 +64,9 @@ class Reservation extends Model
     }
 
     /**
-     * Relación: una reserva pertenece a un usuario.
+     * Relación con el usuario.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, \App\Models\Reservation>
      */
     public function user()
     {
@@ -77,9 +74,9 @@ class Reservation extends Model
     }
 
     /**
-     * Relación: una reserva tiene una factura.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne<Invoice>
+     * Relación con la factura.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\App\Models\Invoice>
      */
     public function invoice()
     {
@@ -87,9 +84,9 @@ class Reservation extends Model
     }
 
     /**
-     * Relación: una reserva puede tener múltiples facturas (original + rectificativas).
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Invoice>
+     * Relación con las facturas.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Invoice>
      */
     public function invoices()
     {
@@ -97,9 +94,9 @@ class Reservation extends Model
     }
 
     /**
-     * Relación: una reserva puede tener múltiples pagos.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Payment>
+     * Relación con los pagos.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Payment>
      */
     public function payments()
     {
@@ -108,9 +105,9 @@ class Reservation extends Model
 
 
     /**
-     * Calcula el total realmente pagado (pagos con estado 'succeeded' menos reembolsos).
+     * Calcula el total pagado neto.
      *
-     * @return float Total pagado neto (incluye reembolsos como negativos)
+     * @return float Total pagado neto
      */
     public function paidAmount(): float
     {
@@ -127,7 +124,7 @@ class Reservation extends Model
     }
 
     /**
-     * Calcula el total reembolsado en la reserva.
+     * Calcula el total reembolsado.
      *
      * @return float Monto total reembolsado
      */
@@ -143,7 +140,7 @@ class Reservation extends Model
     }
 
     /**
-     * Calcula el saldo pendiente de pago en la reserva.
+     * Calcula el saldo pendiente de pago.
      *
      * @return float Monto pendiente de pago
      */
@@ -154,7 +151,7 @@ class Reservation extends Model
     }
 
     /**
-     * Calcula el exceso pagado sobre el total de la reserva.
+     * Calcula el exceso pagado.
      *
      * @return float Monto pagado en exceso
      */
@@ -165,10 +162,9 @@ class Reservation extends Model
     }
 
     /**
-     * Calcula el porcentaje de reembolso aplicable al cancelar según días restantes.
-     * Política definida en config/reservations.php. Sólo aplica si la reserva está pagada.
+     * Calcula el porcentaje de reembolso por cancelación.
      *
-     * @return int Porcentaje de reembolso aplicable
+     * @return int Porcentaje de reembolso
      */
     public function cancellationRefundPercent(): int
     {

@@ -6,10 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Modelo PropertyEnvironment.
- *
- * Representa la información del entorno de una propiedad turística.
- * Incluye descripción, fotos y detalles sobre naturaleza, cultura, actividades y servicios.
+ * Modelo que representa el entorno de una propiedad.
  *
  * @property int $id
  * @property int $property_id
@@ -52,9 +49,9 @@ class PropertyEnvironment extends Model
     ];
 
     /**
-     * Relación: un entorno pertenece a una propiedad.
+     * Relación con la propiedad.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Property, PropertyEnvironment>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Property, \App\Models\PropertyEnvironment>
      */
     public function property()
     {

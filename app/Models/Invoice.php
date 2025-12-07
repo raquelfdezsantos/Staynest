@@ -6,11 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Modelo Invoice.
+ * Modelo que representa una factura.
  *
- * Representa la factura generada tras el pago simulado de una reserva.
- * Incluye número de factura, importe total, fecha de emisión y relación con la reserva.
- * 
  * @property int $id
  * @property int $reservation_id
  * @property string $number
@@ -22,9 +19,9 @@ class Invoice extends Model
 {
     use HasFactory;
     /**
-     * Resumen de los atributos que pueden asignarse de forma masiva.
-     * 
-     * @var array <int, string>
+     * Atributos asignables masivamente.
+     *
+     * @var array<int, string>
      */
     protected $fillable = [
         'reservation_id',
@@ -36,9 +33,9 @@ class Invoice extends Model
     ];
 
     /**
-     * Conversión automática de atributos a tipos nativos.
-     * 
-     * @var array <int, string>
+     * Conversión automática de atributos.
+     *
+     * @var array<int, string>
      */
     protected $casts = [
         'issued_at' => 'datetime',
@@ -47,9 +44,9 @@ class Invoice extends Model
     ];
 
     /**
-     * Relación: una factura pertenece a una reserva.
-     * 
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<Reservation, Invoice>
+     * Relación con la reserva.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\Reservation, \App\Models\Invoice>
      */
     public function reservation()
     {
@@ -57,10 +54,10 @@ class Invoice extends Model
     }
 
     /**
-     * Genera un número de factura único.
-     * 
-     * @param string $prefix Prefijo del número de factura (INV, RECT, REFUND)
-     * @return string Número de factura único
+     * Genera número único de factura.
+     *
+     * @param string $prefix Prefijo
+     * @return string Número único
      */
     public static function generateUniqueNumber(string $prefix = 'INV'): string
     {

@@ -7,10 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * Modelo Property.
- *
- * Representa una vivienda turística registrada en el sistema.
- * Cada propiedad tiene fotos, un calendario de tarifas y reservas asociadas.
+ * Modelo que representa una propiedad.
  *
  * @property int $id
  * @property int $user_id
@@ -59,9 +56,9 @@ class Property extends Model
     ];
 
     /**
-     * Relación: una propiedad pertenece a un usuario admin.
+     * Relación con el usuario.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<User, Property>
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo<\App\Models\User, \App\Models\Property>
      */
     public function user()
     {
@@ -69,9 +66,9 @@ class Property extends Model
     }
 
     /**
-     * Relación: una propiedad puede tener muchas fotos.
+     * Relación con las fotos.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<Photo>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\Photo>
      */
     public function photos()
     {
@@ -79,9 +76,9 @@ class Property extends Model
     }
 
     /**
-     * Relación: una propiedad tiene un calendario de tarifas.
+     * Relación con el calendario de tarifas.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany<RateCalendar>
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany<\App\Models\RateCalendar>
      */
     public function rateCalendar()
     {
@@ -89,9 +86,9 @@ class Property extends Model
     }
 
     /**
-     * Relación: una propiedad puede tener información de entorno.
+     * Relación con el entorno.
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne<PropertyEnvironment>
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<\App\Models\PropertyEnvironment>
      */
     public function environment()
     {
@@ -99,7 +96,7 @@ class Property extends Model
     }
 
     /**
-     * Conversión automática de atributos a tipos nativos.
+     * Conversión automática de atributos.
      *
      * @return array<string, string>
      */
