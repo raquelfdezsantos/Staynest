@@ -7,16 +7,14 @@ use App\Models\User;
 use Illuminate\Auth\Access\Response;
 
 /**
- * Policy ReservationPolicy
- *
- * Define las reglas de autorización para acciones sobre reservas.
+ * Policy para reservas.
  */
 class ReservationPolicy
 {
     /**
-     * Determina si el usuario puede ver el listado de reservas.
+     * Determina si puede ver el listado de reservas.
      *
-     * @param User $user Usuario autenticado
+     * @param \App\Models\User $user Usuario autenticado
      * @return bool
      */
     public function viewAny(User $user): bool
@@ -25,10 +23,10 @@ class ReservationPolicy
     }
 
     /**
-     * Determina si el usuario puede ver una reserva específica.
+     * Determina si puede ver una reserva específica.
      *
-     * @param User $user Usuario autenticado
-     * @param Reservation $r Reserva a consultar
+     * @param \App\Models\User $user Usuario autenticado
+     * @param \App\Models\Reservation $r Reserva a consultar
      * @return bool
      */
     public function view(User $user, Reservation $r): bool
@@ -37,9 +35,9 @@ class ReservationPolicy
     }
 
     /**
-     * Determina si el usuario puede crear una reserva.
+     * Determina si puede crear una reserva.
      *
-     * @param User $user Usuario autenticado
+     * @param \App\Models\User $user Usuario autenticado
      * @return bool
      */
     public function create(User $user): bool
@@ -48,10 +46,10 @@ class ReservationPolicy
     }
 
     /**
-     * Determina si el usuario puede actualizar una reserva.
+     * Determina si puede actualizar una reserva.
      *
-     * @param User $user Usuario autenticado
-     * @param Reservation $r Reserva a actualizar
+     * @param \App\Models\User $user Usuario autenticado
+     * @param \App\Models\Reservation $r Reserva a actualizar
      * @return bool
      */
     public function update(User $user, Reservation $r): bool
@@ -60,10 +58,10 @@ class ReservationPolicy
     }
 
     /**
-     * Determina si el usuario puede eliminar una reserva.
+     * Determina si puede eliminar una reserva.
      *
-     * @param User $user Usuario autenticado
-     * @param Reservation $reservation Reserva a eliminar
+     * @param \App\Models\User $user Usuario autenticado
+     * @param \App\Models\Reservation $reservation Reserva a eliminar
      * @return bool
      */
     public function delete(User $user, Reservation $reservation): bool
@@ -72,10 +70,10 @@ class ReservationPolicy
     }
 
     /**
-     * Determina si el usuario puede cancelar una reserva.
+     * Determina si puede cancelar una reserva.
      *
-     * @param User $user Usuario autenticado
-     * @param Reservation $r Reserva a cancelar
+     * @param \App\Models\User $user Usuario autenticado
+     * @param \App\Models\Reservation $r Reserva a cancelar
      * @return bool
      */
     public function cancel(User $user, Reservation $r): bool
@@ -84,10 +82,10 @@ class ReservationPolicy
     }
 
     /**
-     * Determina si el usuario puede pagar una reserva.
+     * Determina si puede pagar una reserva.
      *
-     * @param User $user Usuario autenticado
-     * @param Reservation $r Reserva a pagar
+     * @param \App\Models\User $user Usuario autenticado
+     * @param \App\Models\Reservation $r Reserva a pagar
      * @return bool
      */
     public function pay(User $user, Reservation $r): bool
@@ -96,10 +94,10 @@ class ReservationPolicy
     }
     
     /**
-     * Determina si el usuario puede restaurar una reserva eliminada.
+     * Determina si puede restaurar una reserva eliminada.
      *
-     * @param User $user Usuario autenticado
-     * @param Reservation $reservation Reserva a restaurar
+     * @param \App\Models\User $user Usuario autenticado
+     * @param \App\Models\Reservation $reservation Reserva a restaurar
      * @return bool
      */
     public function restore(User $user, Reservation $reservation): bool
@@ -108,10 +106,10 @@ class ReservationPolicy
     }
 
     /**
-     * Determina si el usuario puede eliminar permanentemente una reserva.
+     * Determina si puede eliminar permanentemente una reserva.
      *
-     * @param User $user Usuario autenticado
-     * @param Reservation $reservation Reserva a eliminar permanentemente
+     * @param \App\Models\User $user Usuario autenticado
+     * @param \App\Models\Reservation $reservation Reserva a eliminar permanentemente
      * @return bool
      */
     public function forceDelete(User $user, Reservation $reservation): bool
