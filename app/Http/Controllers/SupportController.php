@@ -8,19 +8,15 @@ use App\Mail\SupportMessageMail;
 use App\Models\Property;
 
 /**
- * Controlador para la gestión de soporte y contacto.
- *
- * Permite mostrar el formulario de soporte y enviar mensajes al equipo de soporte.
+ * Controlador para soporte y contacto.
  */
 class SupportController extends Controller
 {
     /**
-     * Muestra el formulario de contacto con soporte.
+     * Muestra formulario de soporte.
      *
-     * Recupera la propiedad actual del contexto de sesión o de la query.
-     *
-     * @param Request $request Solicitud HTTP.
-     * @return \Illuminate\Contracts\View\View Vista del formulario de soporte.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Contracts\View\View
      */
     public function index(Request $request)
     {
@@ -42,12 +38,10 @@ class SupportController extends Controller
     }
 
     /**
-     * Procesa el envío del formulario de soporte.
+     * Procesa envío de formulario soporte.
      *
-     * Valida los datos, asocia la propiedad si existe y envía el email al equipo de soporte.
-     *
-     * @param Request $request Solicitud HTTP con los datos del formulario.
-     * @return \Illuminate\Http\RedirectResponse Redirige con mensaje de éxito tras enviar el email.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -125,6 +119,7 @@ class SupportController extends Controller
             $data['property_name'] = $property->name;
             $data['property_id'] = $property->id;
         }
+
 
         Mail::to(env('MAIL_SUPPORT', 'soporte@staynest.com'))
             ->send(new SupportMessageMail($data));

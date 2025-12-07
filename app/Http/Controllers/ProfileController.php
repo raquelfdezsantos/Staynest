@@ -25,16 +25,13 @@ use Illuminate\Support\Str;
 
 /**
  * Controlador de perfil de usuario.
- *
- * Permite a los clientes editar sus datos personales, subir un avatar
- * y consultar sus reservas y facturas en la sección "Mi perfil".
  */
 class ProfileController extends Controller
 {
     /**
      * Muestra el formulario de edición del perfil del usuario autenticado.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Contracts\View\View
      */
     public function edit(Request $request): View
@@ -46,9 +43,8 @@ class ProfileController extends Controller
 
     /**
      * Actualiza el perfil del usuario autenticado con los datos validados.
-     * Si el email cambia, se reinicia la verificación.
      *
-     * @param  \App\Http\Requests\ProfileUpdateRequest  $request
+     * @param \App\Http\Requests\ProfileUpdateRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
@@ -82,10 +78,8 @@ class ProfileController extends Controller
 
     /**
      * Elimina la cuenta del usuario autenticado tras validar la contraseña.
-     * Cancela todas las reservas activas, calcula reembolsos, libera noches.
-     * Cierra sesión, invalida la sesión y regenera el token CSRF.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
@@ -117,7 +111,7 @@ class ProfileController extends Controller
     /**
      * Cancela todas las reservas activas de un usuario, libera noches y procesa reembolsos.
      *
-     * @param  \App\Models\User  $user
+     * @param \App\Models\User $user
      * @return void
      */
     private function cancelAllUserReservations($user): void
@@ -224,8 +218,8 @@ class ProfileController extends Controller
     /**
      * Genera un array de fechas entre check_in y check_out (excluyendo checkout).
      *
-     * @param  string  $checkIn
-     * @param  string  $checkOut
+     * @param string $checkIn
+     * @param string $checkOut
      * @return array<string>
      */
     private function rangeDates(string $checkIn, string $checkOut): array
@@ -237,9 +231,9 @@ class ProfileController extends Controller
     /**
      * Marca las fechas como disponibles/no disponibles en el calendario.
      *
-     * @param  int  $propertyId
-     * @param  array<string>  $dates
-     * @param  bool  $available
+     * @param int $propertyId
+     * @param array<string> $dates
+     * @param bool $available
      * @return void
      */
     private function setAvailability(int $propertyId, array $dates, bool $available): void

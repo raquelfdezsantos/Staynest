@@ -11,17 +11,11 @@ use Carbon\CarbonPeriod;
 
 /**
  * Controlador de propiedades.
- *
- * Gestiona la visualización pública del alojamiento y sus detalles:
- * fotos, precios, calendario de disponibilidad y ficha completa.
  */
 class PropertyController extends Controller
 {
     /**
      * Muestra la HOME adaptativa según el número de propiedades.
-     * 
-     * - Si hay 1 propiedad: muestra ficha completa
-     * - Si hay 2+: muestra grid de propiedades
      *
      * @return \Illuminate\Contracts\View\View
      */
@@ -54,10 +48,7 @@ class PropertyController extends Controller
     /**
      * Muestra el listado de propiedades disponibles.
      *
-     * Obtiene las propiedades junto con sus fotos asociadas,
-     * ordenadas de la más reciente a la más antigua, y las pagina.
-     *
-     * @return \Illuminate\Contracts\View\View Vista con el listado de propiedades.
+     * @return \Illuminate\Contracts\View\View
      */
     public function index()
     {
@@ -68,11 +59,8 @@ class PropertyController extends Controller
     /**
      * Muestra la ficha detallada de una propiedad.
      *
-     * Carga las fotos y el calendario de tarifas disponibles
-     * (solo fechas futuras con disponibilidad).
-     *
-     * @param \App\Models\Property $property Propiedad seleccionada.
-     * @return \Illuminate\Contracts\View\View Vista con los detalles de la propiedad.
+     * @param \App\Models\Property $property
+     * @return \Illuminate\Contracts\View\View
      */
     public function show(Property $property)
     {
@@ -204,7 +192,7 @@ class PropertyController extends Controller
     /**
      * Muestra todas las propiedades de un administrador específico.
      *
-     * @param int $userId ID del usuario admin
+     * @param int $userId
      * @return \Illuminate\Contracts\View\View
      */
     public function byOwner($userId)
@@ -225,10 +213,8 @@ class PropertyController extends Controller
 
     /**
      * Página institucional: Descubre Staynest
-     * 
-     * Muestra información sobre el modelo de negocio y un grid
-     * con TODAS las propiedades disponibles en la plataforma.
      *
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Contracts\View\View
      */
     public function discover(Request $request)

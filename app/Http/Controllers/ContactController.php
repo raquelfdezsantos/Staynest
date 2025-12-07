@@ -10,15 +10,13 @@ use App\Models\Property;
 
 /**
  * Controlador para el formulario de contacto.
- *
- * Permite mostrar el formulario y procesar el envío de mensajes de contacto asociados a una propiedad.
  */
 class ContactController extends Controller
 {
     /**
      * Muestra el formulario de contacto para una propiedad específica.
      *
-     * @param Property $property Propiedad asociada al mensaje de contacto.
+     * @param \App\Models\Property $property
      * @return \Illuminate\Contracts\View\View
      */
     public function create(Property $property)
@@ -29,8 +27,8 @@ class ContactController extends Controller
     /**
      * Procesa el envío del formulario de contacto y envía el mensaje por email al administrador.
      *
-     * @param Property $property Propiedad asociada al mensaje de contacto.
-     * @param Request $request Solicitud HTTP con los datos del formulario.
+     * @param \App\Models\Property $property
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Property $property, Request $request)

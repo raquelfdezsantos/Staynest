@@ -21,18 +21,13 @@ use App\Mail\PaymentBalanceDueMail;
 
 /**
  * Controlador para la gestión de pagos de reservas.
- *
- * Permite simular pagos, generar facturas y enviar notificaciones por email tanto al cliente como al administrador.
  */
 class PaymentController extends Controller
 {
     /**
      * Simula el pago de una reserva pendiente y genera la factura correspondiente.
      *
-     * Autoriza la operación solo si el usuario es el cliente dueño o el admin.
-     * Envía notificaciones por email al cliente y al administrador.
-     *
-     * @param int $reservationId ID de la reserva a pagar.
+     * @param int $reservationId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function pay(int $reservationId)
@@ -108,9 +103,7 @@ class PaymentController extends Controller
     /**
      * Simula el abono de una diferencia pendiente en una reserva ya pagada parcialmente.
      *
-     * Solo permite el pago si existe un saldo pendiente. Envía notificaciones por email al cliente y al administrador.
-     *
-     * @param int $reservationId ID de la reserva a abonar la diferencia.
+     * @param int $reservationId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function payDifference(int $reservationId)

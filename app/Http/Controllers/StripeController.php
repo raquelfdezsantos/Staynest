@@ -21,18 +21,16 @@ use App\Mail\PaymentBalanceSettledMail;
 use App\Mail\AdminPaymentBalanceSettledMail;
 
 /**
- * Controlador para la gestión de pagos con Stripe.
- *
- * Permite iniciar pagos, gestionar diferencias, procesar éxito/cancelación y enviar notificaciones.
+ * Controlador para pagos con Stripe.
  */
 class StripeController extends Controller
 {
     /**
-     * Inicia el proceso de pago completo de una reserva mediante Stripe Checkout.
+     * Inicia pago completo de reserva.
      *
-     * @param Request $request Solicitud HTTP.
-     * @param Reservation $reservation Reserva a pagar.
-     * @return \Illuminate\Http\RedirectResponse Redirige a la URL de Stripe Checkout.
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Reservation $reservation
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function checkout(Request $request, Reservation $reservation)
     {
@@ -75,11 +73,11 @@ class StripeController extends Controller
     }
 
     /**
-     * Inicia el proceso de pago de la diferencia tras modificar una reserva.
+     * Inicia pago de diferencia.
      *
-     * @param Request $request Solicitud HTTP.
-     * @param Reservation $reservation Reserva a pagar la diferencia.
-     * @return \Illuminate\Http\RedirectResponse Redirige a la URL de Stripe Checkout.
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Reservation $reservation
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function checkoutDifference(Request $request, Reservation $reservation)
     {
@@ -127,13 +125,10 @@ class StripeController extends Controller
     }
 
     /**
-     * Procesa el retorno de Stripe tras un pago exitoso.
+     * Procesa pago exitoso.
      *
-     * Recupera la sesión de Stripe, valida el pago y registra Payment/Invoice.
-     * Envía notificaciones por email al cliente y al administrador.
-     *
-     * @param Request $request Solicitud HTTP con el session_id de Stripe.
-     * @return \Illuminate\Http\RedirectResponse Redirige al listado de reservas con mensaje de éxito o error.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function success(Request $request)
     {
@@ -239,13 +234,11 @@ class StripeController extends Controller
     }
 
     /**
-     * Gestiona el pago de la diferencia tras modificar una reserva.
+     * Gestiona pago de diferencia.
      *
-     * Registra el pago, actualiza la factura y envía notificaciones.
-     *
-     * @param Reservation $reservation Reserva a la que se aplica el pago de diferencia.
-     * @param mixed $session Sesión de Stripe con metadata y datos de pago.
-     * @return \Illuminate\Http\RedirectResponse Redirige al listado de reservas con mensaje de éxito.
+     * @param \App\Models\Reservation $reservation
+     * @param mixed $session
+     * @return \Illuminate\Http\RedirectResponse
      */
     private function handleDifferencePayment(Reservation $reservation, $session)
     {
@@ -339,9 +332,9 @@ class StripeController extends Controller
     }
 
     /**
-     * Procesa la cancelación del pago por parte del usuario.
+     * Procesa cancelación de pago.
      *
-     * @return \Illuminate\Http\RedirectResponse Redirige al listado de reservas con mensaje de error.
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function cancel()
     {

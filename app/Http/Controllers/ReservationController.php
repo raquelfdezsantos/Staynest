@@ -32,20 +32,18 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Controlador de reservas.
- *
- * Gestiona la creación, validación y visualización de reservas tanto
- * para clientes como para el administrador. Controla las reglas de negocio
- * sobre disponibilidad, estancia mínima, solapamientos y capacidad máxima.
  */
 class ReservationController extends Controller
 {
     /**
-     * Guarda en sesión los datos de una reserva iniciada por invitado y redirige a login.
-     * Tras iniciar sesión/registro, el usuario vuelve a /reservar con los datos preseleccionados.
+     * Guarda datos en sesión y redirige a login.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function prepare(Request $request)
     {
-        // Recoger sin forzar reglas de negocio aquí; solo persistimos la selección del formulario
+        // Recoger sin forzar reglas de negocio aquí; solo persistir la selección del formulario
         $payload = $request->only([
             'property_id', 'check_in', 'check_out', 'guests', 'adults', 'children', 'pets', 'notes'
         ]);
@@ -62,10 +60,11 @@ class ReservationController extends Controller
         // Simplemente redirigir al login
         return redirect()->guest(route('login'));
     }
+
     /**
-     * Muestra la ficha de una propiedad y su formulario de reserva.
+     * Muestra el formulario de reserva.
      *
-     * @param  string  $slug  Slug de la propiedad
+     * @param string $slug
      * @return \Illuminate\Contracts\View\View
      */
     public function create(string $slug)
@@ -76,11 +75,9 @@ class ReservationController extends Controller
 
 
     /**
-     * Muestra el listado de reservas del cliente para una propiedad específica.
+     * Muestra el listado de reservas del cliente.
      *
-     * Si el usuario es admin y dueño de la propiedad, redirige al panel de administración.
-     *
-     * @param Property $property Propiedad asociada a las reservas.
+     * @param \App\Models\Property $property
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function index(Property $property)
@@ -102,15 +99,10 @@ class ReservationController extends Controller
 
 
     /**
-     * Crea una reserva validando reglas de negocio y calculando el precio:
-     * - Capacidad máxima del alojamiento
-     * - Rango de fechas válido y estancia mínima
-     * - Ausencia de solapamientos con reservas existentes
-     * - Disponibilidad diaria en calendario de tarifas
-     * - Cálculo del total sumando el precio de cada noche
+     * Crea una reserva validando reglas de negocio.
      *
-     * @param  \App\Http\Requests\StoreReservationRequest  $request  Datos validados de la reserva
-     * @return \Illuminate\Http\RedirectResponse  Redirige al listado de reservas del cliente
+     * @param \App\Http\Requests\StoreReservationRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreReservationRequest $request)
     {
@@ -271,7 +263,7 @@ class ReservationController extends Controller
 
 
     /**
-     * Lista las reservas del cliente autenticado (con paginación).
+     * Lista las reservas del cliente autenticado.
      *
      * @return \Illuminate\Contracts\View\View
      */
@@ -287,12 +279,11 @@ class ReservationController extends Controller
 
 
     /**
-     * Genera un array de fechas entre dos días (excluyendo el último).
-     * Utiliza CarbonPeriod para crear el rango y devuelve las fechas en formato string.
+     * Genera array de fechas entre dos días.
      *
-     * @param string $from Fecha de inicio (YYYY-MM-DD).
-     * @param string $to Fecha de fin (YYYY-MM-DD).
-     * @return array Array de fechas en formato string.
+     * @param string $from
+     * @param string $to
+     * @return array
      */
     private function rangeDates(string $from, string $to): array
     {
@@ -303,12 +294,10 @@ class ReservationController extends Controller
         })->all();
     }
 
-    /** Genera un código único con formato: SN-YYYY-XXXXXX (máx 20 chars). */
     /**
-     * Genera un código único para la reserva con formato SN-YYYY-XXXXXX.
-     * Realiza varios intentos para evitar colisiones y asegura longitud máxima de 20 caracteres.
+     * Genera código único para reserva.
      *
-     * @return string Código único de reserva.
+     * @return string
      */
     private function generateReservationCode(): string
     {
@@ -326,12 +315,11 @@ class ReservationController extends Controller
     }
 
     /**
-     * Establece la disponibilidad de un conjunto de fechas para una propiedad.
-     * Actualiza el campo is_available en RateCalendar para las fechas indicadas.
+     * Establece disponibilidad de fechas.
      *
-     * @param int $propertyId ID de la propiedad.
-     * @param array $dates Fechas a modificar.
-     * @param bool $available Estado de disponibilidad.
+     * @param int $propertyId
+     * @param array $dates
+     * @param bool $available
      * @return void
      */
     public function setAvailability(int $propertyId, array $dates, bool $available): void
@@ -348,9 +336,9 @@ class ReservationController extends Controller
     }
 
     /**
-     * Muestra el formulario de edición de una reserva para el cliente (solo estados pending y paid).
+     * Muestra formulario de edición de reserva.
      *
-     * @param Reservation $reservation Reserva a editar.
+     * @param \App\Models\Reservation $reservation
      * @return \Illuminate\Contracts\View\View|\Illuminate\Http\RedirectResponse
      */
     public function edit(Reservation $reservation)
@@ -405,12 +393,10 @@ class ReservationController extends Controller
     }
 
     /**
-     * Actualiza las fechas y datos de una reserva para el cliente (solo estados pending y paid).
+     * Actualiza fechas y datos de reserva.
      *
-     * Valida solapamientos, disponibilidad y reglas de negocio. Gestiona pagos y reembolsos si hay diferencia.
-     *
-     * @param Request $request Solicitud HTTP con los datos de la reserva.
-     * @param Reservation $reservation Reserva a actualizar.
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Reservation $reservation
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, Reservation $reservation)
@@ -705,11 +691,9 @@ class ReservationController extends Controller
     }
 
     /**
-     * Cancela una reserva para el cliente (solo estados pending y paid).
+     * Cancela una reserva.
      *
-     * Calcula el posible reembolso según la política y libera las noches en el calendario.
-     *
-     * @param Reservation $reservation Reserva a cancelar.
+     * @param \App\Models\Reservation $reservation
      * @return \Illuminate\Http\RedirectResponse
      */
     public function cancel(Reservation $reservation)
@@ -740,9 +724,9 @@ class ReservationController extends Controller
                 ]);
 
                 // Generar factura rectificativa asociada a la cancelación
-                $invoiceNumber = \App\Models\Invoice::generateUniqueNumber('RECT');
+                $invoiceNumber = Invoice::generateUniqueNumber('RECT');
 
-                return \App\Models\Invoice::create([
+                return Invoice::create([
                     'reservation_id' => $reservation->id,
                     'number'         => $invoiceNumber,
                     'pdf_path'       => null,

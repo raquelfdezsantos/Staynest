@@ -3,10 +3,7 @@
 
 /**
  * Controlador del área de administración.
- *
- * Permite gestionar reservas, propiedades, fotos, calendario y precios, así como realizar cancelaciones, reembolsos y bloqueos de fechas.
- * Requiere autenticación y rol 'admin'.
- * La reposición de noches afecta a RateCalendar indicando disponibilidad=true.
+ * Gestiona reservas, propiedades, fotos, calendario y precios.
  */
 
 namespace App\Http\Controllers;
@@ -37,10 +34,7 @@ class AdminController extends Controller
     /**
      * Muestra el dashboard del administrador con el listado de reservas.
      *
-     * Filtros opcionales por estado (?status=pending|paid|cancelled) y por rango
-     * de fechas (?from=YYYY-MM-DD&to=YYYY-MM-DD).
-     *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Contracts\View\View
      */
     public function index(Request $request)
@@ -103,10 +97,8 @@ class AdminController extends Controller
     /**
      * Muestra el dashboard filtrado por una propiedad específica.
      *
-     * Verifica que la propiedad pertenezca al admin y muestra estadísticas y reservas solo de esa propiedad.
-     *
-     * @param Request $request Solicitud HTTP con filtros opcionales.
-     * @param Property $property Propiedad a filtrar.
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Property $property
      * @return \Illuminate\Contracts\View\View
      */
     public function propertyDashboardFiltered(Request $request, Property $property)
@@ -162,9 +154,9 @@ class AdminController extends Controller
     }
 
     /**
-     * Calcula el porcentaje de ocupación del mes actual para todas las propiedades del admin.
+     * Calcula el porcentaje de ocupación del mes actual.
      *
-     * @return float Porcentaje de ocupación.
+     * @return float
      */
     private function calculateOccupancyRate(): float
     {
@@ -199,8 +191,8 @@ class AdminController extends Controller
     /**
      * Calcula el porcentaje de ocupación del mes actual para una propiedad específica.
      *
-     * @param int $propertyId ID de la propiedad.
-     * @return float Porcentaje de ocupación.
+     * @param int $propertyId
+     * @return float
      */
     private function calculateOccupancyRateForProperty(int $propertyId): float
     {
@@ -232,10 +224,7 @@ class AdminController extends Controller
     /**
      * Cancela una reserva pendiente y repone las noches al calendario.
      *
-     * Solo reservas con estado 'pending' pueden cancelarse aquí. Marca como disponibles las fechas del rango [check_in, check_out) para la propiedad asociada.
-     * Envía notificaciones de cancelación al cliente y al admin.
-     *
-     * @param int $reservationId ID de la reserva a cancelar.
+     * @param int $reservationId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function cancel(int $reservationId)
@@ -333,9 +322,9 @@ class AdminController extends Controller
     /**
      * Genera un array de fechas entre dos días (excluyendo el último).
      *
-     * @param string $from Fecha de inicio (YYYY-MM-DD).
-     * @param string $to Fecha de fin (YYYY-MM-DD).
-     * @return array Array de fechas en formato string.
+     * @param string $from
+     * @param string $to
+     * @return array
      */
     private function rangeDates(string $from, string $to): array
     {
@@ -348,9 +337,10 @@ class AdminController extends Controller
     /**
      * Establece la disponibilidad de un conjunto de fechas para una propiedad.
      *
-     * @param int $propertyId ID de la propiedad.
-     * @param array $dates Fechas a modificar.
-     * @param bool $available Estado de disponibilidad.
+     * @param int $propertyId
+     * @param array $dates
+     * @param bool $available
+     * @return void
      */
     private function setAvailability(int $propertyId, array $dates, bool $available): void
     {
@@ -363,7 +353,7 @@ class AdminController extends Controller
     /**
      * Muestra el formulario de edición de una reserva para el admin.
      *
-     * @param int $id ID de la reserva.
+     * @param int $id
      * @return \Illuminate\Contracts\View\View
      */
     public function edit(int $id)
@@ -381,7 +371,7 @@ class AdminController extends Controller
     /**
      * Muestra la vista de detalles de una reserva para el admin.
      *
-     * @param Reservation $reservation Reserva a mostrar.
+     * @param \App\Models\Reservation $reservation
      * @return \Illuminate\Contracts\View\View
      */
     public function show(Reservation $reservation)
@@ -400,10 +390,8 @@ class AdminController extends Controller
     /**
      * Actualiza una reserva (solo estados pending/paid) y notifica cambios.
      *
-     * Valida fechas, huéspedes y disponibilidad. Notifica por email al cliente y admin. Si hay diferencia a devolver, simula reembolso.
-     *
-     * @param Request $request Solicitud HTTP con los datos de la reserva.
-     * @param int $id ID de la reserva.
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request, int $id)
@@ -519,9 +507,7 @@ class AdminController extends Controller
     /**
      * Procesa el reembolso de una reserva pagada, cancela la reserva y genera factura rectificativa.
      *
-     * Envía notificaciones de cancelación y reembolso al cliente y al admin.
-     *
-     * @param int $id ID de la reserva.
+     * @param int $id
      * @return \Illuminate\Http\RedirectResponse
      */
     public function refund(int $id)
@@ -599,10 +585,8 @@ class AdminController extends Controller
     /**
      * Bloquea noches en el calendario de una propiedad.
      *
-     * No permite bloquear si existen reservas que solapan el rango. Marca las fechas como no disponibles.
-     *
-     * @param Request $request Solicitud HTTP con las fechas.
-     * @param Property $property Propiedad obtenida mediante route model binding
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Property $property
      * @return \Illuminate\Http\RedirectResponse
      */
     public function blockDates(Request $request, Property $property)
@@ -653,10 +637,8 @@ class AdminController extends Controller
     /**
      * Desbloquea noches en el calendario de una propiedad.
      *
-     * Marca las fechas como disponibles en el calendario.
-     *
-     * @param Request $request Solicitud HTTP con las fechas.
-     * @param Property $property Propiedad obtenida mediante route model binding
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Property $property
      * @return \Illuminate\Http\RedirectResponse
      */
     public function unblockDates(Request $request, Property $property)
@@ -690,9 +672,7 @@ class AdminController extends Controller
     /**
      * Elimina (soft delete) una propiedad y cancela sus reservas futuras.
      *
-     * Libera fechas, procesa reembolsos y envía notificaciones. Envía confirmación al admin.
-     *
-     * @param Property $property Propiedad a eliminar.
+     * @param \App\Models\Property $property
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroyProperty(Property $property)
@@ -790,7 +770,7 @@ class AdminController extends Controller
     /**
      * Muestra el formulario de edición de la propiedad.
      *
-     * @param Property $property Propiedad a editar.
+     * @param \App\Models\Property $property
      * @return \Illuminate\Contracts\View\View
      */
     public function propertyEdit(Property $property)
@@ -815,8 +795,8 @@ class AdminController extends Controller
     /**
      * Actualiza los datos de la propiedad.
      *
-     * @param Request $request Solicitud HTTP con los datos de la propiedad.
-     * @param Property $property Propiedad a actualizar.
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Property $property
      * @return \Illuminate\Http\RedirectResponse
      */
     public function propertyUpdate(Request $request, Property $property)
@@ -943,8 +923,8 @@ class AdminController extends Controller
     /**
      * Actualiza la información del entorno de una propiedad.
      *
-     * @param Request $request Solicitud HTTP con los datos del entorno.
-     * @param Property $property Propiedad a actualizar.
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Property $property
      * @return \Illuminate\Http\RedirectResponse
      */
     public function environmentUpdate(Request $request, Property $property)
@@ -1026,7 +1006,7 @@ class AdminController extends Controller
     /**
      * Lista las fotos de la propiedad y permite gestionarlas.
      *
-     * @param Property $property Propiedad cuyas fotos se gestionan.
+     * @param \App\Models\Property $property
      * @return \Illuminate\Contracts\View\View
      */
     public function photosIndex(Property $property)
@@ -1045,7 +1025,8 @@ class AdminController extends Controller
     /**
      * Sube una o varias fotos a la propiedad.
      *
-     * @param Request $request Solicitud HTTP con las fotos y propiedad.
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Property $property
      * @return \Illuminate\Http\RedirectResponse
      */
     public function photosStore(Request $request, Property $property)
@@ -1084,7 +1065,7 @@ class AdminController extends Controller
     /**
      * Elimina una foto de una propiedad.
      *
-     * @param int $photoId ID de la foto a eliminar.
+     * @param int $photoId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function photosDestroy($photoId)
@@ -1109,11 +1090,11 @@ class AdminController extends Controller
     }
 
     /**
-    * Actualiza el orden de las fotos de una propiedad.
-    *
-    * @param Request $request Solicitud HTTP con el nuevo orden.
-    * @return \Illuminate\Http\JsonResponse
-    */
+     * Actualiza el orden de las fotos de una propiedad.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function photosReorder(Request $request)
     {
         $adminId = Auth::id();
@@ -1137,8 +1118,8 @@ class AdminController extends Controller
     /**
      * Marca una foto como portada (is_cover) de una propiedad.
      *
-     * @param Property $property La propiedad
-     * @param int $photo ID de la foto a marcar como portada.
+     * @param \App\Models\Property $property
+     * @param int $photo
      * @return \Illuminate\Http\RedirectResponse
      */
     public function photosSetCover(Property $property, $photo)
@@ -1181,7 +1162,7 @@ class AdminController extends Controller
     /**
      * Muestra el dashboard de una propiedad específica con sus reservas.
      *
-     * @param Property $property Propiedad a mostrar.
+     * @param \App\Models\Property $property
      * @return \Illuminate\Contracts\View\View
      */
     public function propertyDashboard(Property $property)
@@ -1214,7 +1195,7 @@ class AdminController extends Controller
     /**
      * Almacena una nueva propiedad.
      *
-     * @param Request $request Solicitud HTTP con los datos de la nueva propiedad.
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function propertiesStore(Request $request)
@@ -1243,7 +1224,7 @@ class AdminController extends Controller
     /**
      * Restaura una propiedad eliminada (soft delete).
      *
-     * @param int $propertyId ID de la propiedad a restaurar.
+     * @param int $propertyId
      * @return \Illuminate\Http\RedirectResponse
      */
     public function propertiesRestore($propertyId)
@@ -1266,7 +1247,7 @@ class AdminController extends Controller
     /**
      * Muestra el calendario con la propiedad pre-seleccionada si se pasa property_id.
      *
-     * @param Property $property Propiedad seleccionada.
+     * @param \App\Models\Property $property
      * @return \Illuminate\Contracts\View\View
      */
     public function calendarIndex(Property $property)
@@ -1309,8 +1290,8 @@ class AdminController extends Controller
     /**
      * Establece el precio por noche para un rango de fechas en una propiedad.
      *
-     * @param Request $request Solicitud HTTP con el precio y rango de fechas.
-     * @param Property $property Propiedad obtenida mediante route model binding
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\Property $property
      * @return \Illuminate\Http\RedirectResponse
      */
     public function setPrice(Request $request, Property $property)
