@@ -503,40 +503,34 @@
         }
       });
 
-      // Función para mover el botón según el tamaño de pantalla
-      function moveButtonIfMobile() {
-        const isMobile = window.innerWidth <= 540;
+      // Función para mover elementos según el tamaño de pantalla
+      function moveElementsIfMobile() {
+        const isMobile = window.innerWidth < 768; // Tailwind md: breakpoint
         const form = document.getElementById('editReservationForm');
         const aside = document.querySelector('.reservar-aside-mobile');
         const btnDiv = document.querySelector('.reservar-btn-mobile');
-        if (!form || !aside || !btnDiv) return;
-        const btnParent = btnDiv.parentNode;
+        const gridContainer = form.parentElement;
+        
+        if (!form || !aside || !btnDiv || !gridContainer) return;
+        
         if (isMobile) {
-          // Si el botón no está después del aside, moverlo
-          if (btnParent !== aside.parentNode) {
-            // Primero, si está en el form, removerlo
-            if (btnParent === form) {
-              form.removeChild(btnDiv);
-            }
-            // Insertar después del aside
-            aside.parentNode.insertBefore(btnDiv, aside.nextSibling);
+          // En móvil: aside va dentro del form, antes del botón
+          if (aside.parentElement !== form) {
+            form.insertBefore(aside, btnDiv);
           }
         } else {
-          // Si no es móvil, si el botón no está en el form, devolverlo
-          if (btnParent !== form) {
-            // Remover del aside.parentNode
-            aside.parentNode.removeChild(btnDiv);
-            // Añadir al final del form
-            form.appendChild(btnDiv);
+          // En desktop: aside vuelve al grid container
+          if (aside.parentElement !== gridContainer) {
+            gridContainer.appendChild(aside);
           }
         }
       }
 
       // Llamar al cargar
-      moveButtonIfMobile();
+      moveElementsIfMobile();
 
       // Llamar al cambiar tamaño de ventana
-      window.addEventListener('resize', moveButtonIfMobile);
+      window.addEventListener('resize', moveElementsIfMobile);
     </script>
   </div>
 @endsection

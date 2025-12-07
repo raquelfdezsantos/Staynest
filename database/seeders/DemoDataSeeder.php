@@ -24,14 +24,14 @@ class DemoDataSeeder extends Seeder
      * Crea un entorno demo completo para mostrar todas las funcionalidades:
      * 
      * USUARIOS:
-     * - Admin Principal (luis@staynest.com) → Gestiona Apartamento Nordeste + 1 propiedad demo
-     * - Admin Secundario (ana@staynest.com) → Tiene 1 propiedad soft-deleted para recuperar
+     * - Admin Principal (raquel@staynest.com) → Gestiona Apartamento Nordeste (propiedad real)
+     * - Admin Secundario (ana@staynest.com) → Estudio Llanes (visible) + Chalet Rías Bajas (soft-deleted)
      * - 3 Clientes con reservas en diferentes estados
      * 
      * PROPIEDADES:
-     * - Apartamento Nordeste (REAL) → Propiedad principal para la demo
-     * - Chalet con Piscina → Para mostrar edición/eliminación
-     * - Estudio Playa (SOFT-DELETED) → Para demostrar recuperación
+     * - Apartamento Nordeste (REAL - Raquel) → Propiedad principal para la demo
+     * - Estudio Llanes (VISIBLE - Ana) → Para mostrar multi-propiedad
+     * - Chalet Rías Bajas (SOFT-DELETED - Ana) → Para demostrar recuperación
      * 
      * RESERVAS:
      * - Estados: pending (con expiración cercana), paid, cancelled
@@ -45,10 +45,10 @@ class DemoDataSeeder extends Seeder
         // 1. USUARIOS
         // ========================================
         
-        // Admin Principal - Luis (gestiona Apartamento Nordeste)
-        $adminLuis = User::create([
-            'name' => 'Luis García',
-            'email' => 'luis@staynest.com',
+        // Admin Principal - Raquel (gestiona Apartamento Nordeste)
+        $adminRaquel = User::create([
+            'name' => 'Raquel Fernández',
+            'email' => 'raquel@staynest.com',
             'password' => Hash::make('password'),
             'role' => 'admin',
             'email_verified_at' => now(),
@@ -109,9 +109,9 @@ class DemoDataSeeder extends Seeder
         // 2. PROPIEDADES
         // ========================================
 
-        // PROPIEDAD 1: Apartamento Nordeste (REAL - Luis)
+        // PROPIEDAD 1: Apartamento Nordeste (REAL - Raquel)
         $nordeste = Property::create([
-            'user_id' => $adminLuis->id,
+            'user_id' => $adminRaquel->id,
             'name' => 'Apartamento Nordeste',
             'slug' => 'apartamento-nordeste-gijon',
             'description' => "Apartamento Nordeste es un apartamento turístico en Gijón ideal para disfrutar de una estancia cómoda cerca del mar. Se encuentra a solo 9 minutos a pie de la Playa de Poniente y a 15 de la playa de San Lorenzo. Muy próximo al centro de Gijón, lo que lo convierte en una excelente opción para quienes buscan alojamiento en Gijón cerca de la playa.\n\nEl apartamento ofrece wifi gratis, TV de pantalla plana y un espacio moderno y bien equipado. Dispone de 2 dormitorios, 2 baños con ducha, y una cocina completa con nevera, lavavajillas y menaje. También cuenta con lavadora, toallas, ropa de cama y todo lo necesario para una estancia confortable, tanto para turismo como para trabajo remoto.\n\nLa ubicación es uno de sus mayores atractivos: a pocos minutos encontrarás puntos de interés como la Plaza Mayor de Gijón, las Termas Romanas de Campo Valdés, la Estación de Alsas, y las Estación de Tren Sanz Crespo. En los alrededores hay supermercados, restaurantes y zonas comerciales, perfectos para recorrer Gijón a pie.\n\nEl Aeropuerto de Asturias se sitúa a 39 km, lo que facilita el acceso a viajeros nacionales e internacionales.\n\nSi buscas un apartamento vacacional en Gijón bien ubicado, cómodo y con todos los servicios, Apartamento Nordeste es una opción ideal para tu estancia.",
@@ -157,9 +157,9 @@ class DemoDataSeeder extends Seeder
             'services_photo' => 'images/demo/servicios.jpg',
         ]);
 
-        // PROPIEDAD 2: Chalet con Piscina (DEMO - Luis, para editar/eliminar)
+        // PROPIEDAD 2: Chalet con Piscina (DEMO - Ana, SOFT-DELETED para recuperar)
         $chalet = Property::create([
-            'user_id' => $adminLuis->id,
+            'user_id' => $adminAna->id,
             'name' => 'Chalet con Vistas Rías Bajas',
             'slug' => 'chalet-vistas-rias-bajas',
             'description' => "Espectacular chalet con vistas panorámicas a las Rías Bajas gallegas. Piscina privada, jardín de 200m² y barbacoa. Ubicado en zona residencial tranquila cerca de Sanxenxo.\n\nDispone de 3 dormitorios dobles, 2 baños completos, salón amplio con chimenea y garaje para 2 coches. Perfecto para grupos y familias que buscan privacidad y la belleza del mar gallego.\n\nLa piscina está disponible de mayo a octubre. A 10 minutos en coche de las mejores playas de Pontevedra.",
@@ -170,6 +170,7 @@ class DemoDataSeeder extends Seeder
             'tourism_license' => 'VT-123456-PO',
             'rental_registration' => 'VT-123456-PO',
             'services' => ['wifi', 'pool', 'parking', 'air_conditioning', 'heating', 'tv', 'kitchen', 'washer', 'dishwasher', 'towels', 'bed_linen', 'terrace', 'pets_allowed'],
+            'deleted_at' => now()->subDays(10), // Borrado hace 10 días
         ]);
 
         Photo::create(['property_id' => $chalet->id, 'url' => 'https://picsum.photos/id/1018/1600/1067', 'is_cover' => true, 'sort_order' => 1]);
@@ -196,12 +197,12 @@ class DemoDataSeeder extends Seeder
             'services_photo' => 'https://picsum.photos/id/1040/1600/1067',
         ]);
 
-        // PROPIEDAD 3: Estudio Playa (SOFT-DELETED - Ana, para recuperar)
+        // PROPIEDAD 3: Estudio Playa (VISIBLE - Ana)
         $estudio = Property::create([
             'user_id' => $adminAna->id,
-            'name' => 'Estudio Primera Línea Playa Llanes',
-            'slug' => 'estudio-playa-llanes',
-            'description' => "Estudio moderno con vistas al mar Cantábrico en primera línea de playa de Llanes. Totalmente equipado con cocina americana, terraza con vistas panorámicas y parking incluido.\n\nA pie de playa y del casco histórico de Llanes. Cerca de restaurantes y rutas de senderismo. Ideal para parejas.",
+            'name' => 'Estudio Céntrico Llanes',
+            'slug' => 'estudio-centrico-llanes',
+            'description' => "Estudio moderno en el centro de Llanes, a pocos minutos andando de la playa. Totalmente equipado con cocina americana, terraza luminosa y parking incluido.\n\nUbicación perfecta cerca del casco histórico, restaurantes y rutas de senderismo. A 5 minutos a pie de la playa del Sablón. Ideal para parejas que quieren disfrutar del encanto de Llanes.",
             'address' => 'Paseo de San Pedro, 28',
             'city' => 'Llanes',
             'postal_code' => '33500',
@@ -209,12 +210,11 @@ class DemoDataSeeder extends Seeder
             'tourism_license' => 'VUT-789012-AS',
             'rental_registration' => 'VUT-789012-AS',
             'services' => ['wifi', 'air_conditioning', 'tv', 'kitchen', 'parking', 'towels', 'bed_linen', 'terrace'],
-            'deleted_at' => now()->subDays(10), // Borrado hace 10 días
         ]);
 
-        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/id/1041/1600/1067', 'is_cover' => true, 'sort_order' => 1]);
-        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/id/1042/1600/1067', 'is_cover' => false, 'sort_order' => 2]);
-        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/id/1043/1600/1067', 'is_cover' => false, 'sort_order' => 3]);
+        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/id/1043/1600/1067', 'is_cover' => true, 'sort_order' => 1]);
+        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/id/1041/1600/1067', 'is_cover' => false, 'sort_order' => 2]);
+        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/id/1042/1600/1067', 'is_cover' => false, 'sort_order' => 3]);
 
         $this->generateRateCalendar($estudio->id, basePrice: 70, weekendPrice: 95, onlyPast: true);
 
@@ -223,7 +223,7 @@ class DemoDataSeeder extends Seeder
             'property_id' => $estudio->id,
             'title' => 'Descubre Llanes',
             'subtitle' => 'Villa marinera asturiana con playas espectaculares y un casco histórico medieval. El oriente de Asturias en su máxima expresión.',
-            'summary' => "Llanes combina playa, montaña y tradición en un entorno único. Desde el estudio podrás disfrutar de:\n\n\nPlaya de Llanes a pie de calle\nCasco histórico medieval\nBuffones de Pría (géiseres naturales)\nPlaya de Gulpiyuri (playa interior)\nRutas por los Picos de Europa",
+            'summary' => "Llanes combina playa, montaña y tradición en un entorno único. Desde el estudio podrás disfrutar de:\n\n\nPlaya del Sablón a 5 minutos a pie\nCasco histórico medieval\nBuffones de Pría (géiseres naturales)\nPlaya de Gulpiyuri (playa interior)\nRutas por los Picos de Europa",
             'hero_photo' => 'https://picsum.photos/id/1044/1600/900',
             'nature_description' => 'Playas salvajes, acantilados impresionantes y los Picos de Europa a un paso. Llanes ofrece naturaleza en estado puro: desde el mar Cantábrico hasta las montañas más emblemáticas de España.',
             'nature_photo' => 'https://picsum.photos/id/1045/1600/1067',
@@ -354,15 +354,15 @@ class DemoDataSeeder extends Seeder
         $this->command->info('');
         $this->command->info('CREDENCIALES DE ACCESO:');
         $this->command->info('');
-        $this->command->info('Admin Principal (Luis):');
-        $this->command->info('   Email: luis@staynest.com');
+        $this->command->info('Admin Principal (Raquel):');
+        $this->command->info('   Email: raquel@staynest.com');
         $this->command->info('   Password: password');
-        $this->command->info('   Propiedades: Apartamento Nordeste + Chalet Rías Bajas');
+        $this->command->info('   Propiedades: Apartamento Nordeste (real)');
         $this->command->info('');
         $this->command->info('Admin Secundario (Ana):');
         $this->command->info('   Email: ana@staynest.com');
         $this->command->info('   Password: password');
-        $this->command->info('   Propiedades: 1 estudio borrado (para recuperar)');
+        $this->command->info('   Propiedades: Estudio Llanes (visible) + Chalet Rías Bajas (borrado)');
         $this->command->info('');
         $this->command->info('Clientes:');
         $this->command->info('   Laura: laura@example.com (reserva pending)');
