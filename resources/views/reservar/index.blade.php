@@ -597,40 +597,40 @@
                 @endauth
             });
 
-            // Función para mover el botón según el tamaño de pantalla
-            function moveButtonIfMobile() {
-                const isMobile = window.innerWidth <= 540;
+            // Función para reorganizar resumen y botón en móvil
+            function moveElementsIfMobile() {
+                const isMobile = window.innerWidth < 768; // Coincidir con md: breakpoint de Tailwind
                 const form = document.getElementById('reservationForm');
                 const aside = document.querySelector('.reservar-aside-mobile');
                 const btnDiv = document.querySelector('.reservar-btn-mobile');
-                if (!form || !aside || !btnDiv) return;
-                const btnParent = btnDiv.parentNode;
+                const gridContainer = document.querySelector('.grid.md\\:grid-cols-3');
+                
+                if (!form || !aside || !btnDiv || !gridContainer) return;
+                
                 if (isMobile) {
-                    // Si el botón no está después del aside, moverlo
-                    if (btnParent !== aside.parentNode) {
-                        // Primero, si está en el form, removerlo
-                        if (btnParent === form) {
-                            form.removeChild(btnDiv);
-                        }
-                        // Insertar después del aside
-                        aside.parentNode.insertBefore(btnDiv, aside.nextSibling);
+                    // En móvil/tablet (<768px): mover el aside dentro del form, antes del botón
+                    if (aside.parentNode !== form) {
+                        // Insertar el aside justo antes del botón
+                        form.insertBefore(aside, btnDiv);
                     }
                 } else {
-                    // Si no es móvil, si el botón no está en el form, devolverlo
-                    if (btnParent !== form) {
-                        // Remover del aside.parentNode
-                        aside.parentNode.removeChild(btnDiv);
-                        // Añadir al final del form
+                    // En desktop (≥768px): devolver el aside al grid container
+                    if (aside.parentNode !== gridContainer) {
+                        // Remover del form y añadir de vuelta al grid
+                        gridContainer.appendChild(aside);
+                    }
+                    // Asegurar que el botón esté al final del form
+                    if (btnDiv.parentNode !== form) {
                         form.appendChild(btnDiv);
                     }
                 }
             }
 
             // Llamar al cargar
-            moveButtonIfMobile();
+            moveElementsIfMobile();
 
             // Llamar al cambiar tamaño de ventana
-            window.addEventListener('resize', moveButtonIfMobile);
+            window.addEventListener('resize', moveElementsIfMobile);
         </script>
     </div>
 @endsection
