@@ -9,7 +9,6 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('properties', function (Blueprint $table) {
-            // 10,7 te da precisión más que de sobra para direcciones
             $table->decimal('latitude', 10, 7)->nullable()->after('province');
             $table->decimal('longitude', 10, 7)->nullable()->after('latitude');
         });

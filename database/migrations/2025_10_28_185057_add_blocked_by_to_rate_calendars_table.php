@@ -12,10 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('rate_calendars', function (Blueprint $table) {
-            // Campo para distinguir el tipo de bloqueo
-            // null = fecha disponible
-            // 'reservation' = bloqueada por reserva de cliente
-            // 'admin' = bloqueada manualmente por administrador
+            // Campo para tipo de bloqueo: null=disponible, 'reservation'=por reserva, 'admin'=manual
             $table->enum('blocked_by', ['reservation', 'admin'])->nullable()->after('is_available');
         });
     }

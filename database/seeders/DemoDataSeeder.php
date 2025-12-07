@@ -255,7 +255,7 @@ class DemoDataSeeder extends Seeder
 
         // RESERVA 1: Laura → Nordeste (PENDING, expira en 5 minutos para demo)
         // IMPORTANTE: Si schedule:work está corriendo, esta reserva será cancelada automáticamente
-        // Para testing: detén schedule:work antes de ejecutar migrate:fresh --seed
+        // Para testing: detener schedule:work antes de ejecutar migrate:fresh --seed
         $reserva1 = Reservation::create([
             'user_id' => $cliente1->id,
             'property_id' => $nordeste->id,

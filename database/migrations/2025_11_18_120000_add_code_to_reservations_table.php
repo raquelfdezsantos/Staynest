@@ -18,8 +18,7 @@ return new class extends Migration {
 
     public function down(): void
     {
-        // No se elimina la columna; opcionalmente se podrían poner en null los códigos añadidos
-        // Reservation::query()->update(['code' => null]); // NO recomendado
+        
     }
 
     private function generateCode(): string

@@ -14,10 +14,7 @@ return new class extends Migration {
             $table->string('pdf_path', 255)->nullable()->change();
         });
 
-        // Backfill: poner el total de la reserva en amount
-        // SQLite doesn't support referencing another table alias in the SET clause the
-        // same way MySQL/Postgres do with multi-table updates, so use a portable
-        // subselect which works across drivers:
+        // Backfill: asignar total_price de la reserva a amount usando subconsulta compatible con SQLite
         DB::statement(<<<'SQL'
             UPDATE invoices
             SET amount = (
