@@ -75,7 +75,6 @@ Route::get('/aviso-legal', fn() => view('legal.aviso-legal'))->name('legal.aviso
 Route::get('/politica-privacidad', fn() => view('legal.politica-privacidad'))->name('legal.privacidad');
 Route::get('/cookies', fn() => view('legal.cookies'))->name('legal.cookies');
 
-// (Eliminada ruta legacy /reservar -> public.reservar)
 
 
 /*
@@ -92,6 +91,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/perfil', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/perfil', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -124,6 +125,8 @@ Route::middleware(['auth', 'role:admin'])
         Route::get('/invoices/{number}', [InvoiceController::class, 'show'])
             ->name('invoices.show');
     });
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -160,6 +163,7 @@ Route::middleware(['auth', 'role:admin'])
     });
 
 
+
 /*
 |--------------------------------------------------------------------------
 | Área CLIENTE (reservas)
@@ -168,7 +172,7 @@ Route::middleware(['auth', 'role:admin'])
 Route::middleware(['auth', 'role:customer'])->group(function () {
     // Redirecciones de rutas legacy a rutas anidadas
     Route::get('/mis-reservas', function() {
-        $property = \App\Models\Property::first();
+        $property = Property::first();
         if ($property) {
             return redirect()->route('properties.reservas.index', $property->slug);
         }
@@ -176,7 +180,7 @@ Route::middleware(['auth', 'role:customer'])->group(function () {
     })->name('reservas.index');
 
     Route::get('/mis-facturas', function() {
-        $property = \App\Models\Property::first();
+        $property = Property::first();
         if ($property) {
             return redirect()->route('properties.invoices.index', $property->slug);
         }
@@ -213,13 +217,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/invoices/{number}', [InvoiceController::class, 'show'])->name('invoices.show');
 });
 
-// Ruta de prueba envío email con Mailtrap
+// Ruta de prueba envío email 
 Route::get('/dev/test-payment-mail', function () {
     $reservation = Reservation::with(['user', 'property'])->latest()->firstOrFail();
     $invoice = Invoice::where('reservation_id', $reservation->id)->latest()->firstOrFail();
     \Mail::to('cliente@vut.test')->send(new PaymentReceiptMail($reservation, $invoice));
     return 'OK sent';
 });
+
 
 
 /*
