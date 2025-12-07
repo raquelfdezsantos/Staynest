@@ -45,4 +45,13 @@
     :root:not([data-theme]) .light-mode-logo {
         display: none;
     }
+    
+    /* En modo claro con header transparente, mostrar logo oscuro */
+    [data-theme="light"] .nav-header--transparent .dark-mode-logo {
+        display: inline-block !important;
+    }
+    
+    [data-theme="light"] .nav-header--transparent .light-mode-logo {
+        display: none !important;
+    }
 </style>
