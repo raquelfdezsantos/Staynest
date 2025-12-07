@@ -1,6 +1,5 @@
 <x-app-layout>
     <div class="max-w-5xl mx-auto px-4 py-10">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <style>
             html[data-theme="dark"] .profile-card {
                 background: rgba(51, 51, 51, 0.2) !important;
@@ -12,74 +11,89 @@
 
             /* Calendario Flatpickr - Modo Oscuro */
         html[data-theme="dark"] .flatpickr-calendar {
-            background: rgb(38, 38, 38);
-            border: 1px solid var(--color-border-light);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            background: var(--color-bg-card) !important;
+            border: 1px solid var(--color-border-light) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
         }
-
+        
         html[data-theme="dark"] .flatpickr-months {
-            background: rgb(38, 38, 38);
-            color: var(--color-text-primary);
+            background: var(--color-bg-card) !important;
+            border-bottom: 1px solid var(--color-border-light) !important;
         }
-
+        
         html[data-theme="dark"] .flatpickr-current-month .flatpickr-monthDropdown-months,
         html[data-theme="dark"] .flatpickr-current-month input.cur-year {
-            background: rgb(38, 38, 38);
-            color: var(--color-text-primary);
+            color: var(--color-text-primary) !important;
+            background: var(--color-bg-secondary) !important;
         }
-
+        
         html[data-theme="dark"] .flatpickr-weekdays {
-            background: rgb(38, 38, 38);
+            background: var(--color-bg-card) !important;
         }
-
+        
         html[data-theme="dark"] span.flatpickr-weekday {
-            color: var(--color-text-secondary);
+            color: var(--color-text-secondary) !important;
         }
-
+        
         html[data-theme="dark"] .flatpickr-day {
-            color: var(--color-text-primary);
+            color: var(--color-text-primary) !important;
         }
-
-        html[data-theme="dark"] .flatpickr-day:hover {
-            background: rgba(77, 141, 148, 0.2);
-            color: var(--color-text-primary);
+        
+        html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled) {
+            background: rgba(77,141,148,0.10) !important;
+            border-color: var(--color-accent) !important;
         }
-
-        html[data-theme="dark"] .flatpickr-day.selected {
-            background: var(--color-accent);
-            color: white;
-            border-color: var(--color-accent);
+        
+        html[data-theme="dark"] .flatpickr-day.selected,
+        html[data-theme="dark"] .flatpickr-day.startRange,
+        html[data-theme="dark"] .flatpickr-day.endRange {
+            background: var(--color-accent) !important;
+            border-color: var(--color-accent) !important;
+            color: white !important;
         }
-
+        
         html[data-theme="dark"] .flatpickr-day.today {
-            border-color: var(--color-accent);
+            border-color: var(--color-accent) !important;
         }
-
+        
         html[data-theme="dark"] .flatpickr-months .flatpickr-prev-month svg,
         html[data-theme="dark"] .flatpickr-months .flatpickr-next-month svg {
-            fill: var(--color-text-primary);
+            fill: var(--color-text-primary) !important;
         }
-
+        
+        /* Modo Claro */
         html[data-theme="light"] .flatpickr-calendar {
-            background: white;
-            border: 1px solid #e0e0e0;
+            background: #d1d1d1 !important;
+            border: 1px solid #e0e0e0 !important;
         }
-
+        
         html[data-theme="light"] .flatpickr-months {
-            background: white;
+            background: #d1d1d1 !important;
         }
-
+        
         html[data-theme="light"] .flatpickr-weekdays {
-            background: white;
+            background: #d1d1d1 !important;
         }
-
-        html[data-theme="light"] .flatpickr-day.selected {
-            background: var(--color-accent);
-            color: white;
+        
+        html[data-theme="light"] .flatpickr-day {
+            color: #222 !important;
         }
-
+        
+        html[data-theme="light"] .flatpickr-day:hover:not(.flatpickr-disabled) {
+            background: rgba(77,141,148,0.10) !important;
+            border-color: var(--color-accent) !important;
+        }
+        
+        html[data-theme="light"] .flatpickr-day.selected,
+        html[data-theme="light"] .flatpickr-day.startRange,
+        html[data-theme="light"] .flatpickr-day.endRange {
+            background: var(--color-accent) !important;
+            border-color: var(--color-accent) !important;
+            color: white !important;
+        }
+        
         html[data-theme="light"] .flatpickr-day.today {
-            border-color: var(--color-accent);
+            border-color: var(--color-accent) !important;
         }
 
         .flatpickr-days {
@@ -233,6 +247,7 @@
             </div>
         </x-modal>
 
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/es.js"></script>
         <script>

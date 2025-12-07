@@ -72,9 +72,9 @@
     <section class="space-y-16">
         <div class="grid md:grid-cols-2 gap-8">
             @if($property->environment->nature_description)
-                <div class="space-y-3">
-                    <h3 class="text-lg font-semibold">Naturaleza</h3>
-                    <p class="text-neutral-300 text-sm">{{ $property->environment->nature_description }}</p>
+                <div class="flex flex-col" style="height: 100%;">
+                    <h3 class="text-lg font-semibold mb-3">Naturaleza</h3>
+                    <p class="text-neutral-300 text-sm mb-3 flex-grow">{{ $property->environment->nature_description }}</p>
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->nature_photo)
                             @php
@@ -95,9 +95,9 @@
             @endif
 
             @if($property->environment->culture_description)
-                <div class="space-y-3">
-                    <h3 class="text-lg font-semibold">Cultura y Patrimonio</h3>
-                    <p class="text-neutral-300 text-sm">{{ $property->environment->culture_description }}</p>
+                <div class="flex flex-col" style="height: 100%;">
+                    <h3 class="text-lg font-semibold mb-3">Cultura y Patrimonio</h3>
+                    <p class="text-neutral-300 text-sm mb-3 flex-grow">{{ $property->environment->culture_description }}</p>
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->culture_photo)
                             @php
@@ -120,9 +120,9 @@
 
         <div class="grid md:grid-cols-2 gap-8">
             @if($property->environment->activities_description)
-                <div class="space-y-3">
-                    <h3 class="text-lg font-semibold">Actividades</h3>
-                    <p class="text-neutral-300 text-sm">{{ $property->environment->activities_description }}</p>
+                <div class="flex flex-col" style="height: 100%;">
+                    <h3 class="text-lg font-semibold mb-3">Actividades</h3>
+                    <p class="text-neutral-300 text-sm mb-3 flex-grow">{{ $property->environment->activities_description }}</p>
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->activities_photo)
                             @php
@@ -143,9 +143,9 @@
             @endif
 
             @if($property->environment->services_description)
-                <div class="space-y-3">
-                    <h3 class="text-lg font-semibold">Servicios Cercanos</h3>
-                    <p class="text-neutral-300 text-sm">{{ $property->environment->services_description }}</p>
+                <div class="flex flex-col" style="height: 100%;">
+                    <h3 class="text-lg font-semibold mb-3">Servicios Cercanos</h3>
+                    <p class="text-neutral-300 text-sm mb-3 flex-grow">{{ $property->environment->services_description }}</p>
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->services_photo)
                             @php
