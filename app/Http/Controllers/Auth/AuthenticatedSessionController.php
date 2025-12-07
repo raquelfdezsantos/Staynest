@@ -76,6 +76,13 @@ class AuthenticatedSessionController extends Controller
                     'expires_at' => now()->addMinutes(5),
                 ]);
 
+                // Bloquear noches [check_in, check_out)
+                foreach ($dates as $dateStr) {
+                    \App\Models\RateCalendar::where('property_id', $property->id)
+                        ->where('date', $dateStr)
+                        ->update(['is_available' => false, 'blocked_by' => 'reservation']);
+                }
+
                 // Enviar emails de confirmación
                 try {
                     \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\ReservationConfirmedMail($reservation));

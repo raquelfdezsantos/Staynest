@@ -143,6 +143,13 @@ class ClientRegisterController extends Controller
                     'expires_at' => now()->addMinutes(5),
                 ]);
 
+                // Bloquear noches [check_in, check_out)
+                foreach ($dates as $dateStr) {
+                    RateCalendar::where('property_id', $property->id)
+                        ->where('date', $dateStr)
+                        ->update(['is_available' => false, 'blocked_by' => 'reservation']);
+                }
+
                 // Enviar emails de confirmación
                 try {
                     Mail::to($user->email)->send(new ReservationConfirmedMail($reservation));

@@ -235,8 +235,9 @@ class ReservationController extends Controller
             // Bloquear noches [check_in, check_out)
             $period = CarbonPeriod::create($data['check_in'], $data['check_out'])->excludeEndDate();
             foreach ($period as $d) {
+                $dateStr = is_object($d) && method_exists($d, 'toDateString') ? $d->toDateString() : (string) $d;
                 RateCalendar::where('property_id', $property->id)
-                    ->where('date', is_object($d) && method_exists($d, 'toDateString') ? $d->toDateString() : (string) $d)
+                    ->where('date', $dateStr)
                     ->update(['is_available' => false, 'blocked_by' => 'reservation']);
             }
 

@@ -36,8 +36,8 @@
         <td style="padding: 12px; border-bottom: 1px solid #e9ecef; text-align: right;">{{ $reservation->check_out->format('d/m/Y') }}</td>
     </tr>
     <tr>
-        <td style="padding: 12px; @if($invoice) border-bottom: 1px solid #e9ecef; @endif"><strong>Total actual:</strong></td>
-        <td style="padding: 12px; @if($invoice) border-bottom: 1px solid #e9ecef; @endif text-align: right;">{{ number_format($reservation->total_price, 2) }}€</td>
+        <td style="padding: 12px; {{ $invoice ? 'border-bottom: 1px solid #e9ecef;' : '' }}"><strong>Total actual:</strong></td>
+        <td style="padding: 12px; {{ $invoice ? 'border-bottom: 1px solid #e9ecef;' : '' }} text-align: right;">{{ number_format($reservation->total_price, 2) }}€</td>
     </tr>
     @if($invoice)
     <tr>
