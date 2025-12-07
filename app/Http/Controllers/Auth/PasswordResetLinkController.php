@@ -10,16 +10,14 @@ use Illuminate\View\View;
 
 
 /**
- * Controlador para la solicitud de enlace de restablecimiento de contraseña.
- *
- * Permite mostrar la vista de solicitud y procesar el envío del enlace de restablecimiento al correo del usuario.
+ * Controlador para solicitar enlace de restablecimiento de contraseña.
  */
 class PasswordResetLinkController extends Controller
 {
     /**
-     * Muestra la vista para solicitar el enlace de restablecimiento de contraseña.
+     * Muestra el formulario para solicitar enlace de restablecimiento.
      *
-     * @return View Vista de solicitud de restablecimiento.
+     * @return \Illuminate\View\View
      */
     public function create(): View
     {
@@ -27,13 +25,11 @@ class PasswordResetLinkController extends Controller
     }
 
     /**
-     * Procesa la solicitud de envío de enlace de restablecimiento de contraseña.
+     * Envía el enlace de restablecimiento de contraseña.
      *
-     * Valida el correo y envía el enlace si es correcto.
-     *
-     * @param Request $request Solicitud HTTP con el correo del usuario.
-     * @return RedirectResponse Redirección con estado según el resultado del envío.
-     * @throws \Illuminate\Validation\ValidationException Si la validación del correo falla.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
@@ -41,7 +37,6 @@ class PasswordResetLinkController extends Controller
             'email' => ['required', 'email'],
         ]);
 
-        // Se envía el enlace de restablecimiento de contraseña al usuario.
         $status = Password::sendResetLink(
             $request->only('email')
         );

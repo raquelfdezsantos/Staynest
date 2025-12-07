@@ -11,21 +11,21 @@ use Illuminate\Support\Facades\Mail;
 class ExpirePendingReservations extends Command
 {
     /**
-     * The name and signature of the console command.
-     *
-     * @var string
+     * Comando para expirar reservas pendientes.
      */
     protected $signature = 'reservations:expire-pending';
 
     /**
-     * The console command description.
-     *
-     * @var string
+     * Descripción del comando.
      */
     protected $description = 'Cancela automáticamente las reservas pendientes que han expirado';
 
     /**
-     * Execute the console command.
+     * Ejecuta el comando para expirar reservas pendientes.
+     * Busca reservas con estado 'pending' cuya fecha de expiración haya pasado,
+     * las marca como canceladas, libera el calendario y notifica por email.
+     *
+     * @return int
      */
     public function handle()
     {
@@ -43,12 +43,9 @@ class ExpirePendingReservations extends Command
         $count = 0;
         foreach ($expiredReservations as $reservation) {
             try {
-                // Cambiar estado a cancelled
-                $reservation->update([
-                    'status' => 'cancelled'
-                ]);
+                $reservation->update(['status' => 'cancelled']);
 
-                // Liberar fechas del calendario [check_in, check_out) - excluir check_out
+                // Liberar fechas del calendario (rango [check_in, check_out))
                 $checkIn = is_string($reservation->check_in) ? $reservation->check_in : $reservation->check_in->toDateString();
                 $checkOut = is_string($reservation->check_out) ? $reservation->check_out : $reservation->check_out->toDateString();
                 
@@ -61,10 +58,8 @@ class ExpirePendingReservations extends Command
                         'blocked_by' => null
                     ]);
 
-                // Enviar email al cliente
                 Mail::to($reservation->user->email)->send(new ReservationExpiredMail($reservation, false));
 
-                // Enviar email al admin de la propiedad
                 if ($reservation->property && $reservation->property->user) {
                     Mail::to($reservation->property->user->email)->send(new ReservationExpiredMail($reservation, true));
                 }

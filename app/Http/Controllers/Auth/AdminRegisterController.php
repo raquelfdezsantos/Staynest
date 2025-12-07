@@ -17,16 +17,14 @@ use Illuminate\View\View;
 
 /**
  * Controlador para el registro de administradores.
- *
- * Gestiona la visualización del formulario de registro y el proceso de alta de nuevos administradores,
- * incluyendo la validación de datos personales y de la propiedad, así como la creación de usuario y alojamiento.
+ * Gestiona el formulario y proceso de alta de nuevos administradores con su propiedad.
  */
 class AdminRegisterController extends Controller
 {
     /**
-     * Muestra la vista de registro de administrador.
+     * Muestra el formulario de registro de administrador.
      *
-     * @return View Vista de registro de administrador.
+     * @return \Illuminate\View\View
      */
     public function create(): View
     {
@@ -34,19 +32,16 @@ class AdminRegisterController extends Controller
     }
 
     /**
-     * Procesa la solicitud de registro de un nuevo administrador.
+     * Procesa el registro de un nuevo administrador.
+     * Valida los datos, crea el usuario y la propiedad asociada,
+     * y redirige al dashboard de la propiedad.
      *
-     * Valida los datos personales y de la propiedad, crea el usuario y la propiedad asociada,
-     * y redirige al dashboard correspondiente.
-     *
-     * @param Request $request Solicitud HTTP con los datos de registro.
-     * @return RedirectResponse Redirección al dashboard de la propiedad o a la página principal.
-     * @throws \Illuminate\Validation\ValidationException Si la validación de los datos falla.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            // Datos personales
             'name' => [
                 'required', 
                 'string', 
@@ -58,7 +53,6 @@ class AdminRegisterController extends Controller
                     if (preg_match('/[0-9]/', $value)) {
                         $fail('El nombre no puede contener números.');
                     }
-                    // Permitir letras (incluidas tildes y ñ) y espacios
                     if (!preg_match('/^[\p{L}\s]+$/u', $value)) {
                         $fail('El nombre solo puede contener letras y espacios.');
                     }
@@ -85,7 +79,6 @@ class AdminRegisterController extends Controller
                     if (preg_match('/<[^>]*>/', $value)) {
                         $fail('La dirección contiene caracteres HTML no permitidos.');
                     }
-                    // Permitir letras, números, espacios y caracteres comunes en direcciones
                     if (!preg_match('/^[\p{L}\p{N}\s.,ºª\-]+$/u', $value)) {
                         $fail('La dirección contiene caracteres no permitidos.');
                     }
@@ -103,7 +96,6 @@ class AdminRegisterController extends Controller
                 }
             ],
 
-            // Datos del alojamiento
             'property_name' => [
                 'required', 
                 'string', 
@@ -112,7 +104,6 @@ class AdminRegisterController extends Controller
                     if (preg_match('/<[^>]*>/', $value)) {
                         $fail('El nombre de la propiedad contiene caracteres HTML no permitidos.');
                     }
-                    // Permitir letras, números, espacios, puntos y guiones
                     if (!preg_match('/^[\p{L}\p{N}\s.\-]+$/u', $value)) {
                         $fail('El nombre de la propiedad contiene caracteres no permitidos.');
                     }
@@ -126,7 +117,6 @@ class AdminRegisterController extends Controller
                     if (preg_match('/<[^>]*>/', $value)) {
                         $fail('La dirección de la propiedad contiene caracteres HTML no permitidos.');
                     }
-                    // Permitir letras, números, espacios y caracteres comunes en direcciones
                     if (!preg_match('/^[\p{L}\p{N}\s.,ºª\-]+$/u', $value)) {
                         $fail('La dirección de la propiedad contiene caracteres no permitidos.');
                     }
@@ -140,7 +130,6 @@ class AdminRegisterController extends Controller
                     if (preg_match('/<[^>]*>/', $value)) {
                         $fail('La ciudad contiene caracteres HTML no permitidos.');
                     }
-                    // Permitir letras, espacios y guiones
                     if (!preg_match('/^[\p{L}\s\-]+$/u', $value)) {
                         $fail('La ciudad solo puede contener letras, espacios y guiones.');
                     }
@@ -164,7 +153,6 @@ class AdminRegisterController extends Controller
                     if (preg_match('/<[^>]*>/', $value)) {
                         $fail('La provincia contiene caracteres HTML no permitidos.');
                     }
-                    // Permitir letras, espacios y guiones
                     if (!preg_match('/^[\p{L}\s\-]+$/u', $value)) {
                         $fail('La provincia solo puede contener letras, espacios y guiones.');
                     }
@@ -192,21 +180,20 @@ class AdminRegisterController extends Controller
                 }
             ],
 
-            // Método de cobro (fingido)
             'payment_method' => ['required', 'string', 'in:stripe,bank_transfer,paypal'],
         ], [
             'birth_date.after' => 'La fecha de nacimiento no es válida.',
         ]);
 
-        // Validar que no sea menor de edad
+        // Validar mayoría de edad
         $birthDate = \Carbon\Carbon::parse($request->birth_date);
         $age = $birthDate->age;
         if ($age < 18) {
             return back()->withErrors(['birth_date' => 'Debes ser mayor de 18 años para registrarte.']);
         }
 
+        // Crear usuario y propiedad en una transacción
         DB::transaction(function () use ($request) {
-            // Crear usuario administrador
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -218,7 +205,6 @@ class AdminRegisterController extends Controller
                 'role' => 'admin',
             ]);
 
-            // Crear propiedad asociada al usuario
             $property = Property::create([
                 'user_id' => $user->id,
                 'name' => $request->property_name,
@@ -234,12 +220,11 @@ class AdminRegisterController extends Controller
                 'owner_tax_id' => $request->document_id,
             ]);
 
-            // Iniciar sesión con el usuario recién creado
             Auth::login($user);
         });
 
-        // Tras el registro, crear la propiedad, fijar el contexto y redirigir al dashboard de la nueva propiedad
-        $property = \App\Models\Property::where('user_id', Auth::id())
+        // Redirigir al dashboard de la propiedad recién creada
+        $property = Property::where('user_id', Auth::id())
             ->whereNull('deleted_at')
             ->latest('id')
             ->first();

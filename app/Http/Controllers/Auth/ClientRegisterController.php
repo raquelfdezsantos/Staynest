@@ -25,16 +25,14 @@ use Illuminate\View\View;
 
 /**
  * Controlador para el registro de clientes.
- *
- * Gestiona la visualización del formulario de registro y el proceso de alta de nuevos clientes,
- * incluyendo la validación de datos personales y la redirección según el contexto de la propiedad.
+ * Gestiona el formulario y proceso de alta de nuevos clientes.
  */
 class ClientRegisterController extends Controller
 {
     /**
-     * Muestra la vista de registro de cliente.
+     * Muestra el formulario de registro de cliente.
      *
-     * @return View Vista de registro de cliente.
+     * @return \Illuminate\View\View
      */
     public function create(): View
     {
@@ -42,13 +40,11 @@ class ClientRegisterController extends Controller
     }
 
     /**
-     * Procesa la solicitud de registro de un nuevo cliente.
+     * Procesa el registro de un nuevo cliente.
+     * Valida los datos, crea el usuario y gestiona reservas pendientes si existen.
      *
-     * Valida los datos personales, crea el usuario y redirige según la propiedad detectada.
-     *
-     * @param Request $request Solicitud HTTP con los datos de registro.
-     * @return RedirectResponse Redirección a la ficha pública de la propiedad o a la página principal.
-     * @throws \Illuminate\Validation\ValidationException Si la validación de los datos falla.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {
@@ -87,7 +83,7 @@ class ClientRegisterController extends Controller
             'birth_date.after' => 'La fecha de nacimiento no es válida.',
         ]);
 
-        // Validar que sea mayor de edad
+        // Validar mayoría de edad
         $birthDate = Carbon::parse($request->birth_date);
         $age = $birthDate->age;
         if ($age < 18) {
@@ -107,17 +103,16 @@ class ClientRegisterController extends Controller
 
         Auth::login($user);
 
-        // Verificar si hay una reserva pendiente en sesión
+        // Crear reserva automáticamente si había una pendiente
         if (session()->has('pending_reservation') && session('pending_reservation_auto')) {
             $pendingData = session('pending_reservation');
             
-            // Crear la reserva automáticamente
             try {
                 $property = Property::findOrFail($pendingData['property_id']);
                 $checkIn = Carbon::parse($pendingData['check_in']);
                 $checkOut = Carbon::parse($pendingData['check_out']);
                 
-                // Calcular precio usando rate_calendar
+                // Calcular precio total desde el calendario de tarifas
                 $period = CarbonPeriod::create($checkIn, $checkOut)->excludeEndDate();
                 $dates = collect($period)->map(function(Carbon $date) {
                     return $date->toDateString();
@@ -143,14 +138,13 @@ class ClientRegisterController extends Controller
                     'expires_at' => now()->addMinutes(5),
                 ]);
 
-                // Bloquear noches [check_in, check_out)
+                // Bloquear fechas en el calendario (rango [check_in, check_out))
                 foreach ($dates as $dateStr) {
                     RateCalendar::where('property_id', $property->id)
                         ->where('date', $dateStr)
                         ->update(['is_available' => false, 'blocked_by' => 'reservation']);
                 }
 
-                // Enviar emails de confirmación
                 try {
                     Mail::to($user->email)->send(new ReservationConfirmedMail($reservation));
                     Mail::to($property->user->email)->send(new AdminNewReservationMail($reservation));
@@ -158,20 +152,15 @@ class ClientRegisterController extends Controller
                     Log::error('Error enviando emails de confirmación de reserva: ' . $e->getMessage());
                 }
 
-                // Limpiar sesión
                 session()->forget(['pending_reservation', 'pending_reservation_auto', 'url.intended']);
-
-                // Redirigir a mis reservas de la propiedad específica
                 return redirect()->route('properties.reservas.index', $property->slug)->with('success', 'Registro completado. Tu reserva ha sido creada.');
             } catch (Exception $e) {
-                // Registrar el error para debugging
                 Log::error('Error creando reserva tras registro: ' . $e->getMessage(), [
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
                     'pending_data' => $pendingData ?? null,
                 ]);
                 
-                // Si falla la creación de la reserva, redirigir a mis reservas con error
                 $property = Property::find($pendingData['property_id']);
                 session()->forget(['pending_reservation', 'pending_reservation_auto', 'url.intended']);
                 
@@ -182,10 +171,9 @@ class ClientRegisterController extends Controller
             }
         }
 
-        // Detectar propiedad desde parámetro o sesión
+        // Detectar contexto de propiedad y redirigir
         $propertySlug = $request->input('property') ?: session('current_property_slug');
 
-        // Si viene desde una propiedad específica, redirigir a la ficha pública de esa propiedad
         if ($propertySlug) {
             $property = Property::where('slug', $propertySlug)->whereNull('deleted_at')->first();
             if ($property) {

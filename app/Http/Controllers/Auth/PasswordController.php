@@ -10,17 +10,15 @@ use Illuminate\Validation\Rules\Password;
 
 
 /**
- * Controlador para la actualización de la contraseña del usuario.
- *
- * Permite validar y actualizar la contraseña actual del usuario autenticado.
+ * Controlador para actualizar la contraseña del usuario.
  */
 class PasswordController extends Controller
 {
     /**
      * Actualiza la contraseña del usuario autenticado.
      *
-     * @param Request $request Solicitud HTTP con los datos de la contraseña actual y la nueva.
-     * @return RedirectResponse Redirección de vuelta con estado tras la actualización.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request): RedirectResponse
     {

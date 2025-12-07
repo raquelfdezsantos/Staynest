@@ -9,17 +9,15 @@ use Illuminate\View\View;
 
 
 /**
- * Controlador para mostrar el aviso de verificación de correo electrónico.
- *
- * Muestra la vista de verificación si el usuario no ha verificado su email, o redirige al dashboard si ya está verificado.
+ * Controlador para mostrar el aviso de verificación de email.
  */
 class EmailVerificationPromptController extends Controller
 {
     /**
-     * Muestra el aviso de verificación de correo electrónico.
+     * Muestra el aviso de verificación de email.
      *
-     * @param Request $request Solicitud HTTP del usuario autenticado.
-     * @return RedirectResponse|View Redirección al dashboard si el email está verificado, o vista de verificación si no lo está.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\View\View
      */
     public function __invoke(Request $request): RedirectResponse|View
     {

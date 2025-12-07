@@ -8,17 +8,15 @@ use Illuminate\Http\Request;
 
 
 /**
- * Controlador para el envío de notificaciones de verificación de correo electrónico.
- *
- * Permite enviar un nuevo correo de verificación al usuario si aún no ha verificado su email.
+ * Controlador para envío de notificaciones de verificación de email.
  */
 class EmailVerificationNotificationController extends Controller
 {
     /**
-     * Envía una nueva notificación de verificación de correo electrónico.
+     * Envía una nueva notificación de verificación de email.
      *
-     * @param Request $request Solicitud HTTP del usuario autenticado.
-     * @return RedirectResponse Redirección al dashboard si el email ya está verificado, o de vuelta con estado si se envía el enlace.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request): RedirectResponse
     {

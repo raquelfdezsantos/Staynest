@@ -12,26 +12,25 @@ use Illuminate\Support\Facades\Mail;
 class SendExpirationReminders extends Command
 {
     /**
-     * The name and signature of the console command.
-     *
-     * @var string
+     * Comando para enviar recordatorios de expiración.
      */
     protected $signature = 'reservations:send-expiration-reminders';
 
     /**
-     * The console command description.
-     *
-     * @var string
+     * Descripción del comando.
      */
     protected $description = 'Envía recordatorios a usuarios con reservas que expiran en 1 minuto';
 
     /**
-     * Execute the console command.
+     * Ejecuta el comando para enviar recordatorios.
+     * Busca reservas pendientes que expiren en los próximos 1-90 segundos
+     * y envía un email de recordatorio al cliente.
+     *
+     * @return int
      */
     public function handle()
     {
-        // Buscar reservas pendientes que expiren en aproximadamente 1 minuto
-        // (entre 1 y 90 segundos para dar margen de ejecución del cron)
+        // Margen de 1-90 segundos para dar flexibilidad al scheduler
         $oneMinuteFromNow = now()->addSeconds(1);
         $oneMinuteThirtyFromNow = now()->addSeconds(90);
 
@@ -39,9 +38,7 @@ class SendExpirationReminders extends Command
             ->whereNotNull('expires_at')
             ->whereBetween('expires_at', [$oneMinuteFromNow, $oneMinuteThirtyFromNow])
             ->whereNotExists(function ($query) {
-                // Verificar que no se haya enviado ya el recordatorio
-                // (usando una columna reminder_sent_at si la agregas, o basándote en logs)
-                // Por ahora, enviamos una vez por ejecución
+                // Evita duplicados si se ejecuta múltiples veces
             })
             ->with(['user', 'property'])
             ->get();
@@ -54,7 +51,6 @@ class SendExpirationReminders extends Command
         $count = 0;
         foreach ($expiringReservations as $reservation) {
             try {
-                // Enviar email de recordatorio
                 Mail::to($reservation->user->email)->send(new ReservationExpiringReminderMail($reservation));
 
                 $this->info("Recordatorio enviado para reserva #{$reservation->id}");

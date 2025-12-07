@@ -15,15 +15,13 @@ use Illuminate\View\View;
 
 /**
  * Controlador para el registro de usuarios.
- *
- * Permite mostrar la vista de registro y procesar la solicitud de alta de nuevos usuarios.
  */
 class RegisteredUserController extends Controller
 {
     /**
-     * Muestra la vista de registro de usuario.
+     * Muestra el formulario de registro.
      *
-     * @return View Vista de registro de usuario.
+     * @return \Illuminate\View\View
      */
     public function create(): View
     {
@@ -31,13 +29,11 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Procesa la solicitud de registro de un nuevo usuario.
+     * Registra un nuevo usuario y lo autentica.
      *
-     * Valida los datos, crea el usuario y lo autentica.
-     *
-     * @param Request $request Solicitud HTTP con los datos de registro.
-     * @return RedirectResponse Redirección al dashboard tras el registro.
-     * @throws \Illuminate\Validation\ValidationException Si la validación de los datos falla.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {

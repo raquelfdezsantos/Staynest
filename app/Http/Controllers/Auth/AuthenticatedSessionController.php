@@ -11,16 +11,15 @@ use Illuminate\View\View;
 
 
 /**
- * Controlador para la gestión de sesiones autenticadas.
- *
- * Permite mostrar la vista de login, procesar la autenticación de usuarios y cerrar la sesión.
+ * Controlador para la gestión de sesiones de usuario.
+ * Maneja login, logout y redirecciones basadas en rol y contexto de propiedad.
  */
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Muestra la vista de inicio de sesión.
+     * Muestra el formulario de inicio de sesión.
      *
-     * @return View Vista de login.
+     * @return \Illuminate\View\View
      */
     public function create(): View
     {
@@ -28,12 +27,12 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Procesa la solicitud de autenticación de usuario.
+     * Procesa el login del usuario.
+     * Gestiona reservas pendientes, detecta contexto de propiedad
+     * y redirige según el rol (admin/cliente) y propiedad.
      *
-     * Valida las credenciales, gestiona el contexto de la propiedad y redirige según el tipo de usuario y la propiedad detectada.
-     *
-     * @param LoginRequest $request Solicitud de login con credenciales y contexto.
-     * @return RedirectResponse Redirección a la página correspondiente tras el login.
+     * @param \App\Http\Requests\Auth\LoginRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -42,19 +41,20 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
         
-        // Verificar si hay una reserva pendiente en sesión (solo para clientes)
+        // Crear reserva automáticamente si el cliente tenía una pendiente
         if ($user->role === 'customer' && session()->has('pending_reservation') && session('pending_reservation_auto')) {
             $pendingData = session('pending_reservation');
             
-            // Crear la reserva automáticamente
             try {
                 $property = \App\Models\Property::findOrFail($pendingData['property_id']);
                 $checkIn = \Carbon\Carbon::parse($pendingData['check_in']);
                 $checkOut = \Carbon\Carbon::parse($pendingData['check_out']);
                 
-                // Calcular precio usando rate_calendar
+                // Calcular precio total desde el calendario de tarifas
                 $period = \Carbon\CarbonPeriod::create($checkIn, $checkOut)->excludeEndDate();
-                $dates = collect($period)->map(fn($d) => $d->toDateString());
+                $dates = collect($period)->map(function (\Carbon\Carbon $d) {
+                    return $d->toDateString();
+                });
                 $rates = \App\Models\RateCalendar::where('property_id', $property->id)
                     ->whereIn('date', $dates)
                     ->get()
@@ -76,14 +76,13 @@ class AuthenticatedSessionController extends Controller
                     'expires_at' => now()->addMinutes(5),
                 ]);
 
-                // Bloquear noches [check_in, check_out)
+                // Bloquear fechas en el calendario (rango [check_in, check_out))
                 foreach ($dates as $dateStr) {
                     \App\Models\RateCalendar::where('property_id', $property->id)
                         ->where('date', $dateStr)
                         ->update(['is_available' => false, 'blocked_by' => 'reservation']);
                 }
 
-                // Enviar emails de confirmación
                 try {
                     \Illuminate\Support\Facades\Mail::to($user->email)->send(new \App\Mail\ReservationConfirmedMail($reservation));
                     \Illuminate\Support\Facades\Mail::to($property->user->email)->send(new \App\Mail\AdminNewReservationMail($reservation));
@@ -91,20 +90,15 @@ class AuthenticatedSessionController extends Controller
                     \Illuminate\Support\Facades\Log::error('Error enviando emails de confirmación de reserva: ' . $e->getMessage());
                 }
 
-                // Limpiar sesión
                 session()->forget(['pending_reservation', 'pending_reservation_auto', 'url.intended']);
-
-                // Redirigir a mis reservas de la propiedad específica
                 return redirect()->route('properties.reservas.index', $property->slug)->with('success', 'Tu reserva ha sido creada.');
             } catch (\Exception $e) {
-                // Registrar el error para debugging
                 \Illuminate\Support\Facades\Log::error('Error creando reserva tras login: ' . $e->getMessage(), [
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
                     'pending_data' => $pendingData ?? null,
                 ]);
                 
-                // Si falla la creación de la reserva, aún así redirigir a mis reservas
                 $property = \App\Models\Property::find($pendingData['property_id'] ?? null);
                 session()->forget(['pending_reservation', 'pending_reservation_auto', 'url.intended']);
                 
@@ -115,7 +109,7 @@ class AuthenticatedSessionController extends Controller
             }
         }
         
-        // Detectar propiedad: prioridad query, luego sesión, luego URL intended
+        // Detectar contexto de propiedad (query > sesión > URL intended)
         $propertySlug = $request->input('property')
             ?: session('current_property_slug');
 
@@ -125,7 +119,8 @@ class AuthenticatedSessionController extends Controller
                 $propertySlug = $matches[1];
             }
         }
-        // Para admin: verificar si es su propiedad o no
+
+        // Redirección para administradores
         if ($user->role === 'admin') {
             if ($propertySlug) {
                 $property = \App\Models\Property::where('slug', $propertySlug)->whereNull('deleted_at')->first();
@@ -135,15 +130,12 @@ class AuthenticatedSessionController extends Controller
                     if ($intendedUrl && str_contains($intendedUrl, "/propiedades/{$property->slug}")) {
                         return redirect($intendedUrl);
                     }
-                    // Si el admin es propietario de la propiedad del contexto, redirigir al dashboard específico
                     if ($property->user_id === $user->id) {
                         return redirect()->route('admin.property.dashboard', $property->slug);
                     }
-                    // Si el admin no es propietario, permanecer en la vista pública de esa propiedad
                     return redirect()->route('properties.show', $property->slug);
                 }
             }
-            // Sin slug válido: si tiene alguna propiedad propia, usar la primera como contexto
             $ownProperty = \App\Models\Property::where('user_id', $user->id)->whereNull('deleted_at')->first();
             if ($ownProperty) {
                 session(['current_property_slug' => $ownProperty->slug]);
@@ -151,7 +143,8 @@ class AuthenticatedSessionController extends Controller
             }
             return redirect()->intended(route('home'));
         }
-        // Para clientes: redirigir a la ficha pública de la propiedad detectada
+
+        // Redirección para clientes
         if ($propertySlug) {
             $property = \App\Models\Property::where('slug', $propertySlug)->whereNull('deleted_at')->first();
             if ($property) {
@@ -160,21 +153,18 @@ class AuthenticatedSessionController extends Controller
                 if ($intendedUrl && str_contains($intendedUrl, "/propiedades/{$property->slug}")) {
                     return redirect($intendedUrl);
                 }
-                // Ficha pública como aterrizaje consistente
                 return redirect()->route('properties.show', $property);
             }
         }
-        // Si no hay propiedad detectada, ir a la URL intended o home
+
         return redirect()->intended(route('home'));
     }
 
     /**
-     * Cierra la sesión autenticada del usuario.
+     * Cierra la sesión del usuario.
      *
-     * Invalida la sesión y regenera el token de seguridad.
-     *
-     * @param Request $request Solicitud HTTP para cerrar sesión.
-     * @return RedirectResponse Redirección a la página principal.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Request $request): RedirectResponse
     {

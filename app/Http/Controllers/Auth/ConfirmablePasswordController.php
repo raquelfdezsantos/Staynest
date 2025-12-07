@@ -12,15 +12,14 @@ use Illuminate\View\View;
 
 /**
  * Controlador para la confirmación de contraseña.
- *
- * Permite mostrar la vista de confirmación y validar la contraseña del usuario antes de realizar acciones sensibles.
+ * Valida la contraseña del usuario antes de acciones sensibles.
  */
 class ConfirmablePasswordController extends Controller
 {
     /**
-     * Muestra la vista para confirmar la contraseña.
+     * Muestra el formulario de confirmación de contraseña.
      *
-     * @return View Vista de confirmación de contraseña.
+     * @return \Illuminate\View\View
      */
     public function show(): View
     {
@@ -28,11 +27,11 @@ class ConfirmablePasswordController extends Controller
     }
 
     /**
-     * Valida la contraseña del usuario para confirmar su identidad.
+     * Valida la contraseña del usuario.
      *
-     * @param Request $request Solicitud HTTP con la contraseña a validar.
-     * @return RedirectResponse Redirección al dashboard si la contraseña es correcta.
-     * @throws ValidationException Si la contraseña es incorrecta.
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
     {
