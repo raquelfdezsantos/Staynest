@@ -16,7 +16,7 @@
             @endif
 
             {{-- Formulario de subida --}}
-            <div class="bg-neutral-800 border border-neutral-700 shadow-sm mb-6" style="border-radius: 2px; overflow: hidden;">
+            <div class="admin-form-card mb-6" style="border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); overflow: hidden;">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4" style="font-family: var(--font-sans); color: var(--color-text-primary);">Subir nuevas fotos</h3>
                     
@@ -74,7 +74,7 @@
             </div>
 
             {{-- Galería de fotos --}}
-            <div class="bg-neutral-800 border border-neutral-700 shadow-sm" style="border-radius: 2px; overflow: hidden;">
+            <div class="admin-form-card" style="border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); overflow: hidden;">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4" style="font-family: var(--font-sans); color: var(--color-text-primary);">Galería ({{ $photos->count() }} fotos)</h3>
 
@@ -393,13 +393,17 @@
             box-shadow: 0 0 20px rgba(77, 141, 148, 0.5);
         }
 
-        /* Light mode overrides */
-        html[data-theme="light"] .admin-photos-page .bg-neutral-800 {
-            background-color: var(--color-bg-secondary) !important;
+        /* Admin form card styling */
+        .admin-form-card {
+            background: rgba(51, 51, 51, 0.2) !important;
         }
 
-        html[data-theme="light"] .admin-photos-page .border-neutral-700 {
-            border-color: var(--color-border-light) !important;
+        html[data-theme="light"] .admin-form-card {
+            background: #E3E3E3 !important;
+        }
+
+        html[data-theme="dark"] .admin-textarea {
+            background: #222222 !important;
         }
 
         html[data-theme="light"] .admin-photos-page .photo-card {

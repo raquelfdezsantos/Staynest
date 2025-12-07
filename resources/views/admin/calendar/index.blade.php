@@ -98,7 +98,7 @@
                 </div>
               </div>
 
-              <button type="submit" class="btn-action btn-action-danger sn-sentence" style="margin-top: 1rem; height: 36px;">
+              <button type="submit" class="calendar-btn btn-action btn-action-danger sn-sentence" style="margin-top: 1rem; background: transparent; border: 1px solid var(--color-error);">
                 Bloquear noches
               </button>
             </div>
@@ -141,7 +141,7 @@
                 </div>
               </div>
 
-              <button type="submit" class="btn-action btn-action-secondary sn-sentence" style="margin-top: 1rem; height: 36px;">
+              <button type="submit" class="calendar-btn btn-action btn-action-secondary sn-sentence" style="margin-top: 1rem; background: transparent; border: 1px solid var(--color-accent);">
                 Desbloquear noches
               </button>
             </div>
@@ -436,6 +436,19 @@
 
     .calendar-btn-success:hover {
       background-color: #5F7A67;
+    }
+
+    /* Estilos específicos para botones con btn-action */
+    .calendar-btn.btn-action.btn-action-secondary:hover {
+      background-color: rgba(77, 141, 148, 0.10) !important;
+      color: var(--color-accent) !important;
+      border: none !important;
+    }
+
+    .calendar-btn.btn-action.btn-action-danger:hover {
+      background-color: rgba(204, 89, 86, 0.15) !important;
+      color: var(--color-error) !important;
+      border: none !important;
     }
 
     /* Light mode overrides */

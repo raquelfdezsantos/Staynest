@@ -410,7 +410,7 @@
         </div>
 
         {{-- Sección: Entorno --}}
-        <div style="margin-top: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.9); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.25rem 1.5rem;">
+        <div class="admin-form-card" style="border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); padding: 1.5rem; margin-bottom: 2rem;">
             <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Información del Entorno</h3>
             <p class="form-hint" style="margin-bottom: 1.5rem;">Describe el entorno que rodea tu propiedad para que los huéspedes conozcan mejor la zona. Puedes incluir información sobre naturaleza, cultura, actividades y servicios cercanos.</p>
 
@@ -467,9 +467,14 @@
                                 name="env_hero_photo" 
                                 id="env_hero_photo"
                                 accept="image/*"
-                                class="block mt-1 w-full"
-                                style="padding: 0.5rem; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; color: var(--color-text-primary); font-size: var(--text-sm);"
+                                style="display: none;"
                             />
+                            <button type="button" onclick="document.getElementById('env_hero_photo').click()" class="btn-action btn-action-secondary sn-sentence" style="height: 36px; margin-top: 0.25rem;">
+                                <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span id="env_hero_photo_label">Elegir archivo</span>
+                            </button>
                             @if($property->environment && $property->environment->hero_photo)
                                 <p class="form-hint">Actual: {{ basename($property->environment->hero_photo) }}</p>
                             @endif
@@ -501,9 +506,14 @@
                                 name="env_nature_photo" 
                                 id="env_nature_photo"
                                 accept="image/*"
-                                class="block mt-1 w-full"
-                                style="padding: 0.5rem; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; color: var(--color-text-primary); font-size: var(--text-sm);"
+                                style="display: none;"
                             />
+                            <button type="button" onclick="document.getElementById('env_nature_photo').click()" class="btn-action btn-action-secondary sn-sentence" style="height: 36px; margin-top: 0.25rem;">
+                                <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span id="env_nature_photo_label">Elegir archivo</span>
+                            </button>
                             @if($property->environment && $property->environment->nature_photo)
                                 <p class="form-hint">Actual: {{ basename($property->environment->nature_photo) }}</p>
                             @endif
@@ -535,9 +545,14 @@
                                 name="env_culture_photo" 
                                 id="env_culture_photo"
                                 accept="image/*"
-                                class="block mt-1 w-full"
-                                style="padding: 0.5rem; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; color: var(--color-text-primary); font-size: var(--text-sm);"
+                                style="display: none;"
                             />
+                            <button type="button" onclick="document.getElementById('env_culture_photo').click()" class="btn-action btn-action-secondary sn-sentence" style="height: 36px; margin-top: 0.25rem;">
+                                <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span id="env_culture_photo_label">Elegir archivo</span>
+                            </button>
                             @if($property->environment && $property->environment->culture_photo)
                                 <p class="form-hint">Actual: {{ basename($property->environment->culture_photo) }}</p>
                             @endif
@@ -569,9 +584,14 @@
                                 name="env_activities_photo" 
                                 id="env_activities_photo"
                                 accept="image/*"
-                                class="block mt-1 w-full"
-                                style="padding: 0.5rem; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; color: var(--color-text-primary); font-size: var(--text-sm);"
+                                style="display: none;"
                             />
+                            <button type="button" onclick="document.getElementById('env_activities_photo').click()" class="btn-action btn-action-secondary sn-sentence" style="height: 36px; margin-top: 0.25rem;">
+                                <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span id="env_activities_photo_label">Elegir archivo</span>
+                            </button>
                             @if($property->environment && $property->environment->activities_photo)
                                 <p class="form-hint">Actual: {{ basename($property->environment->activities_photo) }}</p>
                             @endif
@@ -603,9 +623,14 @@
                                 name="env_services_photo" 
                                 id="env_services_photo"
                                 accept="image/*"
-                                class="block mt-1 w-full"
-                                style="padding: 0.5rem; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; color: var(--color-text-primary); font-size: var(--text-sm);"
+                                style="display: none;"
                             />
+                            <button type="button" onclick="document.getElementById('env_services_photo').click()" class="btn-action btn-action-secondary sn-sentence" style="height: 36px; margin-top: 0.25rem;">
+                                <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span id="env_services_photo_label">Elegir archivo</span>
+                            </button>
                             @if($property->environment && $property->environment->services_photo)
                                 <p class="form-hint">Actual: {{ basename($property->environment->services_photo) }}</p>
                             @endif
@@ -621,36 +646,41 @@
         </div>
 
         {{-- Zona de peligro: Dar de baja propiedad --}}
-        <div class="danger-zone" style="margin-top: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.9); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.25rem 1.5rem;">
-            <h3 class="danger-title">
-                <svg style="width: 20px; height: 20px; flex-shrink: 0;" fill="none" stroke="var(--color-error)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
+        <section class="admin-form-card p-6" style="border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); padding: 1.5rem; margin-top: 2rem;">
+            <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary); margin:0 0 1rem; text-transform: uppercase; letter-spacing:0.05em;">
                 Zona de peligro
-            </h3>
-            <p class="danger-text" style="font-size: var(--text-base); color: var(--color-text-secondary); margin-bottom: 1rem;">
+            </h2>
+            
+            <p style="margin-bottom: 1rem; font-size: var(--text-base); color: var(--color-text-secondary);">
                 Una vez que des de baja la propiedad, se cancelarán todas las reservas futuras activas 
                 y se procesarán los reembolsos automáticamente.
             </p>
 
             @if($futureReservationsCount > 0)
-                <div style="background: rgba(var(--color-bg-secondary-rgb), 0.9); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: var(--text-sm); line-height: 1.5; backdrop-filter: blur(10px);">
-                    <p style="font-weight: 600; margin-bottom: 0.25rem; color: var(--color-text-primary);">{{ $futureReservationsCount }} reserva(s) futura(s) será(n) cancelada(s)</p>
-                    <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">Los clientes recibirán un reembolso completo y un email de notificación.</p>
+                <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: rgba(204, 89, 86, 0.1); border-left: 4px solid var(--color-error); border-radius: var(--radius-base); display: flex; gap: 0.75rem;">
+                    <svg style="width: 20px; height: 20px; flex-shrink: 0; margin-top: 0.125rem;" fill="none" stroke="var(--color-error)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p style="font-size: var(--text-base); color: var(--color-error); font-weight: 600; margin-bottom: 0.5rem;">
+                            Atención: Tienes {{ $futureReservationsCount }} {{ $futureReservationsCount === 1 ? 'reserva activa' : 'reservas activas' }}
+                        </p>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+                            Al dar de baja la propiedad, todas las reservas futuras se cancelarán automáticamente y los clientes recibirán un reembolso completo con notificación por email.
+                        </p>
+                    </div>
                 </div>
             @endif
 
             <button 
                 class="btn-action btn-action-danger sn-sentence py-2 px-5"
-                style="height:36px; display:inline-flex; align-items:center; background-color: transparent; color: #fff; border: 1px solid var(--color-error); border-radius: var(--radius-base); transition: all 0.3s ease; font-size: 14px;"
+                style="height:36px; display:inline-flex; align-items:center;"
                 x-data=""
                 x-on:click.prevent="$dispatch('open-modal', 'confirm-delete-property')"
-                onmouseover="this.style.color = 'var(--color-error)'; this.style.backgroundColor = 'rgba(204, 89, 86, 0.10)'; this.style.borderColor = 'transparent';"
-                onmouseout="this.style.backgroundColor = 'transparent'; this.style.color = '#fff'; this.style.borderColor = 'var(--color-error)';"
             >
                 Dar de baja propiedad
             </button>
-        </div>
+        </section>
 
         {{-- Modal de confirmación --}}
         <x-modal name="confirm-delete-property" focusable>
@@ -697,4 +727,30 @@
                 </div>
             </x-modal>
     </div>
+
+    <script>
+        // JavaScript para actualizar el texto de los botones de archivo
+        const fileInputs = [
+            'env_hero_photo',
+            'env_nature_photo',
+            'env_culture_photo',
+            'env_activities_photo',
+            'env_services_photo'
+        ];
+
+        fileInputs.forEach(inputId => {
+            const input = document.getElementById(inputId);
+            const label = document.getElementById(inputId + '_label');
+            
+            if (input && label) {
+                input.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        label.textContent = this.files[0].name;
+                    } else {
+                        label.textContent = 'Elegir archivo';
+                    }
+                });
+            }
+        });
+    </script>
 </x-app-layout>
