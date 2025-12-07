@@ -23,21 +23,21 @@ class SendExpirationReminders extends Command
      *
      * @var string
      */
-    protected $description = 'Envía recordatorios a usuarios con reservas que expiran en 1 hora';
+    protected $description = 'Envía recordatorios a usuarios con reservas que expiran en 1 minuto';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-        // Buscar reservas pendientes que expiren en aproximadamente 1 hora
-        // (entre 50 y 70 minutos para dar margen de ejecución del cron)
-        $oneHourFromNow = now()->addMinutes(50);
-        $oneHourTenFromNow = now()->addMinutes(70);
+        // Buscar reservas pendientes que expiren en aproximadamente 1 minuto
+        // (entre 30 y 90 segundos para dar margen de ejecución del cron)
+        $oneMinuteFromNow = now()->addSeconds(30);
+        $oneMinuteThirtyFromNow = now()->addSeconds(90);
 
         $expiringReservations = Reservation::where('status', 'pending')
             ->whereNotNull('expires_at')
-            ->whereBetween('expires_at', [$oneHourFromNow, $oneHourTenFromNow])
+            ->whereBetween('expires_at', [$oneMinuteFromNow, $oneMinuteThirtyFromNow])
             ->whereNotExists(function ($query) {
                 // Verificar que no se haya enviado ya el recordatorio
                 // (usando una columna reminder_sent_at si la agregas, o basándote en logs)
@@ -47,7 +47,7 @@ class SendExpirationReminders extends Command
             ->get();
 
         if ($expiringReservations->isEmpty()) {
-            $this->info('No hay reservas próximas a expirar en la siguiente hora.');
+            $this->info('No hay reservas próximas a expirar en el siguiente minuto.');
             return 0;
         }
 
