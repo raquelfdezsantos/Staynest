@@ -2,15 +2,15 @@
 
 ## Descripción
 
-Este sistema cancela automáticamente las reservas pendientes de pago que no se completen dentro de los 2 minutos siguientes a su creación.
+Este sistema cancela automáticamente las reservas pendientes de pago que no se completen dentro de los 5 minutos siguientes a su creación.
 
 ## Funcionamiento
 
 ### 1. Creación de Reserva
 Cuando se crea una reserva:
 - Se establece `status = 'pending'`
-- Se establece `expires_at = now() + 2 minutos`
-- Se envía email de confirmación con aviso de los 2 minutos
+- Se establece `expires_at = now() + 5 minutos`
+- Se envía email de confirmación con aviso de los 5 minutos
 
 ### 2. Recordatorio (1 minuto antes)
 El comando `reservations:send-expiration-reminders` (ejecutado cada minuto):
@@ -99,10 +99,10 @@ sudo systemctl start staynest-scheduler
 
 ### 1. ReservationConfirmedMail
 - **Cuándo**: Al crear la reserva
-- **Contenido**: Datos de la reserva + aviso de 2 minutos para pagar
+- **Contenido**: Datos de la reserva + aviso de 5 minutos para pagar
 
 ### 2. ReservationExpiringReminderMail
-- **Cuándo**: 1 minuto antes de expirar
+- **Cuándo**: Aproximadamente 1 minuto antes de expirar (en el minuto 4)
 - **Contenido**: Recordatorio urgente con botón de pagar
 
 ### 3. ReservationExpiredMail

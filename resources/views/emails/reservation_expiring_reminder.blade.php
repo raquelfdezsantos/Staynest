@@ -4,7 +4,7 @@
   <h2 style="margin: 0 0 20px; font-family: Georgia, serif; font-size: 24px; color: #ff9800; font-weight: 500;">⚠️ Tu reserva expira pronto</h2>
   
   <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: #333333;">Hola {{ $reservation->user->name }},</p>
-  <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: #333333;">Te recordamos que tu reserva está pendiente de pago y <strong>expirará en aproximadamente 1 hora</strong>.</p>
+  <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: #333333;">Te recordamos que tu reserva está pendiente de pago y <strong>expirará en aproximadamente 1 minuto</strong>.</p>
 
   <table cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; background-color: #f9f9f9; border-radius: 6px;"
     <tr><td style="padding: 10px; font-size: 14px; color: #666666;"><strong style="color: #333333;">Reserva:</strong></td><td style="padding: 10px; font-size: 14px; color: #333333;">{{ $reservation->code ?? ('#'.$reservation->id) }}</td></tr>

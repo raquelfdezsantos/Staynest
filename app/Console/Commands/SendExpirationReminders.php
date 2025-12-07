@@ -31,8 +31,8 @@ class SendExpirationReminders extends Command
     public function handle()
     {
         // Buscar reservas pendientes que expiren en aproximadamente 1 minuto
-        // (entre 30 y 90 segundos para dar margen de ejecución del cron)
-        $oneMinuteFromNow = now()->addSeconds(30);
+        // (entre 1 y 90 segundos para dar margen de ejecución del cron)
+        $oneMinuteFromNow = now()->addSeconds(1);
         $oneMinuteThirtyFromNow = now()->addSeconds(90);
 
         $expiringReservations = Reservation::where('status', 'pending')

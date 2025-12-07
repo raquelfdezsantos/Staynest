@@ -48,6 +48,19 @@ class ExpirePendingReservations extends Command
                     'status' => 'cancelled'
                 ]);
 
+                // Liberar fechas del calendario [check_in, check_out) - excluir check_out
+                $checkIn = is_string($reservation->check_in) ? $reservation->check_in : $reservation->check_in->toDateString();
+                $checkOut = is_string($reservation->check_out) ? $reservation->check_out : $reservation->check_out->toDateString();
+                
+                \App\Models\RateCalendar::where('property_id', $reservation->property_id)
+                    ->where('date', '>=', $checkIn)
+                    ->where('date', '<', $checkOut)
+                    ->where('blocked_by', 'reservation')
+                    ->update([
+                        'is_available' => true,
+                        'blocked_by' => null
+                    ]);
+
                 // Enviar email al cliente
                 Mail::to($reservation->user->email)->send(new ReservationExpiredMail($reservation));
 

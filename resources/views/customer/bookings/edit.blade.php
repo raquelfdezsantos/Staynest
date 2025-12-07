@@ -320,6 +320,8 @@
               const adults = parseInt(document.getElementById('adults').value) || 0;
               const children = parseInt(document.getElementById('children').value) || 0;
               const guests = adults + children;
+              
+              // Lógica de negocio: suma de precios de noches * número de huéspedes
               const total = totalNightsPrice * guests;
               
               const totalEl = document.getElementById('summary-total');
@@ -371,43 +373,55 @@
 
         // Inicializar checkInPicker primero
         checkInPicker = flatpickr('#check_in', {
-          locale: 'es',
-          minDate: 'today',
-          dateFormat: 'Y-m-d',
-          defaultDate: '{{ $reservation->check_in->format('Y-m-d') }}',
-          disable: [
-            function (date) {
-              const y = date.getFullYear();
-              const m = String(date.getMonth() + 1).padStart(2, '0');
-              const d = String(date.getDate()).padStart(2, '0');
-              const dateStr = `${y}-${m}-${d}`;
-              if (checkinDates.includes(dateStr)) return true;
-              if (blockedDates.includes(dateStr)) return true;
-              return false;
+            locale: 'es',
+            minDate: 'today',
+            dateFormat: 'Y-m-d',
+            defaultDate: '{{ $reservation->check_in->format('Y-m-d') }}',
+            disable: [
+                function (date) {
+                    const year = date.getFullYear();
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const dateStr = `${year}-${month}-${day}`;
+
+                    if (checkinDates.includes(dateStr)) {
+                        return true;
+                    }
+
+                    if (blockedDates.includes(dateStr)) {
+                        return true;
+                    }
+
+                    return false;
+                }
+            ],
+            onChange: function (selectedDates) {
+                if (selectedDates.length) {
+                    const nextDay = new Date(selectedDates[0].getTime());
+                    nextDay.setDate(nextDay.getDate() + 1);
+                    checkOutPicker.set('minDate', nextDay);
+                    updateTotal();
+                }
+            },
+
+            onDayCreate: function (dObj, dStr, fp, dayElem) {
+                const date = dayElem.dateObj;
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                const dateStr = `${y}-${m}-${d}`;
+
+                if (checkinDates.includes(dateStr) || blockedDates.includes(dateStr)) {
+                    dayElem.classList.add('unavailable');
+                    dayElem.title = checkinDates.includes(dateStr)
+                        ? 'Check-in programado - no disponible'
+                        : 'Noche ocupada - no disponible';
+                } else {
+                    dayElem.classList.add('available');
+                    dayElem.title = 'Disponible';
+                }
             }
-          ],
-          onChange: function (selectedDates) {
-            if (selectedDates.length && checkOutPicker) {
-              const nextDay = new Date(selectedDates[0].getTime());
-              nextDay.setDate(nextDay.getDate() + 1);
-              checkOutPicker.set('minDate', nextDay);
-            }
-            updateTotal();
-          },
-          onDayCreate: function (dObj, dStr, fp, dayElem) {
-            const date = dayElem.dateObj;
-            const y = date.getFullYear();
-            const m = String(date.getMonth() + 1).padStart(2, '0');
-            const d = String(date.getDate()).padStart(2, '0');
-            const dateStr = `${y}-${m}-${d}`;
-            if (checkinDates.includes(dateStr) || blockedDates.includes(dateStr)) {
-              dayElem.classList.add('unavailable');
-              dayElem.title = 'No disponible';
-            } else {
-              dayElem.classList.add('available');
-              dayElem.title = 'Disponible';
-            }
-          }
+
         });
 
         const tomorrow = new Date();
@@ -415,40 +429,49 @@
 
         // Inicializar checkOutPicker después
         checkOutPicker = flatpickr('#check_out', {
-          locale: 'es',
+            locale: 'es',
             minDate: tomorrow,
             dateFormat: 'Y-m-d',
             defaultDate: '{{ $reservation->check_out->format('Y-m-d') }}',
             disable: [
-              function (date) {
-                if (!checkInPicker || !checkInPicker.selectedDates || !checkInPicker.selectedDates[0]) return false;
-                const checkInDate = checkInPicker.selectedDates[0];
-                const checkOutDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-                const current = new Date(checkInDate.getTime());
-                current.setDate(current.getDate() + 1);
-                while (current < checkOutDate) {
-                  const y = current.getFullYear();
-                  const m = String(current.getMonth() + 1).padStart(2, '0');
-                  const d = String(current.getDate()).padStart(2, '0');
-                  const nightStr = `${y}-${m}-${d}`;
-                  if (blockedDates.includes(nightStr)) return true;
-                  current.setDate(current.getDate() + 1);
+                function (date) {
+                    const checkInDate = checkInPicker.selectedDates[0];
+                    if (!checkInDate) return false;
+
+                    const checkOutDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+                    const current = new Date(checkInDate.getTime());
+                    current.setDate(current.getDate() + 1);
+
+                    while (current < checkOutDate) {
+                        const y = current.getFullYear();
+                        const m = String(current.getMonth() + 1).padStart(2, '0');
+                        const d = String(current.getDate()).padStart(2, '0');
+                        const nightStr = `${y}-${m}-${d}`;
+
+                        if (blockedDates.includes(nightStr)) {
+                            return true;
+                        }
+                        current.setDate(current.getDate() + 1);
+                    }
+
+                    return false;
                 }
-                return false;
-              }
             ],
-            onChange: function () { updateTotal(); },
+            onChange: function () {
+                updateTotal();
+            },
             onDayCreate: function (dObj, dStr, fp, dayElem) {
-              const date = dayElem.dateObj;
-              const y = date.getFullYear();
-              const m = String(date.getMonth() + 1).padStart(2, '0');
-              const d = String(date.getDate()).padStart(2, '0');
-              const dateStr = `${y}-${m}-${d}`;
-              if (blockedDates.includes(dateStr)) {
-                dayElem.classList.add('unavailable');
-              } else {
-                dayElem.classList.add('available');
-              }
+                const date = dayElem.dateObj;
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                const d = String(date.getDate()).padStart(2, '0');
+                const dateStr = `${y}-${m}-${d}`;
+
+                if (blockedDates.includes(dateStr)) {
+                    dayElem.classList.add('unavailable');
+                } else {
+                    dayElem.classList.add('available');
+                }
             }
         });
 

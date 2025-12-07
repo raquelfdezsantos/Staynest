@@ -73,7 +73,7 @@ class AuthenticatedSessionController extends Controller
                     'notes' => $pendingData['notes'] ?? null,
                     'status' => 'pending',
                     'total_price' => $totalPrice,
-                    'expires_at' => now()->addMinutes(2),
+                    'expires_at' => now()->addMinutes(5),
                 ]);
 
                 // Enviar emails de confirmación

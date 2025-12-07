@@ -8,6 +8,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Programar comandos de expiración de reservas
-Schedule::command('reservations:send-expiration-reminders')->hourly();
-Schedule::command('reservations:expire-pending')->hourly();
+// Programar comandos de expiración de reservas (cada minuto para demo de 2 minutos)
+Schedule::command('reservations:send-expiration-reminders')->everyMinute();
+Schedule::command('reservations:expire-pending')->everyMinute();

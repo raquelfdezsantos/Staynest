@@ -79,6 +79,8 @@ class DemoDataSeeder extends Seeder
             'document_type' => 'dni',
             'document_id' => '45678912C',
             'phone' => '+34 633 111 222',
+            'address' => 'Calle Mayor, 15, 3º A',
+            'birth_date' => '1990-05-15',
         ]);
 
         $cliente2 = User::create([
@@ -90,6 +92,8 @@ class DemoDataSeeder extends Seeder
             'document_type' => 'nie',
             'document_id' => 'X9876543D',
             'phone' => '+34 644 333 444',
+            'address' => 'Avenida de la Constitución, 28, 1º B',
+            'birth_date' => '1985-11-23',
         ]);
 
         $cliente3 = User::create([
@@ -101,6 +105,8 @@ class DemoDataSeeder extends Seeder
             'document_type' => 'dni',
             'document_id' => '78945612E',
             'phone' => '+34 655 555 666',
+            'address' => 'Plaza del Carmen, 7, 2º',
+            'birth_date' => '1992-03-08',
         ]);
 
         $this->command->info('Usuarios creados: 2 admins + 3 clientes');
@@ -216,7 +222,7 @@ class DemoDataSeeder extends Seeder
         Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/id/1041/1600/1067', 'is_cover' => false, 'sort_order' => 2]);
         Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/id/1042/1600/1067', 'is_cover' => false, 'sort_order' => 3]);
 
-        $this->generateRateCalendar($estudio->id, basePrice: 70, weekendPrice: 95, onlyPast: true);
+        $this->generateRateCalendar($estudio->id, basePrice: 70, weekendPrice: 95, onlyPast: false);
 
         // Información del entorno para Estudio Llanes
         \App\Models\PropertyEnvironment::create([
@@ -241,7 +247,9 @@ class DemoDataSeeder extends Seeder
         // 3. RESERVAS Y PAGOS
         // ========================================
 
-        // RESERVA 1: Laura → Nordeste (PENDING, expira en 2 minutos para demo)
+        // RESERVA 1: Laura → Nordeste (PENDING, expira en 5 minutos para demo)
+        // IMPORTANTE: Si schedule:work está corriendo, esta reserva será cancelada automáticamente
+        // Para testing: detén schedule:work antes de ejecutar migrate:fresh --seed
         $reserva1 = Reservation::create([
             'user_id' => $cliente1->id,
             'property_id' => $nordeste->id,
@@ -254,24 +262,29 @@ class DemoDataSeeder extends Seeder
             'pets' => 0,
             'total_price' => 285.00,
             'status' => 'pending',
-            'expires_at' => now()->addMinutes(2), // Expira en 2 minutos para mostrar en la demo
+            'expires_at' => now()->addMinutes(5), // Expira en 5 minutos para mostrar en la demo
             'notes' => 'Llegada aproximada a las 16:00h',
         ]);
 
         $this->blockDates($nordeste->id, $reserva1->check_in, $reserva1->check_out);
 
         // RESERVA 2: Carlos → Nordeste (PAID, con pago completo y factura)
+        $checkIn2 = now()->addDays(30)->toDateString();
+        $checkOut2 = now()->addDays(35)->toDateString();
+        $guests2 = 4; // 2 adultos + 2 niños
+        $totalPrice2 = $this->calculateReservationTotal($nordeste->id, $checkIn2, $checkOut2, $guests2);
+        
         $reserva2 = Reservation::create([
             'user_id' => $cliente2->id,
             'property_id' => $nordeste->id,
             'code' => 'SN-' . now()->format('Y') . '-' . strtoupper(substr(md5(uniqid()), 0, 6)),
-            'check_in' => now()->addDays(30)->toDateString(),
-            'check_out' => now()->addDays(35)->toDateString(),
+            'check_in' => $checkIn2,
+            'check_out' => $checkOut2,
             'guests' => 4,
             'adults' => 2,
             'children' => 2,
             'pets' => 0,
-            'total_price' => 600.00,
+            'total_price' => $totalPrice2,
             'status' => 'paid',
             'expires_at' => null,
             'notes' => 'Viaje familiar, necesitamos cuna para bebé',
@@ -279,9 +292,9 @@ class DemoDataSeeder extends Seeder
 
         Payment::create([
             'reservation_id' => $reserva2->id,
-            'amount' => 600.00,
+            'amount' => $totalPrice2,
             'method' => 'simulated',
-            'status' => 'completed',
+            'status' => 'succeeded',
             'provider_ref' => 'SIM-' . strtoupper(substr(md5(uniqid()), 0, 8)),
         ]);
 
@@ -290,7 +303,7 @@ class DemoDataSeeder extends Seeder
             'number' => Invoice::generateUniqueNumber('FACT'),
             'pdf_path' => null,
             'issued_at' => now(),
-            'amount' => 600.00,
+            'amount' => $totalPrice2,
         ]);
 
         $this->blockDates($nordeste->id, $reserva2->check_in, $reserva2->check_out);
@@ -316,7 +329,7 @@ class DemoDataSeeder extends Seeder
             'reservation_id' => $reserva3->id,
             'amount' => 450.00,
             'method' => 'simulated',
-            'status' => 'completed',
+            'status' => 'succeeded',
             'provider_ref' => 'SIM-' . strtoupper(substr(md5(uniqid()), 0, 8)),
         ]);
 
@@ -402,6 +415,30 @@ class DemoDataSeeder extends Seeder
                 'min_stay' => $isWeekend ? 2 : 1,
             ]);
         }
+    }
+
+    /**
+     * Calcula el precio total de una reserva basándose en las tarifas del calendario
+     * Lógica: suma de precios de todas las noches × número de huéspedes
+     */
+    private function calculateReservationTotal(int $propertyId, string $checkIn, string $checkOut, int $guests): float
+    {
+        $sumPrices = 0;
+        $period = CarbonPeriod::create($checkIn, $checkOut)->excludeEndDate();
+        
+        foreach ($period as $date) {
+            $dateStr = $date->toDateString();
+            $rateCalendar = RateCalendar::where('property_id', $propertyId)
+                ->where('date', $dateStr)
+                ->first();
+            
+            if ($rateCalendar) {
+                $sumPrices += $rateCalendar->price;
+            }
+        }
+        
+        // Aplicar lógica de negocio: suma de precios × número de huéspedes
+        return $sumPrices * $guests;
     }
 
     /**
