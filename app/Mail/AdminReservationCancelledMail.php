@@ -12,19 +12,15 @@ use Illuminate\Mail\Mailables\Attachment;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
- * Mailable para notificar al administrador sobre la cancelación de una reserva.
- *
- * Envía un correo informativo al administrador cuando una reserva es cancelada.
+ * Mailable para notificar cancelación de reserva.
  */
 class AdminReservationCancelledMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Constructor del mailable.
-     *
-     * @param mixed $reservation Instancia de la reserva cancelada.
-     * @param mixed|null $invoice Factura rectificativa (opcional).
+     * @param mixed $reservation
+     * @param mixed|null $invoice
      */
     public function __construct(
         public $reservation,
@@ -32,9 +28,9 @@ class AdminReservationCancelledMail extends Mailable
     ) {}
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope
      */
     public function envelope(): Envelope
     {
@@ -44,9 +40,9 @@ class AdminReservationCancelledMail extends Mailable
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define contenido del correo.
      *
-     * @return Content Contenido del correo con la vista correspondiente.
+     * @return \Illuminate\Mail\Mailables\Content
      */
     public function content(): Content
     {
@@ -60,9 +56,9 @@ class AdminReservationCancelledMail extends Mailable
     }
 
     /**
-     * Define los archivos adjuntos del correo (ninguno en este caso).
+     * Define adjuntos del correo.
      *
-     * @return array Lista de adjuntos vacía.
+     * @return array
      */
     public function attachments(): array
     {

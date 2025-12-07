@@ -7,33 +7,29 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Mailable para gestionar el envío de mensajes de contacto desde la web.
- *
- * Envía un correo con los datos del formulario de contacto al equipo de soporte.
+ * Mailable para enviar mensajes de contacto.
  */
 class ContactMessageMail extends Mailable {
     use Queueable, SerializesModels;
 
     /**
-     * Datos del formulario de contacto.
+     * Datos del formulario.
      *
      * @var array
      */
     public array $data;
 
     /**
-     * Constructor del mailable.
+     * Crea una nueva instancia del mailable.
      *
-     * @param array $data Datos del formulario de contacto.
+     * @param array $data Datos del formulario
      */
     public function __construct(array $data){ $this->data = $data; }
 
     /**
-     * Construye el mensaje de correo electrónico.
+     * Construye el mensaje de correo.
      *
-     * Define el asunto, la vista y los datos del mensaje.
-     *
-     * @return $this Instancia del mailable configurado.
+     * @return $this Instancia configurada
      */
     public function build(){
         $subject = $this->data['subject'] ?? 'Nueva consulta desde la web';

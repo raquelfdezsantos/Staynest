@@ -8,25 +8,23 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Mailable para gestionar el envío de mensajes de soporte desde la web.
- *
- * Envía un correo con los datos del formulario de soporte al equipo correspondiente.
+ * Mailable para enviar mensajes de soporte.
  */
 class SupportMessageMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Datos del formulario de soporte.
+     * Datos del formulario.
      *
      * @var array
      */
     public array $data;
 
     /**
-     * Constructor del mailable.
+     * Crea una nueva instancia del mailable.
      *
-     * @param array $data Datos del formulario de soporte.
+     * @param array $data Datos del formulario
      */
     public function __construct(array $data)
     {
@@ -34,11 +32,9 @@ class SupportMessageMail extends Mailable
     }
 
     /**
-     * Construye el mensaje de correo electrónico.
+     * Construye el mensaje de correo.
      *
-     * Define el asunto, la vista y los datos del mensaje.
-     *
-     * @return $this Instancia del mailable configurado.
+     * @return $this Instancia configurada
      */
     public function build()
     {

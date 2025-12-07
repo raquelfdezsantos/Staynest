@@ -11,16 +11,14 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Mailable para confirmar la baja de una propiedad.
- *
- * Envía un correo con el nombre de la propiedad, reservas canceladas y total reembolsado.
+ * Mailable para confirmar baja de propiedad.
  */
 class PropertyDeletedConfirmationMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Nombre de la propiedad dada de baja.
+     * Nombre de la propiedad.
      * @var string
      */
     public $propertyName;
@@ -30,17 +28,17 @@ class PropertyDeletedConfirmationMail extends Mailable
      */
     public $cancelledReservations;
     /**
-     * Total reembolsado por la baja.
+     * Total reembolsado.
      * @var float
      */
     public $totalRefunded;
 
     /**
-     * Constructor del mailable.
+     * Crea una nueva instancia del mailable.
      *
-     * @param string $propertyName Nombre de la propiedad dada de baja.
-     * @param int $cancelledReservations Número de reservas canceladas.
-     * @param float $totalRefunded Total reembolsado por la baja.
+     * @param string $propertyName Nombre de la propiedad
+     * @param int $cancelledReservations Número de reservas canceladas
+     * @param float $totalRefunded Total reembolsado
      */
     public function __construct(string $propertyName, int $cancelledReservations, float $totalRefunded)
     {
@@ -50,9 +48,9 @@ class PropertyDeletedConfirmationMail extends Mailable
     }
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define el sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope Sobre del correo
      */
     public function envelope(): Envelope
     {
@@ -62,9 +60,9 @@ class PropertyDeletedConfirmationMail extends Mailable
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define el contenido del correo.
      *
-     * @return Content Contenido del correo con la vista correspondiente.
+     * @return \Illuminate\Mail\Mailables\Content Contenido del correo
      */
     public function content(): Content
     {
@@ -74,9 +72,9 @@ class PropertyDeletedConfirmationMail extends Mailable
     }
 
     /**
-     * Define los archivos adjuntos del correo (ninguno en este caso).
+     * Define los adjuntos del correo.
      *
-     * @return array Lista de adjuntos vacía.
+     * @return array Lista de adjuntos
      */
     public function attachments(): array
     {

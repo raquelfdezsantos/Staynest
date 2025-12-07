@@ -10,18 +10,14 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Mailable para notificar al usuario sobre un saldo pendiente de pago.
- *
- * Envía un correo informativo cuando existe un importe pendiente en la reserva.
+ * Mailable para notificar saldo pendiente de pago.
  */
 class PaymentBalanceDueMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Constructor del mailable.
-     *
-     * Inicializa el correo de saldo pendiente de pago.
+     * Crea una nueva instancia del mailable.
      */
     public function __construct()
     {
@@ -29,9 +25,9 @@ class PaymentBalanceDueMail extends Mailable
     }
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define el sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope Sobre del correo
      */
     public function envelope(): Envelope
     {
@@ -41,9 +37,9 @@ class PaymentBalanceDueMail extends Mailable
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define el contenido del correo.
      *
-     * @return Content Contenido del correo con la vista correspondiente.
+     * @return \Illuminate\Mail\Mailables\Content Contenido del correo
      */
     public function content(): Content
     {
@@ -53,9 +49,9 @@ class PaymentBalanceDueMail extends Mailable
     }
 
     /**
-     * Define los archivos adjuntos del correo (ninguno en este caso).
+     * Define los adjuntos del correo.
      *
-     * @return array Lista de adjuntos vacía.
+     * @return array Lista de adjuntos
      */
     public function attachments(): array
     {

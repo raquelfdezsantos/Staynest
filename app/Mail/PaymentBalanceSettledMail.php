@@ -12,20 +12,18 @@ use Illuminate\Mail\Mailables\Attachment;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
- * Mailable para notificar al usuario que el pago de la diferencia ha sido completado.
- *
- * Envía un correo con los datos de la reserva y el importe pagado.
+ * Mailable para notificar pago de diferencia completado.
  */
 class PaymentBalanceSettledMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Constructor del mailable.
+     * Crea una nueva instancia del mailable.
      *
-     * @param mixed $reservation Instancia de la reserva.
-     * @param mixed $amount Importe pagado.
-     * @param mixed|null $invoice Factura actualizada (opcional).
+     * @param \App\Models\Reservation $reservation Instancia de la reserva
+     * @param float $amount Importe pagado
+     * @param mixed|null $invoice Factura opcional
      */
     public function __construct(
         public $reservation,
@@ -34,9 +32,9 @@ class PaymentBalanceSettledMail extends Mailable
     ) {}
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define el sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope Sobre del correo
      */
     public function envelope(): Envelope
     {
@@ -46,9 +44,9 @@ class PaymentBalanceSettledMail extends Mailable
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define el contenido del correo.
      *
-     * @return Content Contenido del correo con la vista y datos de la reserva y el importe.
+     * @return \Illuminate\Mail\Mailables\Content Contenido del correo
      */
     public function content(): Content
     {
@@ -63,9 +61,9 @@ class PaymentBalanceSettledMail extends Mailable
     }
 
     /**
-     * Define los archivos adjuntos del correo (ninguno en este caso).
+     * Define los adjuntos del correo.
      *
-     * @return array Lista de adjuntos vacía.
+     * @return array Lista de adjuntos
      */
     public function attachments(): array
     {

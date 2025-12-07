@@ -14,19 +14,17 @@ use Illuminate\Mail\Mailables\Attachment;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
- * Mailable para enviar el recibo de pago al usuario.
- *
- * Envía un correo con los datos de la reserva y la factura asociada tras el pago.
+ * Mailable para enviar recibo de pago.
  */
 class PaymentReceiptMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     /**
-     * Constructor del mailable.
+     * Crea una nueva instancia del mailable.
      *
-     * @param Reservation $reservation Instancia de la reserva pagada.
-     * @param Invoice $invoice Instancia de la factura asociada.
+     * @param \App\Models\Reservation $reservation Instancia de la reserva
+     * @param \App\Models\Invoice $invoice Instancia de la factura
      */
     public function __construct(
         public Reservation $reservation,
@@ -34,9 +32,9 @@ class PaymentReceiptMail extends Mailable implements ShouldQueue
     ) {}
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define el sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope Sobre del correo
      */
     public function envelope(): Envelope
     {
@@ -46,9 +44,9 @@ class PaymentReceiptMail extends Mailable implements ShouldQueue
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define el contenido del correo.
      *
-     * @return Content Contenido del correo con la vista y datos de la reserva y factura.
+     * @return \Illuminate\Mail\Mailables\Content Contenido del correo
      */
     public function content(): Content
     {
@@ -62,9 +60,9 @@ class PaymentReceiptMail extends Mailable implements ShouldQueue
     }
 
     /**
-     * Define los archivos adjuntos del correo (ninguno en este caso).
+     * Define los adjuntos del correo.
      *
-     * @return array Lista de adjuntos vacía.
+     * @return array Lista de adjuntos
      */
     public function attachments(): array
     {

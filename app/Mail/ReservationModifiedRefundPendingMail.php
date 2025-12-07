@@ -11,22 +11,20 @@ use Illuminate\Mail\Mailables\Attachment;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
- * Mailable para notificar al usuario sobre la modificación de la reserva y devolución pendiente.
- *
- * Envía un correo con los datos de la reserva modificada, el nuevo total y el importe a devolver.
+ * Mailable para notificar modificación de reserva con devolución pendiente.
  */
 class ReservationModifiedRefundPendingMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Constructor del mailable.
+     * Crea una nueva instancia del mailable.
      *
-     * @param mixed $reservation Instancia de la reserva modificada.
-     * @param mixed $newTotal Nuevo importe total de la reserva.
-     * @param mixed $refundAmount Importe pendiente de devolución.
-     * @param mixed $invoice Factura actualizada (opcional).
-     * @param bool $isAdmin Si el email se envía al admin de la propiedad.
+     * @param \App\Models\Reservation $reservation Instancia de la reserva
+     * @param float $newTotal Nuevo importe total
+     * @param float $refundAmount Importe de devolución
+     * @param mixed|null $invoice Factura opcional
+     * @param bool $isAdmin Si es para admin
      */
     public function __construct(
         public $reservation,
@@ -37,9 +35,9 @@ class ReservationModifiedRefundPendingMail extends Mailable
     ) {}
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define el sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope Sobre del correo
      */
     public function envelope(): Envelope
     {
@@ -49,9 +47,9 @@ class ReservationModifiedRefundPendingMail extends Mailable
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define el contenido del correo.
      *
-     * @return Content Contenido del correo con la vista, datos de la reserva, nuevo total y devolución.
+     * @return \Illuminate\Mail\Mailables\Content Contenido del correo
      */
     public function content(): Content
     {
@@ -68,9 +66,9 @@ class ReservationModifiedRefundPendingMail extends Mailable
     }
 
     /**
-     * Define los archivos adjuntos del correo (ninguno en este caso).
+     * Define los adjuntos del correo.
      *
-     * @return array Lista de adjuntos vacía.
+     * @return array Lista de adjuntos
      */
     public function attachments(): array
     {

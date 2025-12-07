@@ -11,20 +11,16 @@ use Illuminate\Mail\Mailables\Attachment;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
- * Mailable para notificar al administrador sobre una devolución completada.
- *
- * Envía un correo con los datos de la reserva, el importe devuelto y la factura si existe.
+ * Mailable para notificar devolución completada.
  */
 class AdminPaymentRefundIssuedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Constructor del mailable.
-     *
-     * @param mixed $reservation Instancia de la reserva.
-     * @param mixed $refundAmount Importe devuelto.
-     * @param mixed|null $invoice Factura asociada (opcional).
+     * @param mixed $reservation
+     * @param mixed $refundAmount
+     * @param mixed|null $invoice
      */
     public function __construct(
         public $reservation,
@@ -33,9 +29,9 @@ class AdminPaymentRefundIssuedMail extends Mailable
     ) {}
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope
      */
     public function envelope(): Envelope
     {
@@ -45,9 +41,9 @@ class AdminPaymentRefundIssuedMail extends Mailable
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define contenido del correo.
      *
-     * @return Content Contenido del correo con la vista, datos de la reserva, importe y factura.
+     * @return \Illuminate\Mail\Mailables\Content
      */
     public function content(): Content
     {
@@ -62,9 +58,9 @@ class AdminPaymentRefundIssuedMail extends Mailable
     }
 
     /**
-     * Define los archivos adjuntos del correo (PDF de la factura si existe).
+     * Define adjuntos del correo.
      *
-     * @return array Lista de adjuntos (puede incluir la factura en PDF).
+     * @return array
      */
     public function attachments(): array
     {

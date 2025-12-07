@@ -14,19 +14,15 @@ use Illuminate\Mail\Mailables\Attachment;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
- * Mailable para notificar al administrador sobre un pago recibido.
- *
- * Envía un correo con los datos de la reserva y la factura asociada.
+ * Mailable para notificar pago recibido.
  */
 class AdminPaymentNotificationMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     /**
-     * Constructor del mailable.
-     *
-     * @param Reservation $reservation Instancia de la reserva pagada.
-     * @param Invoice $invoice Instancia de la factura asociada.
+     * @param \App\Models\Reservation $reservation
+     * @param \App\Models\Invoice $invoice
      */
     public function __construct(
         public Reservation $reservation,
@@ -34,9 +30,9 @@ class AdminPaymentNotificationMail extends Mailable implements ShouldQueue
     ) {}
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope
      */
     public function envelope(): Envelope
     {
@@ -46,9 +42,9 @@ class AdminPaymentNotificationMail extends Mailable implements ShouldQueue
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define contenido del correo.
      *
-     * @return Content Contenido del correo con la vista y datos de la reserva y factura.
+     * @return \Illuminate\Mail\Mailables\Content
      */
     public function content(): Content
     {
@@ -62,9 +58,9 @@ class AdminPaymentNotificationMail extends Mailable implements ShouldQueue
     }
 
     /**
-     * Define los archivos adjuntos del correo (ninguno en este caso).
+     * Define adjuntos del correo.
      *
-     * @return array Lista de adjuntos vacía.
+     * @return array
      */
     public function attachments(): array
     {

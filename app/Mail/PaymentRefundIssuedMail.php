@@ -12,20 +12,18 @@ use Illuminate\Mail\Mailables\Attachment;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
- * Mailable para notificar al usuario sobre una devolución emitida.
- *
- * Envía un correo con los datos de la reserva, el importe devuelto y la factura si existe.
+ * Mailable para notificar devolución emitida.
  */
 class PaymentRefundIssuedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Constructor del mailable.
+     * Crea una nueva instancia del mailable.
      *
-     * @param mixed $reservation Instancia de la reserva.
-     * @param mixed $refund Importe devuelto.
-     * @param mixed|null $invoice Factura asociada (opcional).
+     * @param \App\Models\Reservation $reservation Instancia de la reserva
+     * @param float $refund Importe devuelto
+     * @param mixed|null $invoice Factura opcional
      */
     public function __construct(
         public $reservation,
@@ -34,9 +32,9 @@ class PaymentRefundIssuedMail extends Mailable
     ) {}
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define el sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope Sobre del correo
      */
     public function envelope(): Envelope
     {
@@ -46,9 +44,9 @@ class PaymentRefundIssuedMail extends Mailable
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define el contenido del correo.
      *
-     * @return Content Contenido del correo con la vista, datos de la reserva, importe y factura.
+     * @return \Illuminate\Mail\Mailables\Content Contenido del correo
      */
     public function content(): Content
     {
@@ -63,9 +61,9 @@ class PaymentRefundIssuedMail extends Mailable
     }
 
     /**
-     * Define los archivos adjuntos del correo (PDF de la factura si existe).
+     * Define los adjuntos del correo.
      *
-     * @return array Lista de adjuntos (puede incluir la factura en PDF).
+     * @return array Lista de adjuntos
      */
     public function attachments(): array
     {

@@ -13,20 +13,18 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
  * Mailable para notificar al administrador sobre la actualización de una reserva.
- *
- * Envía un correo informativo al administrador cuando una reserva es modificada.
  */
 class AdminReservationUpdatedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Constructor del mailable.
+     * Crea una nueva instancia del mailable.
      *
-     * @param \App\Models\Reservation $reservation Instancia de la reserva modificada.
-     * @param float $previousTotal Importe total anterior.
-     * @param float $difference Diferencia entre el total anterior y el nuevo.
-     * @param mixed|null $invoice Factura actualizada (opcional).
+     * @param \App\Models\Reservation $reservation Instancia de la reserva
+     * @param float $previousTotal Importe total anterior
+     * @param float $difference Diferencia de importe
+     * @param mixed|null $invoice Factura opcional
      */
     public function __construct(
         public \App\Models\Reservation $reservation,
@@ -36,9 +34,9 @@ class AdminReservationUpdatedMail extends Mailable
     ) {}
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define el sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope Sobre del correo
      */
     public function envelope(): Envelope
     {
@@ -48,9 +46,9 @@ class AdminReservationUpdatedMail extends Mailable
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define el contenido del correo.
      *
-     * @return Content Contenido del correo con la vista correspondiente.
+     * @return \Illuminate\Mail\Mailables\Content Contenido del correo
      */
     public function content(): Content
     {
@@ -66,9 +64,9 @@ class AdminReservationUpdatedMail extends Mailable
     }
 
     /**
-     * Define los archivos adjuntos del correo (ninguno en este caso).
+     * Define los adjuntos del correo.
      *
-     * @return array Lista de adjuntos vacía.
+     * @return array Lista de adjuntos
      */
     public function attachments(): array
     {

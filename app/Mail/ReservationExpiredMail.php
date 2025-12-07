@@ -10,26 +10,24 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Mailable para notificar al usuario que su reserva ha expirado.
- *
- * Envía un correo cuando una reserva pendiente de pago ha sido cancelada por expiración.
+ * Mailable para notificar reserva expirada.
  */
 class ReservationExpiredMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Constructor del mailable.
+     * Crea una nueva instancia del mailable.
      *
-     * @param Reservation $reservation Instancia de la reserva expirada.
-     * @param bool $isAdmin Si el email se envía al admin de la propiedad.
+     * @param \App\Models\Reservation $reservation Instancia de la reserva
+     * @param bool $isAdmin Si es para admin
      */
     public function __construct(public Reservation $reservation, public bool $isAdmin = false) {}
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define el sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope Sobre del correo
      */
     public function envelope(): Envelope
     {
@@ -39,9 +37,9 @@ class ReservationExpiredMail extends Mailable
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define el contenido del correo.
      *
-     * @return Content Contenido del correo con la vista y datos de la reserva.
+     * @return \Illuminate\Mail\Mailables\Content Contenido del correo
      */
     public function content(): Content
     {
@@ -55,9 +53,9 @@ class ReservationExpiredMail extends Mailable
     }
 
     /**
-     * Define los archivos adjuntos del correo (ninguno en este caso).
+     * Define los adjuntos del correo.
      *
-     * @return array Lista de adjuntos vacía.
+     * @return array Lista de adjuntos
      */
     public function attachments(): array
     {

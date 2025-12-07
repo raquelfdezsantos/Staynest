@@ -12,20 +12,16 @@ use Illuminate\Mail\Mailables\Attachment;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 
 /**
- * Mailable para notificar al administrador que el pago de la diferencia ha sido completado.
- *
- * Envía un correo con los datos de la reserva y el importe pagado.
+ * Mailable para notificar pago completado.
  */
 class AdminPaymentBalanceSettledMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * Constructor del mailable.
-     *
-     * @param mixed $reservation Instancia de la reserva.
-     * @param mixed $amount Importe pagado.
-     * @param mixed|null $invoice Factura actualizada (opcional).
+     * @param mixed $reservation
+     * @param mixed $amount
+     * @param mixed|null $invoice
      */
     public function __construct(
         public $reservation,
@@ -34,9 +30,9 @@ class AdminPaymentBalanceSettledMail extends Mailable
     ) {}
 
     /**
-     * Define el sobre del correo (asunto, destinatario, etc).
+     * Define sobre del correo.
      *
-     * @return Envelope Sobre del correo con el asunto personalizado.
+     * @return \Illuminate\Mail\Mailables\Envelope
      */
     public function envelope(): Envelope
     {
@@ -46,9 +42,9 @@ class AdminPaymentBalanceSettledMail extends Mailable
     }
 
     /**
-     * Define el contenido del correo (vista y datos).
+     * Define contenido del correo.
      *
-     * @return Content Contenido del correo con la vista y datos de la reserva y el importe.
+     * @return \Illuminate\Mail\Mailables\Content
      */
     public function content(): Content
     {
@@ -63,9 +59,9 @@ class AdminPaymentBalanceSettledMail extends Mailable
     }
 
     /**
-     * Define los archivos adjuntos del correo (ninguno en este caso).
+     * Define adjuntos del correo.
      *
-     * @return array Lista de adjuntos vacía.
+     * @return array
      */
     public function attachments(): array
     {
