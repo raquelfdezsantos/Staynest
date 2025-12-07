@@ -114,16 +114,15 @@
         </div>
 
         @if($user->role === 'admin')
-            {{-- Método de cobro (solo admin) --}}
+            {{-- Método de pago (oculto - solo Stripe) --}}
+            <input type="hidden" name="payment_method" value="stripe">
             <div>
-                <x-input-label for="payment_method" value="Método de cobro" />
-                <select id="payment_method" name="payment_method" class="sn-input block mt-1 w-full" style="background-color: var(--color-bg-secondary); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 0.5rem 0.75rem; color: var(--color-text-primary);">
-                    <option value="">Seleccionar...</option>
-                    <option value="stripe" {{ old('payment_method', $user->payment_method) === 'stripe' ? 'selected' : '' }}>Stripe (recomendado)</option>
-                    <option value="bank_transfer" {{ old('payment_method', $user->payment_method) === 'bank_transfer' ? 'selected' : '' }}>Transferencia bancaria</option>
-                    <option value="paypal" {{ old('payment_method', $user->payment_method) === 'paypal' ? 'selected' : '' }}>PayPal</option>
-                </select>
-                <p style="font-size: var(--text-xs); color: var(--color-text-secondary); margin-top:0.25rem;">Método que usarás para recibir los pagos de tus reservas.</p>
+                <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">
+                    <svg style="display: inline; width: 1rem; height: 1rem; margin-right: 0.25rem;" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    Los pagos de tus reservas se procesarán de forma segura a través de Stripe
+                </p>
             </div>
         @endif
 

@@ -182,20 +182,20 @@
                 </div>
 
                 <!-- DNI -->
-                <div>
+                <div class="md:col-span-2">
                     <x-input-label for="document_id" value="DNI/NIF *" />
                     <x-text-input id="document_id" class="block mt-1 w-full" type="text" name="document_id" :value="old('document_id')" required placeholder="12345678A" />
                 </div>
 
-                <!-- Método de cobro -->
-                <div>
-                    <x-input-label for="payment_method" value="Método de cobro *" />
-                    <select id="payment_method" name="payment_method" class="sn-input block mt-1 w-full bg-neutral-800 border border-neutral-700 rounded px-3 py-2 text-neutral-100" required>
-                        <option value="">Seleccionar...</option>
-                        <option value="stripe" {{ old('payment_method') === 'stripe' ? 'selected' : '' }}>Stripe (recomendado)</option>
-                        <option value="bank_transfer" {{ old('payment_method') === 'bank_transfer' ? 'selected' : '' }}>Transferencia bancaria</option>
-                        <option value="paypal" {{ old('payment_method') === 'paypal' ? 'selected' : '' }}>PayPal</option>
-                    </select>
+                <!-- Método de pago (oculto - solo Stripe) -->
+                <input type="hidden" name="payment_method" value="stripe">
+                <div class="md:col-span-2">
+                    <p class="text-sm text-neutral-400">
+                        <svg class="inline w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        Los pagos se procesarán de forma segura a través de Stripe
+                    </p>
                 </div>
             </div>
         </div>

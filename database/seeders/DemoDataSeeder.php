@@ -147,7 +147,7 @@ class DemoDataSeeder extends Seeder
         $this->generateRateCalendar($nordeste->id, basePrice: 95, weekendPrice: 120);
 
         // Información del entorno para Apartamento Nordeste
-        \App\Models\PropertyEnvironment::create([
+        PropertyEnvironment::create([
             'property_id' => $nordeste->id,
             'title' => 'Descubre Gijón',
             'subtitle' => 'Una ciudad costera con encanto, perfecta combinación de playa, cultura y naturaleza. Disfruta del Cantábrico, la gastronomía asturiana y una ubicación privilegiada cerca del mar.',
@@ -190,7 +190,7 @@ class DemoDataSeeder extends Seeder
         $this->generateRateCalendar($chalet->id, basePrice: 150, weekendPrice: 200);
 
         // Información del entorno para Chalet Rías Bajas
-        \App\Models\PropertyEnvironment::create([
+        PropertyEnvironment::create([
             'property_id' => $chalet->id,
             'title' => 'Descubre las Rías Bajas',
             'subtitle' => 'Un paraíso natural en la costa gallega. Playas de arena blanca, aguas cristalinas y la tranquilidad del mar en un entorno privilegiado.',
@@ -231,7 +231,7 @@ class DemoDataSeeder extends Seeder
         $this->generateRateCalendar($estudio->id, basePrice: 70, weekendPrice: 95, onlyPast: false);
 
         // Información del entorno para Estudio Llanes
-        \App\Models\PropertyEnvironment::create([
+        PropertyEnvironment::create([
             'property_id' => $estudio->id,
             'title' => 'Descubre Llanes',
             'subtitle' => 'Villa marinera asturiana con playas espectaculares y un casco histórico medieval. El oriente de Asturias en su máxima expresión.',
