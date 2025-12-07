@@ -104,8 +104,8 @@
                             <button type="button"
                                     x-data=""
                                     x-on:click.prevent="$dispatch('open-modal', 'confirm-restore-{{ $property->id }}')"
-                                    class="btn-action btn-action-success" 
-                                    style="width: 100%;">
+                                    class="calendar-btn btn-action btn-action-secondary sn-sentence restore-property-btn" 
+                                    style="width: 100%; background: transparent; border: 1px solid var(--color-accent);">
                                 <span class="sn-sentence">Restaurar propiedad</span>
                             </button>
                         </div>
@@ -142,18 +142,13 @@
                             <div class="modal-buttons" style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                                 <button type="button"
                                         @click="$dispatch('close-modal', 'confirm-restore-{{ $property->id }}')"
-                                        class="btn-action btn-action-secondary"
-                                        style="background-color: var(--color-bg-secondary); color: var(--color-text-primary); border: 1px solid var(--color-accent); border-radius: var(--radius-base); transition: all 0.3s ease; font-size: 14px;"
-                                        onmouseover="this.style.color = 'var(--color-accent)'; this.style.backgroundColor = 'rgba(77, 141, 148, 0.10)'; this.style.border = 'none';"
-                                        onmouseout="this.style.backgroundColor = 'var(--color-bg-secondary)'; this.style.color = 'var(--color-text-primary)'; this.style.border = '1px solid var(--color-accent)';">
+                                        class="calendar-btn btn-action btn-action-danger sn-sentence"
+                                        style="background: transparent; border: 1px solid var(--color-error);">
                                     <span class="sn-sentence">Cancelar</span>
                                 </button>
 
                                 <button type="submit" 
-                                        class="btn-action btn-action-success"
-                                        style="background-color: var(--color-success); color: #fff; border: 1px solid var(--color-success); border-radius: var(--radius-base); transition: all 0.3s ease; font-size: 14px;"
-                                        onmouseover="this.style.opacity = '0.9';"
-                                        onmouseout="this.style.opacity = '1';">
+                                        class="calendar-btn calendar-btn-primary sn-sentence">
                                     <span class="sn-sentence">Restaurar propiedad</span>
                                 </button>
                             </div>
@@ -206,6 +201,39 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
+        }
+
+        /* Hover para botones de calendario */
+        .calendar-btn.btn-action.btn-action-secondary:hover {
+            background-color: rgba(77, 141, 148, 0.10) !important;
+            color: var(--color-accent) !important;
+            border: none !important;
+        }
+
+        .calendar-btn.btn-action.btn-action-danger:hover {
+            background-color: rgba(204, 89, 86, 0.15) !important;
+            color: var(--color-error) !important;
+            border: none !important;
+        }
+
+        .calendar-btn-primary {
+            background-color: var(--color-accent);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 36px;
+            min-height: 36px;
+        }
+
+        .calendar-btn-primary:hover {
+            background-color: var(--color-accent-hover);
         }
 
         /* Grid de propiedades */

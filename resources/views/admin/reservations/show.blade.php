@@ -135,12 +135,12 @@
                     <div>
                         <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">Check-in</p>
                         <p style="font-size: var(--text-lg); color: var(--color-text-primary); font-weight: 600;">{{ $reservation->check_in->format('d/m/Y') }}</p>
-                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">{{ $reservation->check_in->format('l, j \d\e F') }}</p>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">{{ ucfirst($reservation->check_in->translatedFormat('l, j \d\e F')) }}</p>
                     </div>
                     <div>
                         <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">Check-out</p>
                         <p style="font-size: var(--text-lg); color: var(--color-text-primary); font-weight: 600;">{{ $reservation->check_out->format('d/m/Y') }}</p>
-                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">{{ $reservation->check_out->format('l, j \d\e F') }}</p>
+                        <p style="font-size: var(--text-sm); color: var(--color-text-secondary);">{{ ucfirst($reservation->check_out->translatedFormat('l, j \d\e F')) }}</p>
                     </div>
                     <div>
                         <p style="font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 0.5rem;">Noches</p>

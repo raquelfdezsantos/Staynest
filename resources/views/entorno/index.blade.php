@@ -70,11 +70,11 @@
 
     <!-- Bloques temáticos -->
     <section class="space-y-16">
-        <div class="grid md:grid-cols-2 gap-8">
+        <div class="grid md:grid-cols-2 gap-8 md:items-end">
             @if($property->environment->nature_description)
-                <div class="flex flex-col" style="height: 100%;">
+                <div class="flex flex-col" style="min-height: 100%;">
                     <h3 class="text-lg font-semibold mb-3">Naturaleza</h3>
-                    <p class="text-neutral-300 text-sm mb-3 flex-grow">{{ $property->environment->nature_description }}</p>
+                    <p class="text-neutral-300 text-sm flex-grow mb-3">{{ $property->environment->nature_description }}</p>
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->nature_photo)
                             @php
@@ -95,9 +95,9 @@
             @endif
 
             @if($property->environment->culture_description)
-                <div class="flex flex-col" style="height: 100%;">
+                <div class="flex flex-col" style="min-height: 100%;">
                     <h3 class="text-lg font-semibold mb-3">Cultura y Patrimonio</h3>
-                    <p class="text-neutral-300 text-sm mb-3 flex-grow">{{ $property->environment->culture_description }}</p>
+                    <p class="text-neutral-300 text-sm flex-grow mb-3">{{ $property->environment->culture_description }}</p>
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->culture_photo)
                             @php
@@ -118,11 +118,11 @@
             @endif
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8">
+        <div class="grid md:grid-cols-2 gap-8 md:items-end">
             @if($property->environment->activities_description)
-                <div class="flex flex-col" style="height: 100%;">
+                <div class="flex flex-col" style="min-height: 100%;">
                     <h3 class="text-lg font-semibold mb-3">Actividades</h3>
-                    <p class="text-neutral-300 text-sm mb-3 flex-grow">{{ $property->environment->activities_description }}</p>
+                    <p class="text-neutral-300 text-sm flex-grow mb-3">{{ $property->environment->activities_description }}</p>
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->activities_photo)
                             @php
@@ -143,9 +143,9 @@
             @endif
 
             @if($property->environment->services_description)
-                <div class="flex flex-col" style="height: 100%;">
+                <div class="flex flex-col" style="min-height: 100%;">
                     <h3 class="text-lg font-semibold mb-3">Servicios Cercanos</h3>
-                    <p class="text-neutral-300 text-sm mb-3 flex-grow">{{ $property->environment->services_description }}</p>
+                    <p class="text-neutral-300 text-sm flex-grow mb-3">{{ $property->environment->services_description }}</p>
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->services_photo)
                             @php
@@ -201,28 +201,28 @@
 
     <!-- Bloques temáticos -->
     <section class="space-y-16">
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="space-y-3">
-                <h3 class="text-lg font-semibold">Naturaleza</h3>
-                <p class="text-neutral-300 text-sm">Descripción de espacios naturales, paisajes y biodiversidad que caracterizan esta ubicación.</p>
+        <div class="grid md:grid-cols-2 gap-8 md:items-end">
+            <div class="flex flex-col" style="min-height: 100%;">
+                <h3 class="text-lg font-semibold mb-3">Naturaleza</h3>
+                <p class="text-neutral-300 text-sm flex-grow mb-3">Descripción de espacios naturales, paisajes y biodiversidad que caracterizan esta ubicación.</p>
                 <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs" style="border-radius:var(--radius-base);">[Contenido en desarrollo]</div>
             </div>
-            <div class="space-y-3">
-                <h3 class="text-lg font-semibold">Cultura y Patrimonio</h3>
-                <p class="text-neutral-300 text-sm">Lugares históricos, arquitectura y tradiciones locales de la zona.</p>
+            <div class="flex flex-col" style="min-height: 100%;">
+                <h3 class="text-lg font-semibold mb-3">Cultura y Patrimonio</h3>
+                <p class="text-neutral-300 text-sm flex-grow mb-3">Lugares históricos, arquitectura y tradiciones locales de la zona.</p>
                 <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs" style="border-radius:var(--radius-base);">[Contenido en desarrollo]</div>
             </div>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-8">
-            <div class="space-y-3">
-                <h3 class="text-lg font-semibold">Actividades</h3>
-                <p class="text-neutral-300 text-sm">Experiencias recomendadas y actividades disponibles en los alrededores.</p>
+        <div class="grid md:grid-cols-2 gap-8 md:items-end">
+            <div class="flex flex-col" style="min-height: 100%;">
+                <h3 class="text-lg font-semibold mb-3">Actividades</h3>
+                <p class="text-neutral-300 text-sm flex-grow mb-3">Experiencias recomendadas y actividades disponibles en los alrededores.</p>
                 <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs" style="border-radius:var(--radius-base);">[Contenido en desarrollo]</div>
             </div>
-            <div class="space-y-3">
-                <h3 class="text-lg font-semibold">Servicios Cercanos</h3>
-                <p class="text-neutral-300 text-sm">Servicios esenciales: supermercados, farmacias, transporte y más.</p>
+            <div class="flex flex-col" style="min-height: 100%;">
+                <h3 class="text-lg font-semibold mb-3">Servicios Cercanos</h3>
+                <p class="text-neutral-300 text-sm flex-grow mb-3">Servicios esenciales: supermercados, farmacias, transporte y más.</p>
                 <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs" style="border-radius:var(--radius-base);">[Contenido en desarrollo]</div>
             </div>
         </div>
