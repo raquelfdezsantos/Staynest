@@ -409,6 +409,217 @@
             </form>
         </div>
 
+        {{-- Sección: Entorno --}}
+        <div style="margin-top: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.9); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.25rem 1.5rem;">
+            <h3 style="font-size: var(--text-lg); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Información del Entorno</h3>
+            <p class="form-hint" style="margin-bottom: 1.5rem;">Describe el entorno que rodea tu propiedad para que los huéspedes conozcan mejor la zona. Puedes incluir información sobre naturaleza, cultura, actividades y servicios cercanos.</p>
+
+            <form method="POST" action="{{ route('admin.property.environment.update', $property->slug) }}" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                @csrf
+                @method('PUT')
+
+                {{-- Header / Hero --}}
+                <div style="padding-bottom: 1.5rem; border-bottom: 1px solid rgba(var(--color-border-rgb), 0.2);">
+                    <h4 style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Encabezado</h4>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <x-input-label for="env_title" value="Título principal" />
+                            <x-text-input 
+                                id="env_title"
+                                name="env_title" 
+                                class="block mt-1 w-full"
+                                :value="old('env_title', $property->environment->title ?? '')"
+                                placeholder="Ej: Descubre Gijón"
+                                maxlength="100"
+                            />
+                        </div>
+
+                        <div>
+                            <x-input-label for="env_subtitle" value="Subtítulo" />
+                            <textarea 
+                                name="env_subtitle" 
+                                id="env_subtitle"
+                                rows="2"
+                                class="sn-input admin-textarea"
+                                style="width: 100%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; padding: 0.75rem; color: var(--color-text-primary); font-size: var(--text-base);"
+                                placeholder="Breve descripción del entorno..."
+                            >{{ old('env_subtitle', $property->environment->subtitle ?? '') }}</textarea>
+                        </div>
+
+                        <div>
+                            <x-input-label for="env_summary" value="Resumen (viñetas)" />
+                            <textarea 
+                                name="env_summary" 
+                                id="env_summary"
+                                rows="3"
+                                class="sn-input admin-textarea"
+                                style="width: 100%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; padding: 0.75rem; color: var(--color-text-primary); font-size: var(--text-base);"
+                                placeholder="Puntos clave separados por salto de línea&#10;Playa de Poniente a 9 min&#10;Centro histórico cercano&#10;Gastronomía local"
+                            >{{ old('env_summary', $property->environment->summary ?? '') }}</textarea>
+                            <p class="form-hint">Cada línea será una viñeta</p>
+                        </div>
+
+                        <div>
+                            <x-input-label for="env_hero_photo" value="Foto destacada" />
+                            <input 
+                                type="file" 
+                                name="env_hero_photo" 
+                                id="env_hero_photo"
+                                accept="image/*"
+                                class="block mt-1 w-full"
+                                style="padding: 0.5rem; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; color: var(--color-text-primary); font-size: var(--text-sm);"
+                            />
+                            @if($property->environment && $property->environment->hero_photo)
+                                <p class="form-hint">Actual: {{ basename($property->environment->hero_photo) }}</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Bloque: Naturaleza --}}
+                <div style="padding-bottom: 1.5rem; border-bottom: 1px solid rgba(var(--color-border-rgb), 0.2);">
+                    <h4 style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Naturaleza</h4>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <x-input-label for="env_nature_description" value="Descripción" />
+                            <textarea 
+                                name="env_nature_description" 
+                                id="env_nature_description"
+                                rows="3"
+                                class="sn-input admin-textarea"
+                                style="width: 100%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; padding: 0.75rem; color: var(--color-text-primary); font-size: var(--text-base);"
+                                placeholder="Describe la naturaleza y paisajes cercanos..."
+                            >{{ old('env_nature_description', $property->environment->nature_description ?? '') }}</textarea>
+                        </div>
+
+                        <div>
+                            <x-input-label for="env_nature_photo" value="Foto" />
+                            <input 
+                                type="file" 
+                                name="env_nature_photo" 
+                                id="env_nature_photo"
+                                accept="image/*"
+                                class="block mt-1 w-full"
+                                style="padding: 0.5rem; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; color: var(--color-text-primary); font-size: var(--text-sm);"
+                            />
+                            @if($property->environment && $property->environment->nature_photo)
+                                <p class="form-hint">Actual: {{ basename($property->environment->nature_photo) }}</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Bloque: Cultura y Patrimonio --}}
+                <div style="padding-bottom: 1.5rem; border-bottom: 1px solid rgba(var(--color-border-rgb), 0.2);">
+                    <h4 style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Cultura y Patrimonio</h4>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <x-input-label for="env_culture_description" value="Descripción" />
+                            <textarea 
+                                name="env_culture_description" 
+                                id="env_culture_description"
+                                rows="3"
+                                class="sn-input admin-textarea"
+                                style="width: 100%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; padding: 0.75rem; color: var(--color-text-primary); font-size: var(--text-base);"
+                                placeholder="Describe el patrimonio cultural y lugares históricos..."
+                            >{{ old('env_culture_description', $property->environment->culture_description ?? '') }}</textarea>
+                        </div>
+
+                        <div>
+                            <x-input-label for="env_culture_photo" value="Foto" />
+                            <input 
+                                type="file" 
+                                name="env_culture_photo" 
+                                id="env_culture_photo"
+                                accept="image/*"
+                                class="block mt-1 w-full"
+                                style="padding: 0.5rem; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; color: var(--color-text-primary); font-size: var(--text-sm);"
+                            />
+                            @if($property->environment && $property->environment->culture_photo)
+                                <p class="form-hint">Actual: {{ basename($property->environment->culture_photo) }}</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Bloque: Actividades --}}
+                <div style="padding-bottom: 1.5rem; border-bottom: 1px solid rgba(var(--color-border-rgb), 0.2);">
+                    <h4 style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Actividades</h4>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <x-input-label for="env_activities_description" value="Descripción" />
+                            <textarea 
+                                name="env_activities_description" 
+                                id="env_activities_description"
+                                rows="3"
+                                class="sn-input admin-textarea"
+                                style="width: 100%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; padding: 0.75rem; color: var(--color-text-primary); font-size: var(--text-base);"
+                                placeholder="Describe las actividades disponibles en la zona..."
+                            >{{ old('env_activities_description', $property->environment->activities_description ?? '') }}</textarea>
+                        </div>
+
+                        <div>
+                            <x-input-label for="env_activities_photo" value="Foto" />
+                            <input 
+                                type="file" 
+                                name="env_activities_photo" 
+                                id="env_activities_photo"
+                                accept="image/*"
+                                class="block mt-1 w-full"
+                                style="padding: 0.5rem; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; color: var(--color-text-primary); font-size: var(--text-sm);"
+                            />
+                            @if($property->environment && $property->environment->activities_photo)
+                                <p class="form-hint">Actual: {{ basename($property->environment->activities_photo) }}</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Bloque: Servicios Cercanos --}}
+                <div style="padding-bottom: 1.5rem;">
+                    <h4 style="font-size: var(--text-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 1rem;">Servicios Cercanos</h4>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <x-input-label for="env_services_description" value="Descripción" />
+                            <textarea 
+                                name="env_services_description" 
+                                id="env_services_description"
+                                rows="3"
+                                class="sn-input admin-textarea"
+                                style="width: 100%; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; padding: 0.75rem; color: var(--color-text-primary); font-size: var(--text-base);"
+                                placeholder="Describe los servicios esenciales cercanos..."
+                            >{{ old('env_services_description', $property->environment->services_description ?? '') }}</textarea>
+                        </div>
+
+                        <div>
+                            <x-input-label for="env_services_photo" value="Foto" />
+                            <input 
+                                type="file" 
+                                name="env_services_photo" 
+                                id="env_services_photo"
+                                accept="image/*"
+                                class="block mt-1 w-full"
+                                style="padding: 0.5rem; background: var(--color-bg-elevated); border: 1px solid var(--color-border-light); border-radius: 2px; color: var(--color-text-primary); font-size: var(--text-sm);"
+                            />
+                            @if($property->environment && $property->environment->services_photo)
+                                <p class="form-hint">Actual: {{ basename($property->environment->services_photo) }}</p>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Botón guardar --}}
+                <div style="align-self: flex-start;">
+                    <button type="submit" class="btn-action btn-action-primary sn-sentence">Guardar información del entorno</button>
+                </div>
+            </form>
+        </div>
+
         {{-- Zona de peligro: Dar de baja propiedad --}}
         <div class="danger-zone" style="margin-top: 2rem; background: rgba(var(--color-bg-secondary-rgb), 0.9); border: 1px solid rgba(var(--color-border-rgb), 0.1); border-radius: var(--radius-base); backdrop-filter: blur(10px); padding: 1.25rem 1.5rem;">
             <h3 class="danger-title">

@@ -41,8 +41,17 @@
                             @endphp
                             
                             @if($coverPhoto)
+                                @php
+                                    if (str_starts_with($coverPhoto->url, 'http')) {
+                                        $coverSrc = $coverPhoto->url;
+                                    } elseif (str_starts_with($coverPhoto->url, 'images/')) {
+                                        $coverSrc = asset($coverPhoto->url);
+                                    } else {
+                                        $coverSrc = asset('storage/' . $coverPhoto->url);
+                                    }
+                                @endphp
                                 <img 
-                                    src="{{ str_starts_with($coverPhoto->url, 'http') ? $coverPhoto->url : asset('storage/' . $coverPhoto->url) }}" 
+                                    src="{{ $coverSrc }}" 
                                     alt="{{ $property->name }}"
                                     style="width: 100%; height: 100%; object-fit: cover;"
                                 >

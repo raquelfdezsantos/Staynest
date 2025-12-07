@@ -333,7 +333,7 @@ class ReservationController extends Controller
      * @param bool $available Estado de disponibilidad.
      * @return void
      */
-    private function setAvailability(int $propertyId, array $dates, bool $available): void
+    public function setAvailability(int $propertyId, array $dates, bool $available): void
     {
         if (empty($dates)) return;
         

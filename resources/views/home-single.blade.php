@@ -9,10 +9,22 @@
         // Fotos ordenadas; cogemos la primera para el hero o usamos fallback
         $photos = ($property?->photos?->sortBy('sort_order')) ?? collect();
         $first  = $photos->first();
-        $hero   = ($first && !empty($first->url))
-                    ? (str_starts_with($first->url, 'http') ? $first->url : asset('storage/' . ltrim($first->url, '/')))
-                    : 'https://picsum.photos/1600/900';
-        $morePhotos = $photos->slice(1, 8);
+        
+        // Detectar si es una ruta pública (images/) o de storage
+        if ($first && !empty($first->url)) {
+            if (str_starts_with($first->url, 'http')) {
+                $hero = $first->url;
+            } elseif (str_starts_with($first->url, 'images/')) {
+                $hero = asset($first->url);
+            } else {
+                $hero = asset('storage/' . ltrim($first->url, '/'));
+            }
+        } else {
+            $hero = 'https://picsum.photos/1600/900';
+        }
+        
+        // Mostrar todas las fotos restantes (hasta 30) en la galería
+        $morePhotos = $photos->slice(1);
     @endphp
 
     {{-- HERO principal: flush top bajo header transparente (clase sn-hero--flush-top) --}}
@@ -137,9 +149,14 @@
                          style="display:grid; gap:10px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));">
                         @foreach(($morePhotos ?? collect()) as $p)
                             @php
-                                $src = (!empty($p->url) && str_starts_with($p->url, 'http'))
-                                        ? $p->url
-                                        : asset('storage/' . ltrim($p->url ?? '', '/'));
+                                // Detectar si es HTTP, ruta pública (images/) o storage
+                                if (!empty($p->url) && str_starts_with($p->url, 'http')) {
+                                    $src = $p->url;
+                                } elseif (!empty($p->url) && str_starts_with($p->url, 'images/')) {
+                                    $src = asset($p->url);
+                                } else {
+                                    $src = asset('storage/' . ltrim($p->url ?? '', '/'));
+                                }
                                 $w = $p->width ?? 1600;
                                 $h = $p->height ?? 1067;
                             @endphp

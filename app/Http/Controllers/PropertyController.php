@@ -131,6 +131,10 @@ class PropertyController extends Controller
     {
         // Fijar contexto al acceder directamente sin pasar por show
         session(['current_property_slug' => $property->slug]);
+        
+        // Cargar información del entorno
+        $property->load('environment');
+        
         return view('entorno.index', compact('property'));
     }
 

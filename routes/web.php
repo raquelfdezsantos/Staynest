@@ -142,6 +142,9 @@ Route::middleware(['auth', 'role:admin'])
         Route::put('/property', [AdminController::class, 'propertyUpdate'])->name('update');
         Route::delete('/property', [AdminController::class, 'destroyProperty'])->name('destroy');
 
+        // Gestión del entorno de la propiedad
+        Route::put('/property/environment', [AdminController::class, 'environmentUpdate'])->name('environment.update');
+
         // Gestión de fotos
         Route::get('/photos', [AdminController::class, 'photosIndex'])->name('photos.index');
         Route::post('/photos', [AdminController::class, 'photosStore'])->name('photos.store');

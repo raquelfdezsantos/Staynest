@@ -21,9 +21,14 @@
                             @if($p->photos->count())
                                 @php
                                     $firstPhoto = $p->photos->sortBy('sort_order')->first();
-                                    $photoUrl = str_starts_with($firstPhoto->url, 'http') 
-                                        ? $firstPhoto->url 
-                                        : asset('storage/' . ltrim($firstPhoto->url, '/'));
+                                    // Detectar si es HTTP, ruta pública (images/) o storage
+                                    if (str_starts_with($firstPhoto->url, 'http')) {
+                                        $photoUrl = $firstPhoto->url;
+                                    } elseif (str_starts_with($firstPhoto->url, 'images/')) {
+                                        $photoUrl = asset($firstPhoto->url);
+                                    } else {
+                                        $photoUrl = asset('storage/' . ltrim($firstPhoto->url, '/'));
+                                    }
                                 @endphp
                                 <img
                                     src="{{ $photoUrl }}"

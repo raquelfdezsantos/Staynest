@@ -89,6 +89,16 @@ class Property extends Model
     }
 
     /**
+     * Relación: una propiedad puede tener información de entorno.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne<PropertyEnvironment>
+     */
+    public function environment()
+    {
+        return $this->hasOne(PropertyEnvironment::class);
+    }
+
+    /**
      * Conversión automática de atributos a tipos nativos.
      *
      * @return array<string, string>

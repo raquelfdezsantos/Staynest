@@ -800,6 +800,9 @@ class AdminController extends Controller
             abort(403, 'No autorizado');
         }
 
+        // Cargar relación de entorno
+        $property->load('environment');
+
         // Contar reservas futuras activas
         $futureReservationsCount = Reservation::where('property_id', $property->id)
             ->where('check_in', '>=', now())
@@ -935,6 +938,89 @@ class AdminController extends Controller
         $property->update($validated);
 
         return back()->with('success', 'Propiedad actualizada correctamente.');
+    }
+
+    /**
+     * Actualiza la información del entorno de una propiedad.
+     *
+     * @param Request $request Solicitud HTTP con los datos del entorno.
+     * @param Property $property Propiedad a actualizar.
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function environmentUpdate(Request $request, Property $property)
+    {
+        // Verificar que la propiedad pertenece al admin
+        if ($property->user_id !== Auth::id()) {
+            abort(403, 'No autorizado');
+        }
+
+        $validated = $request->validate([
+            'env_title' => 'nullable|string|max:100',
+            'env_subtitle' => 'nullable|string|max:500',
+            'env_summary' => 'nullable|string|max:1000',
+            'env_hero_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'env_nature_description' => 'nullable|string|max:1000',
+            'env_nature_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'env_culture_description' => 'nullable|string|max:1000',
+            'env_culture_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'env_activities_description' => 'nullable|string|max:1000',
+            'env_activities_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'env_services_description' => 'nullable|string|max:1000',
+            'env_services_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+        ]);
+
+        // Obtener o crear el registro de entorno
+        $environment = $property->environment ?? new \App\Models\PropertyEnvironment(['property_id' => $property->id]);
+
+        // Actualizar campos de texto
+        $environment->title = $validated['env_title'] ?? $environment->title;
+        $environment->subtitle = $validated['env_subtitle'] ?? $environment->subtitle;
+        $environment->summary = $validated['env_summary'] ?? $environment->summary;
+        $environment->nature_description = $validated['env_nature_description'] ?? $environment->nature_description;
+        $environment->culture_description = $validated['env_culture_description'] ?? $environment->culture_description;
+        $environment->activities_description = $validated['env_activities_description'] ?? $environment->activities_description;
+        $environment->services_description = $validated['env_services_description'] ?? $environment->services_description;
+
+        // Procesar fotos si se subieron
+        if ($request->hasFile('env_hero_photo')) {
+            // Eliminar foto anterior si existe
+            if ($environment->hero_photo && !str_starts_with($environment->hero_photo, 'http')) {
+                Storage::disk('public')->delete($environment->hero_photo);
+            }
+            $environment->hero_photo = $request->file('env_hero_photo')->store('environment', 'public');
+        }
+
+        if ($request->hasFile('env_nature_photo')) {
+            if ($environment->nature_photo && !str_starts_with($environment->nature_photo, 'http')) {
+                Storage::disk('public')->delete($environment->nature_photo);
+            }
+            $environment->nature_photo = $request->file('env_nature_photo')->store('environment', 'public');
+        }
+
+        if ($request->hasFile('env_culture_photo')) {
+            if ($environment->culture_photo && !str_starts_with($environment->culture_photo, 'http')) {
+                Storage::disk('public')->delete($environment->culture_photo);
+            }
+            $environment->culture_photo = $request->file('env_culture_photo')->store('environment', 'public');
+        }
+
+        if ($request->hasFile('env_activities_photo')) {
+            if ($environment->activities_photo && !str_starts_with($environment->activities_photo, 'http')) {
+                Storage::disk('public')->delete($environment->activities_photo);
+            }
+            $environment->activities_photo = $request->file('env_activities_photo')->store('environment', 'public');
+        }
+
+        if ($request->hasFile('env_services_photo')) {
+            if ($environment->services_photo && !str_starts_with($environment->services_photo, 'http')) {
+                Storage::disk('public')->delete($environment->services_photo);
+            }
+            $environment->services_photo = $request->file('env_services_photo')->store('environment', 'public');
+        }
+
+        $environment->save();
+
+        return back()->with('success', 'Información del entorno actualizada correctamente.');
     }
 
     /**

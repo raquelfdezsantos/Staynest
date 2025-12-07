@@ -19,11 +19,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seeder principal: crea usuarios, la propiedad principal, fotos y calendario
-        $this->call(InitialDataSeeder::class);
-        
-        // MultiPropertySeeder: Añade 3 propiedades adicionales para demostrar escalabilidad (RNF9)
-        // Solo descomentar para DEMO o DEFENSA del proyecto. En producción no es necesario.
-        // $this->call(MultiPropertySeeder::class);
+        // DemoDataSeeder: Crea entorno completo para la DEFENSA DEL TFG
+        // - 2 admins (Luis y Ana) + 3 clientes
+        // - 3 propiedades (Apartamento Nordeste REAL + 2 demo)
+        // - Reservas en diferentes estados (pending, paid, cancelled)
+        // - Calendario de tarifas y PropertyEnvironment para Nordeste
+        $this->call(DemoDataSeeder::class);
     }
 }

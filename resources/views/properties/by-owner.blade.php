@@ -27,9 +27,13 @@
                             <div class="aspect-video relative overflow-hidden">
                                 @php
                                     $firstPhoto = $property->photos->first();
-                                    $photoUrl = str_starts_with($firstPhoto->url, 'http') 
-                                        ? $firstPhoto->url 
-                                        : asset('storage/' . ltrim($firstPhoto->url, '/'));
+                                    if (str_starts_with($firstPhoto->url, 'http')) {
+                                        $photoUrl = $firstPhoto->url;
+                                    } elseif (str_starts_with($firstPhoto->url, 'images/')) {
+                                        $photoUrl = asset($firstPhoto->url);
+                                    } else {
+                                        $photoUrl = asset('storage/' . ltrim($firstPhoto->url, '/'));
+                                    }
                                 @endphp
                                 <img src="{{ $photoUrl }}" 
                                      alt="{{ $property->name }}"

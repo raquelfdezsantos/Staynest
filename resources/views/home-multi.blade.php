@@ -13,9 +13,17 @@
                 @php
                     $photos = optional($p->photos)->sortBy('sort_order');
                     $first = $photos?->first();
-                    $thumb = $first
-                        ? (str_starts_with($first->url ?? '', 'http') ? $first->url : asset('storage/' . ltrim($first->url ?? '', '/')))
-                        : null;
+                    if ($first) {
+                        if (str_starts_with($first->url ?? '', 'http')) {
+                            $thumb = $first->url;
+                        } elseif (str_starts_with($first->url ?? '', 'images/')) {
+                            $thumb = asset($first->url);
+                        } else {
+                            $thumb = asset('storage/' . ltrim($first->url ?? '', '/'));
+                        }
+                    } else {
+                        $thumb = null;
+                    }
                     $gid = 'gallery-' . $p->id;
                 @endphp
 
@@ -46,9 +54,13 @@
                         @if($photos)
                             @foreach($photos as $photo)
                                 @php
-                                    $src = str_starts_with($photo->url ?? '', 'http')
-                                        ? $photo->url
-                                        : asset('storage/' . ltrim($photo->url ?? '', '/'));
+                                    if (str_starts_with($photo->url ?? '', 'http')) {
+                                        $src = $photo->url;
+                                    } elseif (str_starts_with($photo->url ?? '', 'images/')) {
+                                        $src = asset($photo->url);
+                                    } else {
+                                        $src = asset('storage/' . ltrim($photo->url ?? '', '/'));
+                                    }
                                     $w = $photo->width ?? 1600;
                                     $h = $photo->height ?? 1067;
                                 @endphp

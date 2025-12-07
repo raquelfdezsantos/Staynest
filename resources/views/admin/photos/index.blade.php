@@ -85,8 +85,17 @@
                             @foreach($photos as $photo)
                                 <div class="photo-item photo-card" data-photo-id="{{ $photo->id }}">
                                     {{-- Imagen --}}
+                                    @php
+                                        if (str_starts_with($photo->url, 'http')) {
+                                            $photoSrc = $photo->url;
+                                        } elseif (str_starts_with($photo->url, 'images/')) {
+                                            $photoSrc = asset($photo->url);
+                                        } else {
+                                            $photoSrc = asset('storage/' . $photo->url);
+                                        }
+                                    @endphp
                                     <img 
-                                        src="{{ str_starts_with($photo->url, 'http') ? $photo->url : asset('storage/' . $photo->url) }}" 
+                                        src="{{ $photoSrc }}" 
                                         alt="Foto {{ $photo->id }}"
                                         class="photo-img"
                                     >
