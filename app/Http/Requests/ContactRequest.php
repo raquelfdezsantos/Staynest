@@ -4,15 +4,13 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Request para validar el formulario de contacto.
- *
- * Valida los campos requeridos y aplica honeypot para evitar spam.
+ * Request para validar formulario de contacto.
  */
 class ContactRequest extends FormRequest {
     /**
-     * Obtiene las reglas de validación para el formulario de contacto.
+     * Obtiene reglas de validación.
      *
-     * @return array Reglas de validación para nombre, email, mensaje y honeypot.
+     * @return array
      */
     public function rules(): array {
         return [
@@ -54,6 +52,8 @@ class ContactRequest extends FormRequest {
 
     /**
      * Mensajes personalizados de validación.
+     *
+     * @return array
      */
     public function messages(): array {
         return [
@@ -63,9 +63,9 @@ class ContactRequest extends FormRequest {
         ];
     }
     /**
-     * Determina si el usuario está autorizado para enviar el formulario de contacto.
+     * Determina autorización.
      *
-     * @return bool Siempre true, permite el acceso.
+     * @return bool
      */
     public function authorize(): bool { return true; }
 }
