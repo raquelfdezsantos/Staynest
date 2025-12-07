@@ -5,17 +5,15 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Factory InvoiceFactory
- *
- * Genera datos simulados para el modelo Invoice en pruebas y seeders.
+ * Factory para generar datos de Invoice.
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Invoice>
  */
 class InvoiceFactory extends Factory
 {
     /**
-     * Define el estado por defecto del modelo Invoice.
+     * Define el estado por defecto del modelo.
      *
-     * @return array<string, mixed> Datos simulados para una factura
+     * @return array<string, mixed> Datos simulados
      */
     public function definition(): array
     {

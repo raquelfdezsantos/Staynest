@@ -5,17 +5,15 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Factory PaymentFactory
- *
- * Genera datos simulados para el modelo Payment en pruebas y seeders.
+ * Factory para generar datos de Payment.
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Payment>
  */
 class PaymentFactory extends Factory
 {
     /**
-     * Define el estado por defecto del modelo Payment.
+     * Define el estado por defecto del modelo.
      *
-     * @return array<string, mixed> Datos simulados para un pago
+     * @return array<string, mixed> Datos simulados
      */
     public function definition(): array
     {

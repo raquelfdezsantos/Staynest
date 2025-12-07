@@ -7,17 +7,14 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * Factory ReservationFactory
- *
- * Genera datos simulados para el modelo Reservation en pruebas y seeders.
+ * Factory for Reservation model.
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Reservation>
  */
 class ReservationFactory extends Factory
 {
     /**
-     * Define el estado por defecto del modelo Reservation.
-     *
-     * @return array<string, mixed> Datos simulados para una reserva
+     * Define the model's default state.
+     * @return array<string, mixed>
      */
     public function definition(): array
     {

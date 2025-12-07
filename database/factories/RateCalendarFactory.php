@@ -7,17 +7,14 @@ use App\Models\Property;
 use Carbon\Carbon;
 
 /**
- * Factory RateCalendarFactory
- *
- * Genera datos simulados para el modelo RateCalendar en pruebas y seeders.
+ * Factory for RateCalendar model.
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\RateCalendar>
  */
 class RateCalendarFactory extends Factory
 {
     /**
-     * Define el estado por defecto del modelo RateCalendar.
-     *
-     * @return array<string, mixed> Datos simulados para un calendario de tarifas
+     * Define the model's default state.
+     * @return array<string, mixed>
      */
     public function definition(): array
     {

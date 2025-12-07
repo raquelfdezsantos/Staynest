@@ -6,17 +6,14 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /**
- * Factory PropertyFactory
- *
- * Genera datos simulados para el modelo Property en pruebas y seeders.
+ * Factory for Property model.
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Property>
  */
 class PropertyFactory extends Factory
 {
     /**
-     * Define el estado por defecto del modelo Property.
-     *
-     * @return array<string, mixed> Datos simulados para una propiedad
+     * Define the model's default state.
+     * @return array<string, mixed>
      */
     public function definition(): array
     {
