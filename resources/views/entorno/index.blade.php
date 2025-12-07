@@ -17,9 +17,13 @@
         <div class="md:col-span-2 aspect-video bg-neutral-800 flex items-center justify-center text-neutral-500 overflow-hidden" style="border-radius:var(--radius-base);">
             @if($property->environment->hero_photo)
                 @php
-                    $heroSrc = str_starts_with($property->environment->hero_photo, 'images/') 
-                        ? asset($property->environment->hero_photo) 
-                        : asset('storage/' . $property->environment->hero_photo);
+                    if (str_starts_with($property->environment->hero_photo, 'http')) {
+                        $heroSrc = $property->environment->hero_photo;
+                    } elseif (str_starts_with($property->environment->hero_photo, 'images/')) {
+                        $heroSrc = asset($property->environment->hero_photo);
+                    } else {
+                        $heroSrc = asset('storage/' . $property->environment->hero_photo);
+                    }
                 @endphp
                 <img src="{{ $heroSrc }}" alt="{{ $property->environment->title }}" class="w-full h-full object-cover" />
             @else
@@ -27,15 +31,37 @@
             @endif
         </div>
         <div class="space-y-4">
-            <h2 class="text-xl font-semibold">Resumen</h2>
+            <h2 class="text-xl font-semibold">Tu destino</h2>
             @if($property->environment->summary)
-                <ul class="text-sm text-neutral-400 list-disc pl-5 space-y-1">
-                    @foreach(explode("\n", $property->environment->summary) as $item)
-                        @if(trim($item))
-                            <li>{{ trim($item) }}</li>
-                        @endif
-                    @endforeach
-                </ul>
+                @php
+                    $lines = explode("\n", $property->environment->summary);
+                    $intro = '';
+                    $listItems = [];
+                    
+                    foreach ($lines as $line) {
+                        $trimmed = trim($line);
+                        if ($trimmed) {
+                            // Si contiene ":" al final, es texto introductorio
+                            if (str_ends_with($trimmed, ':')) {
+                                $intro = $trimmed;
+                            } else {
+                                $listItems[] = $trimmed;
+                            }
+                        }
+                    }
+                @endphp
+                
+                @if($intro)
+                    <p class="text-sm text-neutral-300">{{ $intro }}</p>
+                @endif
+                
+                @if(count($listItems) > 0)
+                    <ul class="text-sm text-neutral-400 list-disc pl-5 space-y-1">
+                        @foreach($listItems as $item)
+                            <li>{{ $item }}</li>
+                        @endforeach
+                    </ul>
+                @endif
             @else
                 <p class="text-neutral-300 text-sm">Información sobre el entorno de esta propiedad.</p>
             @endif
@@ -52,9 +78,13 @@
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->nature_photo)
                             @php
-                                $natureSrc = str_starts_with($property->environment->nature_photo, 'images/') 
-                                    ? asset($property->environment->nature_photo) 
-                                    : asset('storage/' . $property->environment->nature_photo);
+                                if (str_starts_with($property->environment->nature_photo, 'http')) {
+                                    $natureSrc = $property->environment->nature_photo;
+                                } elseif (str_starts_with($property->environment->nature_photo, 'images/')) {
+                                    $natureSrc = asset($property->environment->nature_photo);
+                                } else {
+                                    $natureSrc = asset('storage/' . $property->environment->nature_photo);
+                                }
                             @endphp
                             <img src="{{ $natureSrc }}" alt="Naturaleza" class="w-full h-full object-cover" />
                         @else
@@ -71,9 +101,13 @@
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->culture_photo)
                             @php
-                                $cultureSrc = str_starts_with($property->environment->culture_photo, 'images/') 
-                                    ? asset($property->environment->culture_photo) 
-                                    : asset('storage/' . $property->environment->culture_photo);
+                                if (str_starts_with($property->environment->culture_photo, 'http')) {
+                                    $cultureSrc = $property->environment->culture_photo;
+                                } elseif (str_starts_with($property->environment->culture_photo, 'images/')) {
+                                    $cultureSrc = asset($property->environment->culture_photo);
+                                } else {
+                                    $cultureSrc = asset('storage/' . $property->environment->culture_photo);
+                                }
                             @endphp
                             <img src="{{ $cultureSrc }}" alt="Cultura" class="w-full h-full object-cover" />
                         @else
@@ -92,9 +126,13 @@
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->activities_photo)
                             @php
-                                $activitiesSrc = str_starts_with($property->environment->activities_photo, 'images/') 
-                                    ? asset($property->environment->activities_photo) 
-                                    : asset('storage/' . $property->environment->activities_photo);
+                                if (str_starts_with($property->environment->activities_photo, 'http')) {
+                                    $activitiesSrc = $property->environment->activities_photo;
+                                } elseif (str_starts_with($property->environment->activities_photo, 'images/')) {
+                                    $activitiesSrc = asset($property->environment->activities_photo);
+                                } else {
+                                    $activitiesSrc = asset('storage/' . $property->environment->activities_photo);
+                                }
                             @endphp
                             <img src="{{ $activitiesSrc }}" alt="Actividades" class="w-full h-full object-cover" />
                         @else
@@ -111,9 +149,13 @@
                     <div class="h-40 bg-neutral-800 flex items-center justify-center text-neutral-500 text-xs overflow-hidden" style="border-radius:var(--radius-base);">
                         @if($property->environment->services_photo)
                             @php
-                                $servicesSrc = str_starts_with($property->environment->services_photo, 'images/') 
-                                    ? asset($property->environment->services_photo) 
-                                    : asset('storage/' . $property->environment->services_photo);
+                                if (str_starts_with($property->environment->services_photo, 'http')) {
+                                    $servicesSrc = $property->environment->services_photo;
+                                } elseif (str_starts_with($property->environment->services_photo, 'images/')) {
+                                    $servicesSrc = asset($property->environment->services_photo);
+                                } else {
+                                    $servicesSrc = asset('storage/' . $property->environment->services_photo);
+                                }
                             @endphp
                             <img src="{{ $servicesSrc }}" alt="Servicios" class="w-full h-full object-cover" />
                         @else

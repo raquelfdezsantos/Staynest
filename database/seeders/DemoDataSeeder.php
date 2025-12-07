@@ -145,7 +145,7 @@ class DemoDataSeeder extends Seeder
             'property_id' => $nordeste->id,
             'title' => 'Descubre Gijón',
             'subtitle' => 'Una ciudad costera con encanto, perfecta combinación de playa, cultura y naturaleza. Disfruta del Cantábrico, la gastronomía asturiana y una ubicación privilegiada cerca del mar.',
-            'summary' => "Playa de Poniente a 9 min a pie\nPlaya de San Lorenzo a 15 min a pie\nCentro histórico y Plaza Mayor\nRutas de senderismo en Asturias\nGastronomía: sidrerías y marisquerías",
+            'summary' => "Gijón te ofrece una experiencia única donde el mar Cantábrico se encuentra con una rica oferta cultural y gastronómica. Desde el apartamento podrás acceder fácilmente a:\n\n\nPlaya de Poniente a 9 min a pie\nPlaya de San Lorenzo a 15 min a pie\nCentro histórico y Plaza Mayor\nRutas de senderismo en Asturias\nGastronomía: sidrerías y marisquerías",
             'hero_photo' => 'images/demo/hero.jpg',
             'nature_description' => 'El Cantábrico a tus pies. Disfruta de la Playa de Poniente, San Lorenzo y los acantilados del Cabo de Peñas. A pocos kilómetros, los Picos de Europa te esperan con rutas de montaña y paisajes únicos.',
             'nature_photo' => 'images/demo/naturaleza.jpg',
@@ -172,12 +172,29 @@ class DemoDataSeeder extends Seeder
             'services' => ['wifi', 'pool', 'parking', 'air_conditioning', 'heating', 'tv', 'kitchen', 'washer', 'dishwasher', 'towels', 'bed_linen', 'terrace', 'pets_allowed'],
         ]);
 
-        Photo::create(['property_id' => $chalet->id, 'url' => 'https://picsum.photos/seed/chalet-exterior/1600/1067', 'is_cover' => true, 'sort_order' => 1]);
-        Photo::create(['property_id' => $chalet->id, 'url' => 'https://picsum.photos/seed/chalet-piscina/1600/1067', 'is_cover' => false, 'sort_order' => 2]);
-        Photo::create(['property_id' => $chalet->id, 'url' => 'https://picsum.photos/seed/chalet-salon/1600/1067', 'is_cover' => false, 'sort_order' => 3]);
-        Photo::create(['property_id' => $chalet->id, 'url' => 'https://picsum.photos/seed/chalet-jardin/1600/1067', 'is_cover' => false, 'sort_order' => 4]);
+        Photo::create(['property_id' => $chalet->id, 'url' => 'https://picsum.photos/id/1018/1600/1067', 'is_cover' => true, 'sort_order' => 1]);
+        Photo::create(['property_id' => $chalet->id, 'url' => 'https://picsum.photos/id/1016/1600/1067', 'is_cover' => false, 'sort_order' => 2]);
+        Photo::create(['property_id' => $chalet->id, 'url' => 'https://picsum.photos/id/1015/1600/1067', 'is_cover' => false, 'sort_order' => 3]);
+        Photo::create(['property_id' => $chalet->id, 'url' => 'https://picsum.photos/id/1019/1600/1067', 'is_cover' => false, 'sort_order' => 4]);
 
         $this->generateRateCalendar($chalet->id, basePrice: 150, weekendPrice: 200);
+
+        // Información del entorno para Chalet Rías Bajas
+        \App\Models\PropertyEnvironment::create([
+            'property_id' => $chalet->id,
+            'title' => 'Descubre las Rías Bajas',
+            'subtitle' => 'Un paraíso natural en la costa gallega. Playas de arena blanca, aguas cristalinas y la tranquilidad del mar en un entorno privilegiado.',
+            'summary' => "Las Rías Bajas te ofrecen un paisaje único donde el Atlántico dibuja una costa de ensueño. Desde el chalet tendrás acceso a:\n\n\nPlayas de Sanxenxo a 10 min en coche\nIsla de La Toja y su puente\nCombarro, pueblo marinero tradicional\nRuta del vino Rías Baixas\nMarisquerías y gastronomía gallega",
+            'hero_photo' => 'https://picsum.photos/id/1024/1600/900',
+            'nature_description' => 'El Atlántico en su máxima expresión. Las Rías Bajas ofrecen playas paradisíacas como La Lanzada, A Toxa y Montalvo. Senderos costeros, miradores con vistas al océano y paisajes que enamoran.',
+            'nature_photo' => 'https://picsum.photos/id/1025/1600/1067',
+            'culture_description' => 'Combarro y sus hórreos sobre el mar, la Isla de La Toja con sus tradiciones, y Pontevedra con su casco histórico. Galicia respira historia y tradición marinera en cada rincón.',
+            'culture_photo' => 'https://picsum.photos/id/1033/1600/1067',
+            'activities_description' => 'Rutas en barco por las rías, deportes acuáticos, golf, ciclismo por la costa, visitas a bodegas de Albariño y excursiones a las Islas Cíes. Un paraíso para el ocio.',
+            'activities_photo' => 'https://picsum.photos/id/1036/1600/1067',
+            'services_description' => 'Sanxenxo ofrece supermercados, farmacias, centros de salud, puerto deportivo y una amplia oferta gastronómica. Todo lo necesario para una estancia perfecta.',
+            'services_photo' => 'https://picsum.photos/id/1040/1600/1067',
+        ]);
 
         // PROPIEDAD 3: Estudio Playa (SOFT-DELETED - Ana, para recuperar)
         $estudio = Property::create([
@@ -195,11 +212,28 @@ class DemoDataSeeder extends Seeder
             'deleted_at' => now()->subDays(10), // Borrado hace 10 días
         ]);
 
-        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/seed/estudio-vista/1600/1067', 'is_cover' => true, 'sort_order' => 1]);
-        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/seed/estudio-terraza/1600/1067', 'is_cover' => false, 'sort_order' => 2]);
-        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/seed/estudio-interior/1600/1067', 'is_cover' => false, 'sort_order' => 3]);
+        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/id/1041/1600/1067', 'is_cover' => true, 'sort_order' => 1]);
+        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/id/1042/1600/1067', 'is_cover' => false, 'sort_order' => 2]);
+        Photo::create(['property_id' => $estudio->id, 'url' => 'https://picsum.photos/id/1043/1600/1067', 'is_cover' => false, 'sort_order' => 3]);
 
         $this->generateRateCalendar($estudio->id, basePrice: 70, weekendPrice: 95, onlyPast: true);
+
+        // Información del entorno para Estudio Llanes
+        \App\Models\PropertyEnvironment::create([
+            'property_id' => $estudio->id,
+            'title' => 'Descubre Llanes',
+            'subtitle' => 'Villa marinera asturiana con playas espectaculares y un casco histórico medieval. El oriente de Asturias en su máxima expresión.',
+            'summary' => "Llanes combina playa, montaña y tradición en un entorno único. Desde el estudio podrás disfrutar de:\n\n\nPlaya de Llanes a pie de calle\nCasco histórico medieval\nBuffones de Pría (géiseres naturales)\nPlaya de Gulpiyuri (playa interior)\nRutas por los Picos de Europa",
+            'hero_photo' => 'https://picsum.photos/id/1044/1600/900',
+            'nature_description' => 'Playas salvajes, acantilados impresionantes y los Picos de Europa a un paso. Llanes ofrece naturaleza en estado puro: desde el mar Cantábrico hasta las montañas más emblemáticas de España.',
+            'nature_photo' => 'https://picsum.photos/id/1045/1600/1067',
+            'culture_description' => 'Un pueblo medieval con historia marinera. La Basílica de Santa María, el puerto pesquero, los cubos de la memoria pintados por artistas y un casco histórico que transporta en el tiempo.',
+            'culture_photo' => 'https://picsum.photos/id/1047/1600/1067',
+            'activities_description' => 'Senderismo por la costa, surf, visitas a los Bufones, excursiones a los Picos de Europa, rutas en kayak y descenso del Sella. Llanes es aventura asegurada.',
+            'activities_photo' => 'https://picsum.photos/id/1048/1600/1067',
+            'services_description' => 'Llanes cuenta con supermercados, farmacia, centro de salud, restaurantes con sidra y marisco fresco, y todo lo necesario para una estancia cómoda junto al mar.',
+            'services_photo' => 'https://picsum.photos/id/1051/1600/1067',
+        ]);
 
         $this->command->info('Propiedades creadas: 2 activas + 1 soft-deleted');
 
