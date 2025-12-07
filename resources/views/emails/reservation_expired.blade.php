@@ -3,8 +3,13 @@
 @section('content')
   <h2 style="margin: 0 0 20px; font-family: Georgia, serif; font-size: 24px; color: #d32f2f; font-weight: 500;">Reserva expirada</h2>
   
-  <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: #333333;">Hola {{ $reservation->user->name }},</p>
-  <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: #333333;">Lamentamos informarte que tu reserva ha expirado por falta de pago dentro del plazo establecido.</p>
+  @if($isAdmin ?? false)
+    <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: #333333;">Hola {{ $reservation->property->user->name }},</p>
+    <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: #333333;">Te informamos que la reserva de <strong>{{ $reservation->user->name }}</strong> ({{ $reservation->user->email }}) ha expirado por falta de pago dentro del plazo establecido.</p>
+  @else
+    <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: #333333;">Hola {{ $reservation->user->name }},</p>
+    <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: #333333;">Lamentamos informarte que tu reserva ha expirado por falta de pago dentro del plazo establecido.</p>
+  @endif
 
   <table cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; background-color: #f9f9f9; border-radius: 6px;"
     <tr><td style="padding: 10px; font-size: 14px; color: #666666;"><strong style="color: #333333;">Reserva:</strong></td><td style="padding: 10px; font-size: 14px; color: #333333;">{{ $reservation->code ?? ('#'.$reservation->id) }}</td></tr>
@@ -16,14 +21,20 @@
   </table>
 
   <p style="margin: 24px 0 0; padding: 16px; background-color: #ffebee; border-left: 3px solid #d32f2f; border-radius: 4px; font-size: 14px; line-height: 1.6; color: #333333;">
-    Las fechas de esta reserva han sido liberadas y ya están disponibles para otros huéspedes. Si todavía estás interesado en estas fechas, puedes crear una nueva reserva.
+    Las fechas de esta reserva han sido liberadas y ya están disponibles para otros huéspedes.@if(!($isAdmin ?? false)) Si todavía estás interesado en estas fechas, puedes crear una nueva reserva.@endif
   </p>
 
-  <div style="margin: 32px 0; text-align: center;">
-    <a href="{{ route('properties.show', $reservation->property->slug) }}" style="display: inline-block; padding: 14px 32px; background-color: #4D8D94; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: 500;">
-      Ver alojamiento
-    </a>
-  </div>
+  @if(!($isAdmin ?? false))
+    <div style="margin: 32px 0; text-align: center;">
+      <a href="{{ route('properties.show', $reservation->property->slug) }}" style="display: inline-block; padding: 14px 32px; background-color: #4D8D94; color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: 500;">
+        Ver alojamiento
+      </a>
+    </div>
+  @endif
   
-  <p style="margin: 24px 0 0; font-size: 15px; line-height: 1.6; color: #333333;">Esperamos poder servirte en otra ocasión. Si tienes alguna duda, no dudes en contactarnos.</p>
+  @if($isAdmin ?? false)
+    <p style="margin: 24px 0 0; font-size: 15px; line-height: 1.6; color: #333333;">No es necesaria ninguna acción por tu parte. Si tienes alguna duda, contáctanos.</p>
+  @else
+    <p style="margin: 24px 0 0; font-size: 15px; line-height: 1.6; color: #333333;">Esperamos poder servirte en otra ocasión. Si tienes alguna duda, no dudes en contactarnos.</p>
+  @endif
 @endsection

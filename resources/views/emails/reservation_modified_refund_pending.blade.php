@@ -5,9 +5,13 @@
 @section('content')
 <h2 style="margin: 0 0 20px 0; color: #2c5aa0; font-size: 20px;">Reserva {{ $reservation->code ?? ('#'.$reservation->id) }} modificada</h2>
 
-<p style="margin: 0 0 16px 0;">Hola {{ $reservation->user->name }},</p>
-
-<p style="margin: 0 0 20px 0;">Tu reserva <strong>#{{ $reservation->id }}</strong> en <strong>{{ $reservation->property->name }}</strong> ha sido modificada correctamente.</p>
+@if($isAdmin ?? false)
+  <p style="margin: 0 0 16px 0;">Hola {{ $reservation->property->user->name }},</p>
+  <p style="margin: 0 0 20px 0;">Te informamos que la reserva de <strong>{{ $reservation->user->name }}</strong> ({{ $reservation->user->email }}) en <strong>{{ $reservation->property->name }}</strong> ha sido modificada.</p>
+@else
+  <p style="margin: 0 0 16px 0;">Hola {{ $reservation->user->name }},</p>
+  <p style="margin: 0 0 20px 0;">Tu reserva <strong>#{{ $reservation->id }}</strong> en <strong>{{ $reservation->property->name }}</strong> ha sido modificada correctamente.</p>
+@endif
 
 <h3 style="margin: 24px 0 12px 0; font-size: 16px; color: #333;">Nuevos detalles de la reserva:</h3>
 
@@ -32,9 +36,15 @@
 
 <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 16px; margin: 20px 0; border-radius: 2px;">
     <p style="margin: 0 0 8px 0; font-weight: bold;">Devolución pendiente</p>
-    <p style="margin: 0 0 12px 0;">El nuevo total de la reserva es inferior al monto ya pagado. Procederemos a tramitar la devolución de:</p>
-    <p style="margin: 0 0 12px 0; font-size: 24px; font-weight: bold; color: #28a745;">{{ number_format($refundAmount, 2) }}€</p>
-    <p style="margin: 0;">Te enviaremos un correo de confirmación cuando la devolución se haya procesado correctamente.</p>
+    @if($isAdmin ?? false)
+      <p style="margin: 0 0 12px 0;">El nuevo total de la reserva es inferior al monto ya pagado. Procederemos a tramitar la devolución de:</p>
+      <p style="margin: 0 0 12px 0; font-size: 24px; font-weight: bold; color: #28a745;">{{ number_format($refundAmount, 2) }}€</p>
+      <p style="margin: 0;">Enviaremos un correo de confirmación al cliente cuando la devolución se haya procesado correctamente.</p>
+    @else
+      <p style="margin: 0 0 12px 0;">El nuevo total de la reserva es inferior al monto ya pagado. Procederemos a tramitar la devolución de:</p>
+      <p style="margin: 0 0 12px 0; font-size: 24px; font-weight: bold; color: #28a745;">{{ number_format($refundAmount, 2) }}€</p>
+      <p style="margin: 0;">Te enviaremos un correo de confirmación cuando la devolución se haya procesado correctamente.</p>
+    @endif
 </div>
 
 @if($invoice)

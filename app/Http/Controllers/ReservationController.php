@@ -605,7 +605,7 @@ class ReservationController extends Controller
 
             try {
                 Mail::to($reservation->user->email)->send(
-                    new ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund, $refundInvoice)
+                    new ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund, $refundInvoice, false)
                 );
                 Log::info('ReservationModifiedRefundPendingMail enviado al cliente');
             } catch (Throwable $e) {
@@ -616,7 +616,7 @@ class ReservationController extends Controller
             Log::info('Enviando ReservationModifiedRefundPendingMail al admin', ['email' => $reservation->property->user->email]);
             try {
                 Mail::to($reservation->property->user->email)->send(
-                    new ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund, $refundInvoice)
+                    new ReservationModifiedRefundPendingMail($reservation, $reservation->total_price, $refund, $refundInvoice, true)
                 );
                 Log::info('ReservationModifiedRefundPendingMail enviado al admin');
             } catch (Throwable $e) {

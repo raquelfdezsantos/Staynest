@@ -22,8 +22,9 @@ class ReservationExpiredMail extends Mailable
      * Constructor del mailable.
      *
      * @param Reservation $reservation Instancia de la reserva expirada.
+     * @param bool $isAdmin Si el email se envía al admin de la propiedad.
      */
-    public function __construct(public Reservation $reservation) {}
+    public function __construct(public Reservation $reservation, public bool $isAdmin = false) {}
 
     /**
      * Define el sobre del correo (asunto, destinatario, etc).
@@ -48,6 +49,7 @@ class ReservationExpiredMail extends Mailable
             view: 'emails.reservation_expired',
             with: [
                 'reservation' => $this->reservation->loadMissing(['user', 'property']),
+                'isAdmin' => $this->isAdmin,
             ],
         );
     }

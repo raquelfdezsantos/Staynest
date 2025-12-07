@@ -25,12 +25,15 @@ class ReservationModifiedRefundPendingMail extends Mailable
      * @param mixed $reservation Instancia de la reserva modificada.
      * @param mixed $newTotal Nuevo importe total de la reserva.
      * @param mixed $refundAmount Importe pendiente de devolución.
+     * @param mixed $invoice Factura actualizada (opcional).
+     * @param bool $isAdmin Si el email se envía al admin de la propiedad.
      */
     public function __construct(
         public $reservation,
         public $newTotal,
         public $refundAmount,
-        public $invoice = null
+        public $invoice = null,
+        public bool $isAdmin = false
     ) {}
 
     /**
@@ -59,6 +62,7 @@ class ReservationModifiedRefundPendingMail extends Mailable
                 'newTotal' => $this->newTotal,
                 'refundAmount' => $this->refundAmount,
                 'invoice' => $this->invoice,
+                'isAdmin' => $this->isAdmin,
             ],
         );
     }

@@ -62,11 +62,11 @@ class ExpirePendingReservations extends Command
                     ]);
 
                 // Enviar email al cliente
-                Mail::to($reservation->user->email)->send(new ReservationExpiredMail($reservation));
+                Mail::to($reservation->user->email)->send(new ReservationExpiredMail($reservation, false));
 
                 // Enviar email al admin de la propiedad
                 if ($reservation->property && $reservation->property->user) {
-                    Mail::to($reservation->property->user->email)->send(new ReservationExpiredMail($reservation));
+                    Mail::to($reservation->property->user->email)->send(new ReservationExpiredMail($reservation, true));
                 }
 
                 $this->info("Reserva #{$reservation->id} expirada y notificada.");
