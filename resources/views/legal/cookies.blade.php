@@ -43,7 +43,7 @@
 
                     {{-- Cards para móvil/tablet --}}
                     <div class="cookies-cards" style="display: none; gap: 1rem; margin-top: var(--spacing-md);">
-                        <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1rem;">
+                        <div style="background: var(--color-bg-secondary); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1rem;">
                             <div style="margin-bottom: 0.75rem;">
                                 <strong style="color: var(--color-text-primary);">Cookie:</strong>
                                 <code style="display: block; margin-top: 0.25rem;">{{ config('session.cookie') }}</code>
@@ -57,7 +57,7 @@
                                 <p style="margin-top: 0.25rem;">Sesión (se elimina al cerrar el navegador)</p>
                             </div>
                         </div>
-                        <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1rem;">
+                        <div style="background: var(--color-bg-secondary); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1rem;">
                             <div style="margin-bottom: 0.75rem;">
                                 <strong style="color: var(--color-text-primary);">Cookie:</strong>
                                 <code style="display: block; margin-top: 0.25rem;">XSRF-TOKEN</code>
@@ -95,7 +95,7 @@
 
                     {{-- Cards para móvil/tablet --}}
                     <div class="cookies-cards" style="display: none; gap: 1rem; margin-top: var(--spacing-md);">
-                        <div style="background: var(--color-bg-card); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1rem;">
+                        <div style="background: var(--color-bg-secondary); border: 1px solid var(--color-border-light); border-radius: var(--radius-base); padding: 1rem;">
                             <div style="margin-bottom: 0.75rem;">
                                 <strong style="color: var(--color-text-primary);">Cookie:</strong>
                                 <code style="display: block; margin-top: 0.25rem;">cookie_consent</code>
