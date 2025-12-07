@@ -7,9 +7,7 @@ use App\Policies\ReservationPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 /**
- * Provider AuthServiceProvider
- *
- * Registra las policies de autorización para los modelos.
+ * Provider para autenticación y policies.
  */
 class AuthServiceProvider extends ServiceProvider
 {
@@ -23,7 +21,7 @@ class AuthServiceProvider extends ServiceProvider
     ];
 
     /**
-     * Método de arranque para registrar policies y Gates personalizados.
+     * Registra policies y Gates personalizados.
      *
      * @return void
      */

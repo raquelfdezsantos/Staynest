@@ -7,14 +7,12 @@ use App\Http\Middleware\EnsureUserHasRole;
 use Illuminate\Support\Facades\View;
 
 /**
- * Provider AppServiceProvider
- *
- * Registra servicios y configuraciones globales de la aplicación.
+ * Provider para servicios de la aplicación.
  */
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Registra bindings y servicios en el contenedor de la aplicación.
+     * Registra bindings y servicios.
      *
      * @return void
      */
@@ -24,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Realiza configuraciones y registros al iniciar la aplicación.
+     * Realiza configuraciones al iniciar la aplicación.
      *
      * @return void
      */
