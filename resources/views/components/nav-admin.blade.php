@@ -255,7 +255,6 @@
     (function () {
         // Ajusta altura del spacer del header fijo
         function setNavSpacerHeight() {
-        function setNavSpacerHeight() {
             try {
                 var header = document.querySelector('.nav-header');
                 var spacer = document.querySelector('.nav-spacer');

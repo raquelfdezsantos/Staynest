@@ -2,7 +2,7 @@
     <div class="sn-reservar max-w-5xl mx-auto px-4 py-10 admin-slim-badges">
         
         {{-- Header centrado como en Dashboard --}}
-        <header class="mb-16 text-center">
+        <header class="mb-10 text-center">
             <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Mis propiedades</h1>
             <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Gestiona tus alojamientos, fotos, disponibilidad y reservas.</p>
         </header>
@@ -65,11 +65,11 @@
 
                         {{-- Badge estado --}}
                         @if($property->trashed())
-                            <div class="badge badge-error" style="position: absolute; top: 0.75rem; right: 0.75rem;">
+                            <div class="badge" style="position: absolute; top: 0.75rem; right: 0.75rem; background-color: var(--color-error); color: #fff; border: none;">
                                 <span class="sn-sentence">Dada de baja</span>
                             </div>
                         @else
-                            <div class="badge badge-success" style="position: absolute; top: 0.75rem; right: 0.75rem;">
+                            <div class="badge" style="position: absolute; top: 0.75rem; right: 0.75rem; background-color: var(--color-success); color: #fff; border: none;">
                                 <span class="sn-sentence">Activa</span>
                             </div>
                         @endif

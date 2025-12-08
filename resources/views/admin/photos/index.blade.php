@@ -2,7 +2,7 @@
     <div class="sn-reservar max-w-5xl mx-auto px-4 py-10 admin-slim-badges">
         
         {{-- Header centrado como en Dashboard --}}
-        <header class="mb-16 text-center">
+        <header class="mb-10 text-center">
             <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Galería de fotos</h1>
             <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Gestiona las imágenes de tu propiedad, marca la portada y organízalas.</p>
         </header>

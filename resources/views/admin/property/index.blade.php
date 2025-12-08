@@ -188,7 +188,6 @@
                         name="name" 
                         class="block mt-1 w-full"
                         :value="old('name', $property->name)"
-                        required
                         maxlength="150"
                     />
                 </div>
@@ -368,7 +367,6 @@
                         name="capacity" 
                         class="block mt-1 w-full"
                         :value="old('capacity', $property->capacity)"
-                        required
                         min="1"
                         max="20"
                     />
@@ -376,7 +374,7 @@
 
                 {{-- Licencia turística --}}
                 <div>
-                    <x-input-label for="tourism_license" value="Nº Licencia Turística" />
+                    <x-input-label for="tourism_license" value="Nº Licencia Turística *" />
                     <textarea 
                         id="tourism_license"
                         name="tourism_license" 
@@ -390,7 +388,7 @@
 
                 {{-- Registro de alquiler --}}
                 <div>
-                    <x-input-label for="rental_registration" value="Nº Registro de Alquiler" />
+                    <x-input-label for="rental_registration" value="Nº Registro de Alquiler *" />
                     <textarea 
                         id="rental_registration"
                         name="rental_registration" 

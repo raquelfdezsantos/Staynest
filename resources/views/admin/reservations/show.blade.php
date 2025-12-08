@@ -70,7 +70,7 @@
             }
         </style>
         {{-- Header centrado --}}
-        <header class="mb-16 text-center">
+        <header class="mb-10 text-center">
             <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Reserva #{{ $reservation->code ?? $reservation->id }}</h1>
             <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Detalles completos de la reserva.</p>
         </header>

@@ -108,7 +108,7 @@ class AdminController extends Controller
             abort(403, 'No autorizado');
         }
 
-        $query = Reservation::with(['user', 'property', 'invoice'])
+        $query = Reservation::with(['user', 'property', 'invoice', 'invoices'])
             ->where('property_id', $property->id)
             ->latest();
 
@@ -812,7 +812,7 @@ class AdminController extends Controller
                 'string', 
                 'max:150',
                 function ($attribute, $value, $fail) {
-                    if (preg_match('/<[^>]*>/', $value)) {
+                    if (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value)) {
                         $fail('El nombre de la propiedad contiene caracteres HTML no permitidos.');
                     }
                     // Permitir letras, espacios, puntos y guiones (sin números)
@@ -826,7 +826,7 @@ class AdminController extends Controller
                 'string', 
                 'max:5000',
                 function ($attribute, $value, $fail) {
-                    if ($value && preg_match('/<[^>]*>/', $value)) {
+                    if ($value && (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value))) {
                         $fail('La descripción contiene código HTML o scripts no permitidos.');
                     }
                     // Permitir letras, números, espacios, puntuación y saltos de línea
@@ -840,7 +840,7 @@ class AdminController extends Controller
                 'string', 
                 'max:200',
                 function ($attribute, $value, $fail) {
-                    if ($value && preg_match('/<[^>]*>/', $value)) {
+                    if ($value && (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value))) {
                         $fail('La dirección contiene caracteres HTML no permitidos.');
                     }
                     // Permitir letras, números, espacios y caracteres comunes en direcciones
@@ -854,7 +854,7 @@ class AdminController extends Controller
                 'string', 
                 'max:100',
                 function ($attribute, $value, $fail) {
-                    if ($value && preg_match('/<[^>]*>/', $value)) {
+                    if ($value && (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value))) {
                         $fail('La ciudad contiene caracteres HTML no permitidos.');
                     }
                     // Permitir letras, espacios y guiones
@@ -878,7 +878,7 @@ class AdminController extends Controller
                 'string', 
                 'max:100',
                 function ($attribute, $value, $fail) {
-                    if ($value && preg_match('/<[^>]*>/', $value)) {
+                    if ($value && (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value))) {
                         $fail('La provincia contiene caracteres HTML no permitidos.');
                     }
                     // Permitir letras, espacios y guiones
@@ -889,22 +889,28 @@ class AdminController extends Controller
             ],
             'capacity' => ['required', 'integer', 'min:1', 'max:50'],
             'tourism_license' => [
-                'nullable', 
+                'required', 
                 'string', 
                 'max:100',
                 function ($attribute, $value, $fail) {
-                    if ($value && !preg_match('/^[A-Z0-9\/\-]+$/i', $value)) {
-                        $fail('La licencia turística solo puede contener letras, números, barras y guiones.');
+                    if (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value)) {
+                        $fail('La licencia turística contiene caracteres HTML no permitidos.');
+                    }
+                    if (!preg_match('/^[A-Z0-9\/\-\s]+$/i', $value)) {
+                        $fail('La licencia turística solo puede contener letras, números, barras, guiones y espacios.');
                     }
                 }
             ],
             'rental_registration' => [
-                'nullable', 
+                'required', 
                 'string', 
                 'max:100',
                 function ($attribute, $value, $fail) {
-                    if ($value && !preg_match('/^[A-Z0-9\/\-]+$/i', $value)) {
-                        $fail('El registro de alquiler solo puede contener letras, números, barras y guiones.');
+                    if (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value)) {
+                        $fail('El registro de alquiler contiene caracteres HTML no permitidos.');
+                    }
+                    if (!preg_match('/^[A-Z0-9\/\-\s]+$/i', $value)) {
+                        $fail('El registro de alquiler solo puede contener letras, números, barras, guiones y espacios.');
                     }
                 }
             ],
@@ -914,6 +920,15 @@ class AdminController extends Controller
                 'in:wifi,parking,pool,washer,dishwasher,heating,air_conditioning,hairdryer,first_aid_kit,pets_allowed,smoking_allowed,tv,kitchen,towels,bed_linen,terrace,elevator,crib'
             ],
         ]);
+
+        // Sanitizar datos antes de actualizar
+        $validated['name'] = strip_tags($validated['name']);
+        $validated['description'] = strip_tags($validated['description'] ?? '');
+        $validated['address'] = strip_tags($validated['address'] ?? '');
+        $validated['city'] = strip_tags($validated['city'] ?? '');
+        $validated['province'] = strip_tags($validated['province'] ?? '');
+        $validated['tourism_license'] = strip_tags($validated['tourism_license']);
+        $validated['rental_registration'] = strip_tags($validated['rental_registration']);
 
         $property->update($validated);
 
@@ -1173,7 +1188,7 @@ class AdminController extends Controller
         }
         
         // Obtener reservas de esta propiedad
-        $query = Reservation::with(['user', 'invoice'])
+        $query = Reservation::with(['user', 'invoice', 'invoices'])
             ->where('property_id', $property->id)
             ->latest();
 
@@ -1201,20 +1216,165 @@ class AdminController extends Controller
     public function propertiesStore(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:150',
+            'name' => [
+                'required', 
+                'string', 
+                'max:150',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value)) {
+                        $fail('El nombre de la propiedad contiene caracteres HTML no permitidos.');
+                    }
+                    if (!preg_match('/^[\p{L}\s.\-]+$/u', $value)) {
+                        $fail('El nombre de la propiedad contiene caracteres no permitidos. Solo se permiten letras, espacios, puntos y guiones.');
+                    }
+                }
+            ],
             'slug' => 'required|string|max:150|unique:properties,slug',
-            'description' => 'nullable|string',
-            'address' => 'nullable|string|max:200',
-            'city' => 'nullable|string|max:100',
-            'postal_code' => 'nullable|string|max:10',
-            'province' => 'nullable|string|max:100',
-            'capacity' => 'required|integer|min:1|max:50',
-            'tourism_license' => 'nullable|string|max:100',
-            'rental_registration' => 'nullable|string|max:100',
+            'description' => [
+                'nullable', 
+                'string', 
+                'max:5000',
+                function ($attribute, $value, $fail) {
+                    if ($value && preg_match('/<[^>]*>/', $value)) {
+                        $fail('La descripción contiene código HTML o scripts no permitidos.');
+                    }
+                    if ($value && !preg_match('/^[\p{L}\p{N}\s.,;:!?¿¡()"\'\-\n\r]+$/u', $value)) {
+                        $fail('La descripción contiene caracteres no permitidos.');
+                    }
+                }
+            ],
+            'services' => ['nullable', 'array'],
+            'services.*' => [
+                'string', 
+                'in:wifi,parking,pool,washer,dishwasher,heating,air_conditioning,hairdryer,first_aid_kit,pets_allowed,smoking_allowed,tv,kitchen,towels,bed_linen,terrace,elevator,crib'
+            ],
+            'address' => [
+                'nullable', 
+                'string', 
+                'max:200',
+                function ($attribute, $value, $fail) {
+                    if ($value && (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value))) {
+                        $fail('La dirección contiene caracteres HTML no permitidos.');
+                    }
+                    if ($value && !preg_match('/^[\p{L}\p{N}\s.,ºª\-]+$/u', $value)) {
+                        $fail('La dirección contiene caracteres no permitidos.');
+                    }
+                }
+            ],
+            'city' => [
+                'nullable', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if ($value && (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value))) {
+                        $fail('La ciudad contiene caracteres HTML no permitidos.');
+                    }
+                    if ($value && !preg_match('/^[\p{L}\s\-]+$/u', $value)) {
+                        $fail('La ciudad solo puede contener letras, espacios y guiones.');
+                    }
+                }
+            ],
+            'postal_code' => [
+                'nullable', 
+                'string', 
+                'max:10',
+                function ($attribute, $value, $fail) {
+                    if ($value && !preg_match('/^[0-9]{5}$/', $value)) {
+                        $fail('El código postal debe tener exactamente 5 dígitos.');
+                    }
+                }
+            ],
+            'province' => [
+                'nullable', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if ($value && (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value))) {
+                        $fail('La provincia contiene caracteres HTML no permitidos.');
+                    }
+                    if ($value && !preg_match('/^[\p{L}\s\-]+$/u', $value)) {
+                        $fail('La provincia solo puede contener letras, espacios y guiones.');
+                    }
+                }
+            ],
+            'capacity' => ['required', 'integer', 'min:1', 'max:50'],
+            'tourism_license' => [
+                'required', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value)) {
+                        $fail('La licencia turística contiene caracteres HTML no permitidos.');
+                    }
+                    if (!preg_match('/^[A-Z0-9\/\-\s]+$/i', $value)) {
+                        $fail('La licencia turística solo puede contener letras, números, barras, guiones y espacios.');
+                    }
+                }
+            ],
+            'rental_registration' => [
+                'required', 
+                'string', 
+                'max:100',
+                function ($attribute, $value, $fail) {
+                    if (preg_match('/<[^>]*>/', $value) || preg_match('/&lt;|&gt;/', $value)) {
+                        $fail('El registro de alquiler contiene caracteres HTML no permitidos.');
+                    }
+                    if (!preg_match('/^[A-Z0-9\/\-\s]+$/i', $value)) {
+                        $fail('El registro de alquiler solo puede contener letras, números, barras, guiones y espacios.');
+                    }
+                }
+            ],
+            // Campos de entorno
+            'env_title' => 'nullable|string|max:100',
+            'env_subtitle' => 'nullable|string|max:500',
+            'env_summary' => 'nullable|string|max:1000',
+            'env_hero_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'env_nature_description' => 'nullable|string|max:1000',
+            'env_nature_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'env_culture_description' => 'nullable|string|max:1000',
+            'env_culture_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'env_activities_description' => 'nullable|string|max:1000',
+            'env_activities_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'env_services_description' => 'nullable|string|max:1000',
+            'env_services_photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
+        // Sanitizar datos antes de crear
         $validated['user_id'] = Auth::id();
+        $validated['name'] = strip_tags($validated['name']);
+        $validated['description'] = strip_tags($validated['description'] ?? '');
+        $validated['address'] = strip_tags($validated['address'] ?? '');
+        $validated['city'] = strip_tags($validated['city'] ?? '');
+        $validated['province'] = strip_tags($validated['province'] ?? '');
+        $validated['tourism_license'] = strip_tags($validated['tourism_license']);
+        $validated['rental_registration'] = strip_tags($validated['rental_registration']);
+        
         $property = Property::create($validated);
+
+        // Crear el entorno si hay datos
+        if ($request->hasAny(['env_title', 'env_subtitle', 'env_summary', 'env_nature_description', 'env_culture_description', 'env_activities_description', 'env_services_description'])) {
+            $environmentData = ['property_id' => $property->id];
+            
+            // Procesar campos de texto
+            foreach (['title' => 'env_title', 'subtitle' => 'env_subtitle', 'summary' => 'env_summary', 
+                      'nature_description' => 'env_nature_description', 'culture_description' => 'env_culture_description',
+                      'activities_description' => 'env_activities_description', 'services_description' => 'env_services_description'] as $key => $field) {
+                if ($request->filled($field)) {
+                    $environmentData[$key] = $request->input($field);
+                }
+            }
+            
+            // Procesar fotos
+            foreach (['hero_photo' => 'env_hero_photo', 'nature_photo' => 'env_nature_photo', 'culture_photo' => 'env_culture_photo',
+                      'activities_photo' => 'env_activities_photo', 'services_photo' => 'env_services_photo'] as $key => $field) {
+                if ($request->hasFile($field)) {
+                    $path = $request->file($field)->store('properties/environment', 'public');
+                    $environmentData[$key] = $path;
+                }
+            }
+            
+            \App\Models\PropertyEnvironment::create($environmentData);
+        }
 
         return redirect()
             ->route('admin.properties.index')

@@ -131,7 +131,7 @@
         </style>
         
         {{-- Header centrado como otras páginas públicas --}}
-        <header class="mb-16 text-center">
+        <header class="mb-10 text-center">
             <h1 class="text-4xl font-serif mb-4" style="color: var(--color-text-primary);">Dashboard</h1>
             <p style="color: var(--color-text-secondary); font-size: var(--text-base);">Resumen general de reservas y estadísticas.</p>
         </header>
