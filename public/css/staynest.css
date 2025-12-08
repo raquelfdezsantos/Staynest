@@ -1,10 +1,29 @@
 /**
- * ============================================================================
- * STAYNEST - Estilos Globales
- * ============================================================================
- * Paleta de colores modo oscuro (principal)
- * Tipografías: Source Serif 4 + Inter
- * ============================================================================
+ * STAYNEST - HOJA DE ESTILOS PRINCIPAL
+ * 
+ * Esta hoja de estilos define el diseño visual completo de la aplicación Staynest,
+ * una plataforma de reservas de alojamientos turísticos. Implementa un sistema
+ * de diseño coherente con variables CSS para colores, tipografía, espaciado
+ * y componentes reutilizables.
+ * 
+ * Características principales:
+ * - Sistema de temas oscuro/claro con variables CSS
+ * - Tipografía serif para títulos y sans-serif para texto
+ * - Componentes reutilizables para navegación, formularios y cards
+ * - Diseño responsive para móviles, tablets y desktop
+ * - Accesibilidad con contrastes adecuados y navegación por teclado
+ */
+
+/* ============================================================================
+   VARIABLES CSS - MODO OSCURO (Tema principal)
+   ============================================================================ */
+
+/**
+ * Variables CSS para el modo oscuro - Tema principal de Staynest
+ * 
+ * Define la paleta de colores principal con tonos oscuros para reducir
+ * la fatiga visual. Los colores están optimizados para mantener buen
+ * contraste con texto blanco y elementos interactivos.
  */
 
 /* ============================================================================
@@ -151,11 +170,12 @@
     --transition-fast: 150ms ease-in-out;
     --transition-base: 300ms ease-in-out;
     --transition-slow: 500ms ease-in-out;
-    /* Radio estándar para elementos interactivos y contenedores
-         (igual que la galería: 2px) */
+    /* Radio estándar para elementos interactivos y contenedores */
     --radius-base: 2px;
 
+    /* --------- */
     /* SCROLLBAR */
+    /* --------- */
     
     /* Fallback de ancho de scrollbar */
     --sn-scrollbar-fallback: 8px;
@@ -164,6 +184,14 @@
 /* ============================================================================
    VARIABLES CSS - MODO CLARO
    ============================================================================ */
+
+/**
+ * Variables CSS para el modo claro - Tema alternativo
+ * 
+ * Paleta de colores clara optimizada para entornos bien iluminados.
+ * Mantiene la identidad visual de Staynest con el mismo acento verde-azulado,
+ * pero con fondos más claros y textos oscuros para mejor legibilidad.
+ */
 [data-theme="light"] {
     /* Light más confortable (menos blanco para reducir fatiga visual) */
     --color-bg-primary: #E6E6E6;
@@ -213,6 +241,14 @@
 /* ============================================================================
    RESET Y BASE
    ============================================================================ */
+
+/**
+ * Reset CSS y estilos base
+ * 
+ * Establece las reglas fundamentales para todos los elementos HTML.
+ * Incluye reset de márgenes/paddings, configuración de box-sizing,
+ * y estilos base para html/body con tipografía y colores del tema.
+ */
 * {
     margin: 0;
     padding: 0;
@@ -248,6 +284,15 @@ body {
 /* ============================================================================
    TIPOGRAFÍA
    ============================================================================ */
+
+/**
+ * Sistema tipográfico de Staynest
+ * 
+ * Define la jerarquía tipográfica usando Source Serif 4 para títulos
+ * (serif para mayor elegancia) y Inter para texto body (sans-serif
+ * para mejor legibilidad en pantalla). Incluye tamaños responsive
+ * y ajustes específicos para diferentes secciones.
+ */
 h1,
 h2,
 h3,
@@ -344,6 +389,14 @@ a:hover:not(.nav-link):not(.btn):not(.btn-primary):not(.entorno-cta):not(.btn-ac
 /* ============================================================================
    ALERTAS Y MENSAJES
    ============================================================================ */
+
+/**
+ * Sistema de alertas y notificaciones
+ * 
+ * Estilos para mensajes de feedback al usuario: éxito, error, warning e info.
+ * Cada tipo tiene colores específicos y bordes para mantener consistencia
+ * visual y accesibilidad. Los colores se adaptan al tema oscuro/claro.
+ */
 .alert {
     padding: var(--spacing-sm) var(--spacing-md);
     border-radius: 2px;
@@ -380,6 +433,16 @@ a:hover:not(.nav-link):not(.btn):not(.btn-primary):not(.entorno-cta):not(.btn-ac
 /* ============================================================================
    AJUSTES ESPECÍFICOS MODO CLARO (legibilidad)
    ============================================================================ */
+
+/**
+ * Ajustes específicos para modo claro
+ * 
+ * Optimiza la legibilidad y apariencia visual en tema claro:
+ * - Contrastes de texto adecuados para fondos claros
+ * - Ajustes en formularios y componentes interactivos
+ * - Corrección de elementos que no se ven bien en modo claro
+ * - Mantiene consistencia visual entre temas oscuro y claro
+ */
 /* Headings demasiado claros en light: usar colores de texto del tema */
 html[data-theme="light"] h2 {
     color: var(--color-text-primary);
@@ -595,6 +658,14 @@ input[type="checkbox"]:not(.sn-auth input[type="checkbox"]):hover {
 /* ============================================================================
    SCROLLBAR PERSONALIZADA
    ============================================================================ */
+
+/**
+ * Scrollbar personalizada
+ * 
+ * Estiliza la scrollbar del navegador para mantener consistencia visual
+ * con el diseño de Staynest. Usa el color de acento de marca y se adapta
+ * al tema oscuro/claro. Incluye soporte para Firefox y Webkit.
+ */
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -628,6 +699,17 @@ input[type="checkbox"]:not(.sn-auth input[type="checkbox"]):hover {
 /* ============================================================================
    NAVEGACIÓN PRINCIPAL
    ============================================================================ */
+
+/**
+ * Sistema de navegación principal
+ * 
+ * Header fijo con navegación responsive que incluye:
+ * - Logo animado en modo hero (página principal)
+ * - Menú de navegación con estados activo/hover
+ * - Toggle de tema oscuro/claro
+ * - Dropdown de usuario para áreas autenticadas
+ * - Ajustes para scrollbar y posicionamiento responsive
+ */
 
 .nav-header {
     /* Fondo a ancho visual completo menos la scrollbar */
@@ -694,14 +776,14 @@ html[data-theme="light"] .nav-header--transparent {
     border-bottom-color: transparent;
 }
 
-/* Modo sólido explícito (cuando haces scroll o lo fuerza JS) */
+/* Modo sólido explícito (cuando se hace scroll o lo fuerza JS) */
 .nav-header--solid {
     /* Fondo gestionado por .nav-header (full-width menos scrollbar). Contenido limitado por .nav-container */
     background-color: var(--color-bg-primary);
     border-bottom: 1px solid var(--color-border-light);
 }
 
-/* Posición del toggle y hamburguesa (sin historias de scrollbar) */
+/* Posición del toggle y hamburguesa */
 .nav-header .theme-toggle--corner {
     position: absolute;
     top: 50%;
@@ -934,6 +1016,15 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
 /* ============================================================================
    BOTONES
    ============================================================================ */
+
+/**
+ * Sistema de botones reutilizables
+ * 
+ * Define estilos para botones primarios, secundarios y de acción.
+ * Incluye variantes para diferentes estados (hover, active) y
+ * transformaciones de texto consistentes. Los botones usan
+ * el acento de marca y mantienen proporciones coherentes.
+ */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -973,6 +1064,14 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
 /* ============================================================================
    CARDS
    ============================================================================ */
+
+/**
+ * Sistema de cards reutilizables
+ * 
+ * Componentes card con sombras, bordes redondeados y efectos hover.
+ * Usados para mostrar información de propiedades, reservas y contenido
+ * general. Incluyen transiciones suaves y elevación al hover.
+ */
 .card {
     background-color: var(--color-bg-card);
     border: 1px solid var(--color-border-light);
@@ -990,6 +1089,17 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
 /* ============================================================================
    SISTEMA DE COMPONENTES PARA VISTAS PRIVADAS
    ============================================================================ */
+
+/**
+ * Componentes para áreas de administración y usuario
+ * 
+ * Estilos específicos para las vistas autenticadas de Staynest:
+ * - Cards de administración con grids responsivos
+ * - Tablas de datos con hover states
+ * - Cards de reservas con detalles y acciones
+ * - Formularios con inputs, labels y validación visual
+ * - Badges para estados (éxito, error, warning, info)
+ */
 
 /* Alertas y mensajes */
 .alert {
@@ -1424,8 +1534,7 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
     display: inline-flex;
     align-items: center;
     padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    /* 12px */
+    font-size: 0.75rem; /* 12px */
     font-weight: 600;
     border-radius: 2px;
     text-transform: none;
@@ -1496,6 +1605,16 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
 /* ============================================================================
    UTILIDADES
    ============================================================================ */
+
+/**
+ * Clases de utilidad CSS
+ * 
+ * Conjunto de clases helper para layout y espaciado común:
+ * - Contenedores con ancho máximo y centrado
+ * - Utilidades de texto (alineación, transformación)
+ * - Clases de margen y padding (mt-, mb-, py-, px-)
+ * - Estas clases facilitan el desarrollo rápido sin CSS custom
+ */
 .container {
     max-width: 1400px;
     margin: 0 auto;
@@ -1549,10 +1668,19 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
 /* ============================================================================
    RESPONSIVE
    ============================================================================ */
+
+/**
+ * Diseño responsive y breakpoints
+ * 
+ * Ajustes específicos para diferentes tamaños de pantalla:
+ * - Móviles (< 768px): navegación hamburguesa, layouts apilados
+ * - Tablets (768px - 1024px): grids adaptativos, navegación compacta
+ * - Desktop (> 1024px): layouts completos, navegación expandida
+ * - Ajustes tipográficos y de espaciado por breakpoint
+ */
 @media (max-width: 768px) {
     .nav-menu {
-        display: none;
-        /* Implementaremos menú hamburguesa */
+        display: none; /* Implementación menú hamburguesa */
     }
 
     .container {
@@ -1572,6 +1700,17 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
 /* ============================================================================
    STAYNEST - COMPONENTES ESPECÍFICOS
    ============================================================================ */
+
+/**
+ * Componentes específicos de Staynest
+ * 
+ * Estilos únicos para funcionalidades específicas de la plataforma:
+ * - Grid de propiedades con thumbnails hover
+ * - Cards de propiedades con información detallada
+ * - Galería de imágenes con lightbox
+ * - Formularios de reserva y contacto
+ * - Componentes del footer con información legal
+ */
 
 .sn-grid {
     display: grid;
@@ -1600,8 +1739,7 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
 
 .sn-aspect-4-3 {
     position: relative;
-    padding-bottom: 75%;
-    /* 4:3 */
+    padding-bottom: 75%; /* 4:3 */
     background: #000;
 }
 
@@ -1668,16 +1806,13 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
 .sn-gallery-grid {
     display: grid;
     grid-template-columns: 1fr var(--sn-thumbs-col);
-    gap: 6px;
-    /* más pegadas entre sí */
+    gap: 6px; /* más pegadas entre sí */
 }
 
 .sn-main-wrapper {
     display: block;
-    border: none;
-    /* sin borde visible */
-    border-radius: 2px;
-    /* aún menos redondeado */
+    border: none; /* sin borde visible */
+    border-radius: 2px; /* aún menos redondeado */
     overflow: hidden;
 }
 
@@ -1696,16 +1831,13 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-auto-rows: 1fr;
-    gap: 6px;
-    /* más pegadas */
+    gap: 6px; /* más pegadas */
 }
 
 .sn-thumb-item {
     display: block;
-    border: none;
-    /* sin borde visible */
-    border-radius: 2px;
-    /* aún menos redondeadas */
+    border: none; /* sin borde visible */
+    border-radius: 2px; /* aún menos redondeadas */
     overflow: hidden;
 }
 
@@ -1756,7 +1888,7 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
 }
 
 
-/* Capas: dejamos las imágenes por debajo del halo, pero los halos no interceptan clics */
+/* Capas: dejamos las imágenes por debajo del halo, para que los halos no intercepten clics */
 .sn-home-gallery a img {
     position: relative;
     z-index: 1;
@@ -1809,8 +1941,7 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
 
 /* HERO */
 .sn-hero {
-    position: relative;
-    /* alto completo; header encima en transparencia */
+    position: relative; /* alto completo; header encima en transparencia */
     min-height: 100vh;
     width: 100%;
     margin: 0;
@@ -1833,8 +1964,7 @@ body.sn-hero-mode .sn-hero--flush-top {
 
 .sn-hero__overlay {
     position: absolute;
-    inset: 0;
-    /* Eliminamos cualquier oscurecido: totalmente transparente */
+    inset: 0; /* Eliminar cualquier oscurecido: totalmente transparente */
     background: transparent;
 }
 
@@ -1853,8 +1983,7 @@ body.sn-hero-mode .sn-hero--flush-top {
     font-family: var(--font-serif);
     font-size: clamp(32px, 4.8vw, 56px);
     margin: 0;
-    color: #ffffff;
-    /* Siempre blanco en modo claro y oscuro */
+    color: #ffffff; /* Siempre blanco en modo claro y oscuro */
 }
 
 .sn-hero__strap {
@@ -1867,8 +1996,7 @@ body.sn-hero-mode .sn-hero--flush-top {
 
 .sn-hero__panel-wrap {
     position: absolute;
-    top: 75%;
-    /* Centrado en la mitad inferior (75% de la altura total) */
+    top: 75%; /* Centrado en la mitad inferior (75% de la altura total) */
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 2;
@@ -1923,14 +2051,13 @@ body.sn-hero-mode .sn-hero--flush-top {
     font-size: 1.1em;
 }
 
-/* transiciones del header al salir del hero */
+/* Transiciones del header al salir del hero */
 .sn-hero__blend {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 120px;
-    /* Degradado lineal sencillo adaptable a modo claro/oscuro */
+    height: 120px; /* Degradado lineal sencillo adaptable a modo claro/oscuro */
     background: linear-gradient(180deg, rgba(var(--color-bg-primary-rgb), 0) 0%, var(--color-bg-primary) 85%);
     pointer-events: none;
     z-index: 1;
@@ -1997,17 +2124,16 @@ html[data-theme="light"] .sn-hero__blend {
 
 @media (max-width: 900px) {
 
-    /* ANULAMOS EL LEFT FORZADO DEL MODO TRANSPARENTE */
+    /* Anular left forzado del modo transparente */
     .nav-header--transparent .nav-menu {
         left: auto !important;
     }
 
-    /* Y AHORA APLICAMOS NUESTRO RIGHT CORRECTO */
+    /* Aplicar right correcto */
     .nav-menu {
         right: calc(var(--spacing-xl) + 24px) !important;
     }
 
-    /* Contenedor relativo ya lo tienes con nav-container */
     .nav-container {
         position: relative;
     }
@@ -2064,7 +2190,6 @@ html[data-theme="light"] .sn-hero__blend {
         display: none !important;
     }
 
-    /* Ocultar menú de usuario de desktop en móvil */
     .nav-actions .nav-user-dropdown {
         display: none !important;
     }
@@ -2244,7 +2369,7 @@ footer {
     flex-shrink: 0;
 }
 
-/* ===== Footer responsive (el grid que tenías) ===== */
+/* ===== Footer responsive ===== */
 .footer-grid {
     display: grid;
 }
@@ -2300,7 +2425,7 @@ footer {
     }
 
     .footer-col-2 {
-        text-align: left; /* o center si lo prefieres */
+        text-align: left; 
     }
 
     .footer-col-3 {
@@ -2347,7 +2472,6 @@ footer {
 
 
 /* Alineaciones extra en desktop */
-/* Ajustes menores opcionales (ya cubiertos por el layout único) */
 @media (min-width:768px) {
     .footer-col-2 {
         display: flex;
@@ -2359,8 +2483,6 @@ footer {
         margin-bottom: var(--spacing-sm);
     }
 }
-
-/* (El breakpoint 1024px ya no necesita estilos adicionales para col2: se aplica desde 640px) */
 
 @media (max-width: 640px) {
     .footer-credit {
@@ -2386,7 +2508,7 @@ footer {
     text-align: center;
 }
 
-/* Icono siempre pegadito al texto, no se separa a otra línea */
+/* Icono siempre pegadoal texto, no se separa a otra línea */
 .footer-cookie-icon {
     flex: 0 0 auto;
 }
@@ -2438,6 +2560,14 @@ footer {
    HEADER CON LOGO ANIMADO (Hero Mode)
    ============================================================================ */
 
+/**
+ * Header con logo animado - Modo Hero
+ * 
+ * Sistema especial para la página principal con header transparente
+ * que se vuelve sólido al hacer scroll. Incluye logo animado posicionado
+ * sobre el hero image y transiciones suaves entre estados.
+ */
+
 /* Acciones de usuario: siempre a la derecha */
 .nav-actions {
     display: flex;
@@ -2452,13 +2582,13 @@ footer {
     line-height: 0;
 }
 
-/* --- POSICIÓN DEL LOGO DEL HERO (MISMA FILOSOFÍA QUE TENÍAS) --- */
+/* --- POSICIÓN DEL LOGO DEL HERO --- */
 .nav-logo-hero {
     position: absolute;
-    top: 18vh;                             /* altura base */
-    left: clamp(2.25rem, 12vw, 7rem);      /* nunca pegado, nunca demasiado lejos */
+    top: 18vh; /* altura base */
+    left: clamp(2.25rem, 12vw, 7rem); /* izquierda responsive */
     z-index: 1001;
-    opacity: 0;                            /* solo visible en header transparente */
+    opacity: 0; /* solo visible en header transparente */
 }
 
 /* Mostrar logo hero solo en modo transparente */
@@ -2527,6 +2657,16 @@ body.sn-has-fixed-header.sn-hero-mode {
    TAMAÑOS FINALES DEL LOGO (HEADER + HERO)
    ============================================================================ */
 
+/**
+ * Sistema de tamaños de logo responsive
+ * 
+ * Define los tamaños del logo para diferentes contextos y breakpoints:
+ * - Logo normal del header (40px base)
+ * - Logo grande del hero (80px base)
+ * - Ajustes por breakpoint para móviles, tablets y desktop
+ * - Optimización para diferentes densidades de pantalla
+ */
+
 /* Logo normal del header (público + admin) */
 header .nav-logo {
     height: 40px;
@@ -2547,7 +2687,6 @@ header .nav-logo {
 
     .nav-logo-hero {
         left: calc((100vw - 1400px) / 2 + 7rem);
-        /* 2.25rem = mismo margen que usas en el resto */
     }
 }
 
@@ -2565,8 +2704,7 @@ header .nav-logo {
 /* Móviles y tablets pequeñas (≤ 767px) */
 @media (max-width: 767px) {
     .nav-logo-hero {
-        top: 20vh;              /* un pelín más abajo para que respire respecto al header */
-        /* left se mantiene con el clamp de arriba */
+        top: 20vh; /* un poco más abajo */
     }
 
     header .nav-logo {
@@ -2575,7 +2713,7 @@ header .nav-logo {
 
     .nav-logo-hero .nav-logo {
         height: 64px;
-        max-width: 80vw;        /* por si acaso en pantallas muy estrechas */
+        max-width: 80vw; /* en pantallas muy estrechas */
     }
 }
 
@@ -2599,12 +2737,12 @@ header .nav-logo {
 @media (min-width: 768px) and (max-width: 1200px) {
       
     .nav-menu {
-        gap: var(--spacing-lg); /* antes xl → un poco menos separación */
+        gap: var(--spacing-lg); 
     }
 
     .nav-link {
         padding: var(--spacing-xs) var(--spacing-sm); /* menos padding horizontal */
-        font-size: 1rem;                           /* un pelín más pequeño */
+        font-size: 1rem; 
     }
 
     .nav-actions {
@@ -2670,6 +2808,17 @@ header .nav-logo {
 /* ============================================================================
    TIPOGRAFÍA RESPONSIVE GLOBAL
    ============================================================================ */
+
+/**
+ * Tipografía responsive global
+ * 
+ * Ajusta el tamaño base de fuente según el tamaño de pantalla
+ * para optimizar la legibilidad:
+ * - Pantallas estándar: 16px (base)
+ * - Pantallas grandes (1600px+): 17px (+6%)
+ * - Pantallas muy grandes (2200px+): 18px (+12-15%)
+ * - Mejora la experiencia de lectura en diferentes dispositivos
+ */
 /* Tamaño base "normal" */
 :root {
     font-size: 16px;
@@ -2692,6 +2841,14 @@ header .nav-logo {
 /* ============================================================================
    PHOTOSWIPE - AJUSTES PARA MÓVIL HORIZONTAL
    ============================================================================ */
+
+/**
+ * PhotoSwipe - Galería de imágenes
+ * 
+ * Ajustes específicos para la galería de imágenes en dispositivos móviles
+ * con orientación horizontal. Optimiza el tamaño de las imágenes para
+ * aprovechar mejor el espacio disponible en pantallas estrechas.
+ */
 /* Forzar tamaño completo en móviles horizontales */
 @media (max-height: 600px) and (orientation: landscape) {
     .pswp__img {
