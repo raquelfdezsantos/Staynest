@@ -103,7 +103,7 @@
                     @if($footerProperty && ($footerProperty->tourism_license || $footerProperty->rental_registration))
                         @if($footerProperty->tourism_license)
                             <p style="margin-bottom:var(--spacing-sm);">
-                                <span style="font-weight:500;">Asturias — Registro autonómico</span><br>
+                                <span style="font-weight:500;">{{ $footerProperty->province ?? 'Asturias' }} — Registro autonómico</span><br>
                                 {{ $footerProperty->tourism_license }}
                             </p>
                         @endif

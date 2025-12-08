@@ -45,7 +45,7 @@
             <div class="sn-hero__panel-wrap" style="margin-top: 50px;">
                 <div class="sn-hero__panel">
                     <div>
-                        <small>Asturias — Registro autonómico</small>
+                        <small>{{ $property->province ?? 'Asturias' }} — Registro autonómico</small>
                         <strong>{{ $property->tourism_license ?? '—' }}</strong>
                     </div>
                     <div>

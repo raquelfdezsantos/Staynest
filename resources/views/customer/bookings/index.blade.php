@@ -287,8 +287,11 @@
                                     Editar
                                 </a>
 
-                                @if($r->invoice)
-                                    <a href="{{ route('invoices.show', $r->invoice->number) }}" class="btn-action btn-action-secondary btn-nowrap sn-sentence">Ver factura</a>
+                                @php
+                                    $latestInvoice = $r->invoices()->latest()->first();
+                                @endphp
+                                @if($latestInvoice)
+                                    <a href="{{ route('invoices.show', $latestInvoice->number) }}" class="btn-action btn-action-secondary btn-nowrap sn-sentence">Ver factura</a>
                                 @endif
 
                                 @if($r->status === 'paid' && method_exists($r, 'balanceDue') && $r->balanceDue() > 0)

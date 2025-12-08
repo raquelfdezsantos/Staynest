@@ -256,17 +256,22 @@ class DemoDataSeeder extends Seeder
         // RESERVA 1: Laura → Nordeste (PENDING, expira en 5 minutos para demo)
         // IMPORTANTE: Si schedule:work está corriendo, esta reserva será cancelada automáticamente
         // Para testing: detener schedule:work antes de ejecutar migrate:fresh --seed
+        $checkIn1 = now()->addDays(15)->toDateString();
+        $checkOut1 = now()->addDays(18)->toDateString();
+        $guests1 = 2;
+        $totalPrice1 = $this->calculateReservationTotal($nordeste->id, $checkIn1, $checkOut1, $guests1);
+        
         $reserva1 = Reservation::create([
             'user_id' => $cliente1->id,
             'property_id' => $nordeste->id,
             'code' => 'SN-' . now()->format('Y') . '-' . strtoupper(substr(md5(uniqid()), 0, 6)),
-            'check_in' => now()->addDays(15)->toDateString(),
-            'check_out' => now()->addDays(18)->toDateString(),
-            'guests' => 2,
+            'check_in' => $checkIn1,
+            'check_out' => $checkOut1,
+            'guests' => $guests1,
             'adults' => 2,
             'children' => 0,
             'pets' => 0,
-            'total_price' => 285.00,
+            'total_price' => $totalPrice1,
             'status' => 'pending',
             'expires_at' => now()->addMinutes(5), // Expira en 5 minutos para mostrar en la demo
             'notes' => 'Llegada aproximada a las 16:00h',
