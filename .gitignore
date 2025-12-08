@@ -1,6 +1,8 @@
 *.log
 .DS_Store
 .env
+.env.local
+.env.docker
 .env.backup
 .env.production
 .phpactor.json
@@ -29,3 +31,6 @@ backup_*.sql
 *.sql
 levantar_docker.txt
 cuentas.txt
+check_all_reservations.php
+check_blocked.php
+update_emails.ps1
