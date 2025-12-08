@@ -16,7 +16,7 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
 /**
  * Mailable para notificar pago recibido.
  */
-class AdminPaymentNotificationMail extends Mailable implements ShouldQueue
+class AdminPaymentNotificationMail extends Mailable
 {
     use Queueable, SerializesModels;
 

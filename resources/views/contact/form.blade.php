@@ -33,8 +33,8 @@
                     </div>
                 @endif
 
-                <form method="POST"
-                      action="{{ route('properties.contact.store', $property) }}"
+                    <form method="POST"
+                        action="{{ route('properties.contact.store', $property, false) }}"
                       class="space-y-4"
                       style="display:flex;flex-direction:column;"
                       novalidate>

@@ -69,15 +69,25 @@ class ReservationCancelledMail extends Mailable
     public function attachments(): array
     {
         $attachments = [];
+        
+        \Log::info('ReservationCancelledMail attachments - invoice:', [
+            'has_invoice' => $this->invoice ? 'yes' : 'no',
+            'invoice_id' => $this->invoice->id ?? null,
+            'invoice_number' => $this->invoice->number ?? null,
+        ]);
+        
         if ($this->invoice) {
             if (!empty($this->invoice->pdf_path)) {
                 $attachments[] = Attachment::fromStorage($this->invoice->pdf_path)
                     ->as($this->invoice->number . '.pdf')
                     ->withMime('application/pdf');
             } else {
-                $pdf = PDF::loadView('invoices.pdf', ['invoice' => $this->invoice]);
+                // Cargar relaciones necesarias para la vista PDF
+                $invoice = $this->invoice->loadMissing(['reservation.user', 'reservation.property']);
+                $pdf = PDF::loadView('invoices.pdf', ['invoice' => $invoice]);
                 $attachments[] = Attachment::fromData(fn () => $pdf->output(), $this->invoice->number . '.pdf')
                     ->withMime('application/pdf');
+                \Log::info('PDF generado dinámicamente para factura', ['invoice_number' => $this->invoice->number]);
             }
         }
         return $attachments;

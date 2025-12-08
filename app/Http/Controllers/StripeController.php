@@ -215,7 +215,7 @@ class StripeController extends Controller
 
         // 6) Enviar correos (cliente + admin). Reutiliza mailables
         try {
-            Mail::to($reservation->user->email)->queue(
+            Mail::to($reservation->user->email)->send(
                 new PaymentReceiptMail($reservation, $invoice)
             );
         } catch (Throwable $e) {
@@ -223,7 +223,7 @@ class StripeController extends Controller
         }
 
         try {
-            Mail::to($reservation->property->user->email)->queue(
+            Mail::to($reservation->property->user->email)->send(
                 new AdminPaymentNotificationMail($reservation, $invoice)
             );
         } catch (Throwable $e) {

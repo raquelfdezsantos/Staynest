@@ -15,7 +15,7 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('login') }}" novalidate style="display:flex; flex-direction:column; gap:1.25rem;">
+    <form method="POST" action="{{ route('login', [], false) }}" novalidate style="display:flex; flex-direction:column; gap:1.25rem;">
         @csrf
         @if(request('property'))
             <input type="hidden" name="property" value="{{ request('property') }}">

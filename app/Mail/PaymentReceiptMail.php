@@ -16,7 +16,7 @@ use Barryvdh\DomPDF\Facade\Pdf as PDF;
 /**
  * Mailable para enviar recibo de pago.
  */
-class PaymentReceiptMail extends Mailable implements ShouldQueue
+class PaymentReceiptMail extends Mailable
 {
     use Queueable, SerializesModels;
 

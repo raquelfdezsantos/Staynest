@@ -1,3 +1,20 @@
+<p align="center">
+  <img src="public/images/logos/logo-dark.png" width="260" alt="Staynest Logo">
+</p>
+
+
+
+![Laravel](https://img.shields.io/badge/Laravel-12-f9322c?logo=laravel)
+![PHP](https://img.shields.io/badge/PHP-8.2-777bb4?logo=php)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479a1?logo=mysql)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?logo=tailwindcss&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-ES2023-F7DF1E?logo=javascript&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-5.0-646CFF?logo=vite&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Desktop-2496ed?logo=docker)
+![Stripe](https://img.shields.io/badge/Stripe-Test_Mode-635bff?logo=stripe)
+
+---
+
 # Staynest · Plataforma de Alquiler Vacacional (VUT)
 
 Aplicación web para la gestión de viviendas de uso turístico, desarrollada con **Laravel 12**, **MySQL**, **TailwindCSS** y **Stripe (modo test)**.  
@@ -30,7 +47,7 @@ El sistema envía emails transaccionales y expira reservas pendientes mediante u
 ## Tecnologías
 
 **Backend:** PHP 8.2 · Laravel 12 · Breeze · Blade · Eloquent · Stripe SDK · DomPDF  
-**Frontend:** TailwindCSS 3 · CSS personalizado · JavaScript · Vite · PhotoSwipe  
+**Frontend:** TailwindCSS · CSS personalizado · JavaScript · Vite · PhotoSwipe  
 **Base de datos:** MySQL 8.x  
 **Servicios:** Stripe (modo test) · Ethereal · Google Maps API  
 **Testing:** Pest  
@@ -74,9 +91,45 @@ Disponible en `http://localhost:8000`
 ## Despliegue con Docker
 
 ```bash
-docker-compose up -d
-docker-compose exec app php artisan migrate:fresh --seed
+# 1. Configurar variables de entorno
+cp env.docker.example .env
+
+# 2. Editar .env y añadir tus claves:
+#    - STRIPE_KEY (tu clave pública de Stripe test)
+#    - STRIPE_SECRET (tu clave secreta de Stripe test)
+#    - GOOGLE_MAPS_API_KEY (tu clave de Google Maps)
+#    Los emails se guardan automáticamente en logs
+
+# 3. Construir y levantar contenedores siempre con:
+docker compose up --build
+
+#    Este comando ejecuta automáticamente:
+#    - Migraciones
+#    - Seeders con datos demo
+#    - storage:link
+#    - Corrección de permisos
+#    - Scheduler para cancelar reservas pendientes
+
+# Ver logs
+docker compose logs -f app
+
+# Detener contenedores
+docker compose down
+
+# Reiniciar desde cero
+docker compose down -v
+docker compose up --build
 ```
+
+Disponible en `http://localhost:8000`
+
+---
+
+**Servicios incluidos:**
+- **app**: Aplicación Laravel en puerto 8000
+- **db**: MySQL 8.0 en puerto 3307
+- **scheduler**: Cancelación automática de reservas cada minuto
+- **node**: Vite dev server en puerto 5173 (desarrollo)
 
 ---
 
@@ -103,7 +156,7 @@ docker-compose exec app php artisan migrate:fresh --seed
 
 ## Estado
 
-**Versión:** v0.9.0  
+**Versión:** v1.0.0  
 **Estado:** Listo para defensa de TFG  
 **Entrega:** 12 de diciembre de 2025
 
@@ -112,5 +165,5 @@ docker-compose exec app php artisan migrate:fresh --seed
 ## Autor
 
 **Raquel Fernández Santos**  
-2º DAW · Curso 2025  
+2º DAW · Curso 2024-2025  
 Tutor: **Mario Álvarez Fernández**  

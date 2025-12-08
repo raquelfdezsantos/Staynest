@@ -1,12 +1,4 @@
-
 <?php
-
-/**
- * Archivo de arranque de la aplicación Laravel.
- *
- * Crea y configura la instancia principal de la aplicación,
- * cargando rutas, middleware, excepciones y proveedores.
- */
 
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -20,12 +12,21 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+    
+        // Alias personalizados
+        $middleware->alias([
+            'role' => \App\Http\Middleware\EnsureUserHasRole::class,
+        ]);
+
+        // Añadir middleware de contexto de propiedad al grupo "web"
+        $middleware->web(append: [
+            \App\Http\Middleware\EnsurePropertyContext::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })
     ->withProviders([
-        AuthServiceProvider::class, 
+        AuthServiceProvider::class,
     ])
     ->create();

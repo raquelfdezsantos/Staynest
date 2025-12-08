@@ -1,10 +1,10 @@
 {
     "inter": {
-        "normal": "D:\\1.1.TUNIVERS\\Segundo\\Proyecto-Mario\\vut\\storage\\fonts\/inter_normal_108531fe3e5e06475b33542e0fecf984",
-        "italic": "D:\\1.1.TUNIVERS\\Segundo\\Proyecto-Mario\\vut\\storage\\fonts\/inter_italic_c9757fb8cbf732e377172da3e10a8369",
-        "600": "D:\\1.1.TUNIVERS\\Segundo\\Proyecto-Mario\\vut\\storage\\fonts\/inter_600_108531fe3e5e06475b33542e0fecf984",
-        "600_italic": "D:\\1.1.TUNIVERS\\Segundo\\Proyecto-Mario\\vut\\storage\\fonts\/inter_600_italic_c9757fb8cbf732e377172da3e10a8369",
-        "bold": "D:\\1.1.TUNIVERS\\Segundo\\Proyecto-Mario\\vut\\storage\\fonts\/inter_bold_108531fe3e5e06475b33542e0fecf984",
-        "bold_italic": "inter_bold_italic_c9757fb8cbf732e377172da3e10a8369"
+        "normal": "\/var\/www\/html\/storage\/fonts\/inter_normal_0501955a2a234ef8249788e91d75bc46",
+        "italic": "\/var\/www\/html\/storage\/fonts\/inter_italic_39c7bea15cd945ce7b89b71ed8be60da",
+        "600": "\/var\/www\/html\/storage\/fonts\/inter_600_0501955a2a234ef8249788e91d75bc46",
+        "600_italic": "\/var\/www\/html\/storage\/fonts\/inter_600_italic_39c7bea15cd945ce7b89b71ed8be60da",
+        "bold": "\/var\/www\/html\/storage\/fonts\/inter_bold_0501955a2a234ef8249788e91d75bc46",
+        "bold_italic": "inter_bold_italic_39c7bea15cd945ce7b89b71ed8be60da"
     }
 }

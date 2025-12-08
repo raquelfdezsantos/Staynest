@@ -29,10 +29,15 @@
                         ->first();
                 }
             }
-            // Definir destino del logo
-            $logoHref = $currentProperty
-                ? route('properties.show', $currentProperty->slug)
-                : route('admin.dashboard');
+            // Definir destino del logo: siempre al sitio público si hay propiedades, sino al dashboard
+            if ($currentProperty) {
+                $logoHref = route('properties.show', $currentProperty->slug);
+            } else {
+                $anyProperty = \App\Models\Property::where('user_id', auth()->id())
+                    ->whereNull('deleted_at')
+                    ->first();
+                $logoHref = $anyProperty ? route('properties.show', $anyProperty->slug) : route('home');
+            }
         @endphp
         <div class="nav-logo-wrapper">
             <a href="{{ $logoHref }}" aria-label="Ir al inicio de la propiedad">
@@ -43,24 +48,26 @@
         {{-- Grupo: Menú + Acciones (juntos a la derecha) --}}
         <div class="nav-right-group">
             <ul class="nav-menu">
-            @if($currentProperty)
-                {{-- Si hay propiedad en contexto, Dashboard apunta al dashboard de esa propiedad --}}
-                <li><a href="{{ route('admin.property.dashboard', $currentProperty->slug) }}"
-                        class="nav-link {{ request()->routeIs('admin.property.dashboard') ? 'active' : '' }}">Dashboard</a></li>
-                <li><a href="{{ route('admin.property.edit', $currentProperty->slug) }}"
-                        class="nav-link {{ request()->routeIs('admin.property.edit') ? 'active' : '' }}">Propiedad</a></li>
-                <li><a href="{{ route('admin.property.photos.index', $currentProperty->slug) }}"
-                        class="nav-link {{ request()->routeIs('admin.property.photos.*') ? 'active' : '' }}">Fotos</a></li>
-                <li><a href="{{ route('admin.property.calendar.index', $currentProperty->slug) }}"
-                        class="nav-link {{ request()->routeIs('admin.property.calendar.*') ? 'active' : '' }}">Calendario</a></li>
-            @else
-                {{-- Si NO hay propiedad, Dashboard apunta al dashboard general --}}
-                <li><a href="{{ route('admin.dashboard') }}"
-                        class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+            @if(auth()->user()->role === 'admin')
+                @if($currentProperty)
+                    {{-- Si hay propiedad en contexto, Dashboard apunta al dashboard de esa propiedad --}}
+                    <li><a href="{{ route('admin.property.dashboard', $currentProperty->slug) }}"
+                            class="nav-link {{ request()->routeIs('admin.property.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+                    <li><a href="{{ route('admin.property.edit', $currentProperty->slug) }}"
+                            class="nav-link {{ request()->routeIs('admin.property.edit') ? 'active' : '' }}">Propiedad</a></li>
+                    <li><a href="{{ route('admin.property.photos.index', $currentProperty->slug) }}"
+                            class="nav-link {{ request()->routeIs('admin.property.photos.*') ? 'active' : '' }}">Fotos</a></li>
+                    <li><a href="{{ route('admin.property.calendar.index', $currentProperty->slug) }}"
+                            class="nav-link {{ request()->routeIs('admin.property.calendar.*') ? 'active' : '' }}">Calendario</a></li>
+                @else
+                    {{-- Si NO hay propiedad en contexto, Dashboard apunta al dashboard general --}}
+                    <li><a href="{{ route('admin.dashboard') }}"
+                            class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">Dashboard</a></li>
+                @endif
+                
+                <li><a href="{{ route('admin.properties.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.properties.*') || request()->routeIs('admin.reservations.*') || request()->routeIs('admin.invoices.*') ? 'active' : '' }}">Panel</a></li>
             @endif
-            
-            <li><a href="{{ route('admin.properties.index') }}"
-                    class="nav-link {{ request()->routeIs('admin.properties.*') || request()->routeIs('admin.reservations.*') || request()->routeIs('admin.invoices.*') ? 'active' : '' }}">Panel</a></li>
             
             {{-- Menú de usuario --}}
             @auth
@@ -83,44 +90,18 @@
                         </svg>
                     </button>
                     <ul class="nav-dropdown-menu">
-                        @if($currentProperty)
-                            <li><a href="{{ route('properties.show', $currentProperty->slug) }}" class="nav-dropdown-item">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                    <path d="M9 22V12h6v10"/>
-                                </svg>
-                                Ver sitio público
-                            </a></li>
-                        @else
-                            @php
-                                $adminPropertiesCount = \App\Models\Property::where('user_id', auth()->id())
-                                    ->whereNull('deleted_at')
-                                    ->count();
-                                $singleProperty = null;
-                                if ($adminPropertiesCount === 1) {
-                                    $singleProperty = \App\Models\Property::where('user_id', auth()->id())
-                                        ->whereNull('deleted_at')
-                                        ->first();
-                                }
-                            @endphp
-                            @if($singleProperty)
-                                <li><a href="{{ route('properties.show', $singleProperty->slug) }}" class="nav-dropdown-item">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                        <path d="M9 22V12h6v10"/>
-                                    </svg>
-                                    Ver sitio público
-                                </a></li>
-                            @else
-                                <li><a href="{{ route('admin.properties.index') }}" class="nav-dropdown-item">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                        <path d="M9 22V12h6v10"/>
-                                    </svg>
-                                    Ver sitio público
-                                </a></li>
-                            @endif
-                        @endif
+                        @php
+                            $publicProperty = $currentProperty ?? \App\Models\Property::where('user_id', auth()->id())
+                                ->whereNull('deleted_at')
+                                ->first();
+                        @endphp
+                        <li><a href="{{ $publicProperty ? route('properties.show', $publicProperty->slug) : route('home') }}" class="nav-dropdown-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path d="M9 22V12h6v10"/>
+                            </svg>
+                            Ver sitio público
+                        </a></li>
                         <li><a href="{{ route('profile.edit') }}" class="nav-dropdown-item">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="3"/>
@@ -169,44 +150,18 @@
                         </svg>
                     </button>
                     <ul class="nav-dropdown-menu">
-                        @if($currentProperty)
-                            <li><a href="{{ route('properties.show', $currentProperty->slug) }}" class="nav-dropdown-item">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                    <path d="M9 22V12h6v10"/>
-                                </svg>
-                                Ver sitio público
-                            </a></li>
-                        @else
-                            @php
-                                $adminPropertiesCount = \App\Models\Property::where('user_id', auth()->id())
-                                    ->whereNull('deleted_at')
-                                    ->count();
-                                $singleProperty = null;
-                                if ($adminPropertiesCount === 1) {
-                                    $singleProperty = \App\Models\Property::where('user_id', auth()->id())
-                                        ->whereNull('deleted_at')
-                                        ->first();
-                                }
-                            @endphp
-                            @if($singleProperty)
-                                <li><a href="{{ route('properties.show', $singleProperty->slug) }}" class="nav-dropdown-item">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                        <path d="M9 22V12h6v10"/>
-                                    </svg>
-                                    Ver sitio público
-                                </a></li>
-                            @else
-                                <li><a href="{{ route('admin.properties.index') }}" class="nav-dropdown-item">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                                        <path d="M9 22V12h6v10"/>
-                                    </svg>
-                                    Ver sitio público
-                                </a></li>
-                            @endif
-                        @endif
+                        @php
+                            $publicProperty = $currentProperty ?? \App\Models\Property::where('user_id', auth()->id())
+                                ->whereNull('deleted_at')
+                                ->first();
+                        @endphp
+                        <li><a href="{{ $publicProperty ? route('properties.show', $publicProperty->slug) : route('home') }}" class="nav-dropdown-item">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                                <path d="M9 22V12h6v10"/>
+                            </svg>
+                            Ver sitio público
+                        </a></li>
                         <li><a href="{{ route('profile.edit') }}" class="nav-dropdown-item">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="3"/>

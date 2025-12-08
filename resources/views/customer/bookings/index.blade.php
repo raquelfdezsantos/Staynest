@@ -309,66 +309,6 @@
                                         class="btn-action btn-action-danger sn-sentence">
                                     Cancelar
                                 </button>
-                                <x-modal name="confirm-reservation-cancel-{{ $r->id }}" focusable>
-                                    <form method="POST" action="{{ route('reservas.cancel', $r) }}" style="padding: 2rem;">
-                                        @csrf
-                                        <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary);">Cancelar reserva {{ $r->code ?? ('#'.$r->id) }}</h2>
-                                        @php
-                                            $daysUntil = now()->diffInDays($r->check_in, false);
-                                            $daysUntilInt = max(0, (int) $daysUntil);
-                                            $percent = $r->cancellationRefundPercent();
-                                            $paid = $r->paidAmount();
-                                            $baseRefundable = min($paid, $r->total_price);
-                                            $estimatedRefund = $percent > 0 ? ($baseRefundable * $percent / 100) : 0;
-                                        @endphp
-                                        <div style="margin-top:0.75rem; font-size: var(--text-sm); color: var(--color-text-secondary); line-height:1.4;">
-                                            <p style="margin-bottom:0.75rem;">
-                                                Al cancelar ahora, faltan <strong>{{ $daysUntilInt }}</strong> días para el check‑in.
-                                                @if($r->status === 'paid')
-                                                    @if($daysUntilInt <= 0)
-                                                        El periodo de estancia ya ha comenzado, no procede reembolso.
-                                                    @else
-                                                        Según la política de cancelación: <br>
-                                                        @if($percent > 0)
-                                                            Reembolso aplicable: <strong>{{ $percent }}%</strong> sobre lo pagado (máx. el total de la reserva).
-                                                        @else
-                                                            No aplica reembolso ({{ $daysUntilInt }} días < 7 días antes del check‑in).
-                                                        @endif
-                                                    @endif
-                                                @else
-                                                    La reserva aún no está pagada; no se genera reembolso.
-                                                @endif
-                                            </p>
-                                            @if($r->status === 'paid')
-                                                <p style="margin-bottom:0.5rem;">
-                                                    Has pagado: <strong>{{ number_format($paid, 2, ',', '.') }} €</strong> de un total de {{ number_format($r->total_price, 2, ',', '.') }} €.
-                                                </p>
-                                                @if($percent > 0 && $daysUntilInt >= 0)
-                                                    <p style="margin-bottom:0.5rem;">
-                                                        Estimación de reembolso: <strong>{{ number_format($estimatedRefund, 2, ',', '.') }} €</strong> ({{ $percent }}% de {{ number_format($baseRefundable, 2, ',', '.') }} €).
-                                                    </p>
-                                                @endif
-                                                @if($percent === 0 || $daysUntilInt <= 0)
-                                                    <p style="margin-bottom:0.5rem; color: var(--color-text-muted);">No se realizará devolución.</p>
-                                                @endif
-                                            @endif
-                                            <p style="margin-top:0.75rem;">
-                                                ¿Confirmas la cancelación? Esta acción es irreversible y liberará las noches.
-                                            </p>
-                                        </div>
-                                        <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:0.75rem;">
-                                            <button type="button"
-                                                    x-on:click="$dispatch('close-modal', 'confirm-reservation-cancel-{{ $r->id }}')"
-                                                    class="btn-action btn-action-secondary sn-sentence">Volver</button>
-                                            <button type="submit"
-                                                    style="padding: 0.5rem 1.25rem; font-size: var(--text-sm); font-weight: 600; color: white; background-color: var(--color-error); border: none; border-radius: 2px; cursor: pointer; transition: background-color var(--transition-fast);"
-                                                    onmouseover="this.style.backgroundColor='#d87876'"
-                                                    onmouseout="this.style.backgroundColor='var(--color-error)'">
-                                                Confirmar cancelación
-                                            </button>
-                                        </div>
-                                    </form>
-                                </x-modal>
                             @endif
                         </div>
                     </div>
@@ -382,5 +322,71 @@
                 </div>
             @endif
         @endif
+
+        {{-- Modales de cancelación fuera del contenedor principal --}}
+        @foreach($reservations as $r)
+            @if($r->status !== 'cancelled')
+                <x-modal name="confirm-reservation-cancel-{{ $r->id }}" focusable>
+                    <form method="POST" action="{{ route('reservas.cancel', $r) }}" style="padding: 2rem;">
+                        @csrf
+                        <h2 style="font-size: var(--text-lg); font-weight:600; color: var(--color-text-primary);">Cancelar reserva {{ $r->code ?? ('#'.$r->id) }}</h2>
+                        @php
+                            $daysUntil = now()->diffInDays($r->check_in, false);
+                            $daysUntilInt = max(0, (int) $daysUntil);
+                            $percent = $r->cancellationRefundPercent();
+                            $paid = $r->paidAmount();
+                            $baseRefundable = min($paid, $r->total_price);
+                            $estimatedRefund = $percent > 0 ? ($baseRefundable * $percent / 100) : 0;
+                        @endphp
+                        <div style="margin-top:0.75rem; font-size: var(--text-sm); color: var(--color-text-secondary); line-height:1.4;">
+                            <p style="margin-bottom:0.75rem;">
+                                Al cancelar ahora, faltan <strong>{{ $daysUntilInt }}</strong> días para el check‑in.
+                                @if($r->status === 'paid')
+                                    @if($daysUntilInt <= 0)
+                                        El periodo de estancia ya ha comenzado, no procede reembolso.
+                                    @else
+                                        Según la política de cancelación: <br>
+                                        @if($percent > 0)
+                                            Reembolso aplicable: <strong>{{ $percent }}%</strong> sobre lo pagado (máx. el total de la reserva).
+                                        @else
+                                            No aplica reembolso ({{ $daysUntilInt }} días < 7 días antes del check‑in).
+                                        @endif
+                                    @endif
+                                @else
+                                    La reserva aún no está pagada; no se genera reembolso.
+                                @endif
+                            </p>
+                            @if($r->status === 'paid')
+                                <p style="margin-bottom:0.5rem;">
+                                    Has pagado: <strong>{{ number_format($paid, 2, ',', '.') }} €</strong> de un total de {{ number_format($r->total_price, 2, ',', '.') }} €.
+                                </p>
+                                @if($percent > 0 && $daysUntilInt >= 0)
+                                    <p style="margin-bottom:0.5rem;">
+                                        Estimación de reembolso: <strong>{{ number_format($estimatedRefund, 2, ',', '.') }} €</strong> ({{ $percent }}% de {{ number_format($baseRefundable, 2, ',', '.') }} €).
+                                    </p>
+                                @endif
+                                @if($percent === 0 || $daysUntilInt <= 0)
+                                    <p style="margin-bottom:0.5rem; color: var(--color-text-muted);">No se realizará devolución.</p>
+                                @endif
+                            @endif
+                            <p style="margin-top:0.75rem;">
+                                ¿Confirmas la cancelación? Esta acción es irreversible y liberará las noches.
+                            </p>
+                        </div>
+                        <div style="margin-top:1.5rem; display:flex; justify-content:flex-end; gap:0.75rem;">
+                            <button type="button"
+                                    x-on:click="$dispatch('close-modal', 'confirm-reservation-cancel-{{ $r->id }}')"
+                                    class="btn-action btn-action-secondary sn-sentence">Volver</button>
+                            <button type="submit"
+                                    style="padding: 0.5rem 1.25rem; height: 36px; font-size: var(--text-sm); font-weight: 600; color: white; background-color: var(--color-error); border: none; border-radius: 2px; cursor: pointer; transition: background-color var(--transition-fast); display: inline-flex; align-items: center; justify-content: center;"
+                                    onmouseover="this.style.backgroundColor='#d87876'"
+                                    onmouseout="this.style.backgroundColor='var(--color-error)'">
+                                Confirmar cancelación
+                            </button>
+                        </div>
+                    </form>
+                </x-modal>
+            @endif
+        @endforeach
     </div>
 </x-app-layout>

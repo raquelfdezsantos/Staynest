@@ -31,7 +31,7 @@
         @endif
 
         {{-- Formulario --}}
-        <form method="POST" action="{{ route('soporte.store') }}" style="display: flex; flex-direction: column; gap: 1.5rem;" novalidate>
+        <form method="POST" action="{{ route('soporte.store', [], false) }}" style="display: flex; flex-direction: column; gap: 1.5rem;" novalidate>
             @csrf
             @if(session('current_property_slug'))
                 <input type="hidden" name="property" value="{{ session('current_property_slug') }}">

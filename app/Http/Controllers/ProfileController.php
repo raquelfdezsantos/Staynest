@@ -132,8 +132,7 @@ class ProfileController extends Controller
                     $refundAmount = round(min($paid, $reservation->total_price) * ($percent / 100), 2);
                 }
 
-                $refundInvoice = null;
-                DB::transaction(function () use ($reservation, $refundAmount, $user, $percent, &$refundInvoice) {
+                $refundInvoice = DB::transaction(function () use ($reservation, $refundAmount) {
                     // Liberar noches
                     $dates = $this->rangeDates(
                         $reservation->check_in->toDateString(),
@@ -156,36 +155,27 @@ class ProfileController extends Controller
 
                         // Crear factura rectificativa de cancelación
                         $invoiceNumber = Invoice::generateUniqueNumber('RECT');
-                        $refundInvoice = Invoice::create([
+                        
+                        return Invoice::create([
                             'reservation_id' => $reservation->id,
                             'number'         => $invoiceNumber,
                             'pdf_path'       => null,
                             'issued_at'      => now(),
                             'amount'         => -$refundAmount,
-                            'details'        => [
-                                'context'        => 'cancellation',
-                                'refund_percent' => $percent,
-                                'refund_reason'  => 'Cancelación por eliminación de cuenta',
-                                'check_in'       => $reservation->check_in->format('Y-m-d'),
-                                'check_out'      => $reservation->check_out->format('Y-m-d'),
-                                'guests'         => $reservation->guests,
-                                'adults'         => $reservation->adults ?? 0,
-                                'children'       => $reservation->children ?? 0,
-                                'pets'           => $reservation->pets ?? 0,
-                            ],
                         ]);
                     }
+                    return null;
                 });
 
                 // Enviar emails de cancelación
                 try {
-                    Mail::to($user->email)->send(new ReservationCancelledMail($reservation));
+                    Mail::to($user->email)->send(new ReservationCancelledMail($reservation, false, $refundInvoice));
                 } catch (Throwable $e) {
                     Log::error('Error enviando email de cancelación al cliente: ' . $e->getMessage());
                 }
 
                 try {
-                    Mail::to($reservation->property->user->email)->send(new ReservationCancelledMail($reservation, true));
+                    Mail::to($reservation->property->user->email)->send(new ReservationCancelledMail($reservation, true, $refundInvoice));
                 } catch (Throwable $e) {
                     Log::error('Error enviando email de cancelación al admin: ' . $e->getMessage());
                 }
