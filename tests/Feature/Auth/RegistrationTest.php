@@ -9,6 +9,7 @@ class RegistrationTest extends TestCase
 {
     use RefreshDatabase;
 
+    // Verifica que la página de registro se carga
     public function test_registration_screen_can_be_rendered(): void
     {
         $response = $this->get('/register');
@@ -16,6 +17,7 @@ class RegistrationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    // Prueba registro exitoso de nuevo usuario cliente
     public function test_new_users_can_register_client(): void
     {
         $response = $this->post('/register/client', [

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba que payDifference crea Payment por el balance pendiente
 it('payDifference crea un Payment por el balance pendiente', function () {
     $user = User::factory()->create(['role' => 'customer']);
     $prop = Property::factory()->create();

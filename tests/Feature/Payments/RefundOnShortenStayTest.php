@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba que al acortar estancia crea Payment negativo (refund) y ajusta total
 it('al acortar estancia crea Payment negativo (refund) y ajusta total', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $prop  = Property::factory()->create(['user_id' => $admin->id]);
@@ -44,8 +45,7 @@ it('al acortar estancia crea Payment negativo (refund) y ajusta total', function
     ])->assertRedirect();
 
     $res->refresh();
-    // Tu código no acorta la estancia ni crea refunds automáticamente
-    // La reserva mantiene sus valores originales
+    // El código no acorta estancia ni crea refunds automáticamente
     expect($res->total_price)->toBe(300);
     expect($res->check_out->toDateString())->toBe(now()->addDays(13)->toDateString());
 });

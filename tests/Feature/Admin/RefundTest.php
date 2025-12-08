@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba que admin puede procesar refund completo y envía emails
 it('admin puede procesar refund completo y envía emails', function () {
     Mail::fake();
 
@@ -55,6 +56,7 @@ it('admin puede procesar refund completo y envía emails', function () {
     });
 });
 
+// Prueba que admin no puede procesar refund si no está paid
 it('admin no puede procesar refund si no está paid', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $user = User::factory()->create();

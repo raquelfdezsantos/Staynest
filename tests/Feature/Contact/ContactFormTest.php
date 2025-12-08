@@ -7,6 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba envío exitoso de email de contacto
 it('envía email de contacto con datos válidos', function () {
     Mail::fake();
 
@@ -25,6 +26,7 @@ it('envía email de contacto con datos válidos', function () {
     });
 });
 
+// Prueba rate limiting después de múltiples intentos
 it('bloquea después de 6 intentos (rate limit)', function () {
     $user = \App\Models\User::factory()->create(['email' => 'owner@example.com']);
     $property = \App\Models\Property::factory()->for($user)->create();

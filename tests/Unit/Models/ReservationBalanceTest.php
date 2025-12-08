@@ -2,6 +2,7 @@
 
 use App\Models\{Reservation, Payment};
 
+// Prueba que balanceDue y paidAmount se calculan correctamente
 it('balanceDue y paidAmount se calculan correctamente', function () {
     $r = new Reservation(['total_price' => 300]);
 

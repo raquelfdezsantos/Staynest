@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba que dueño puede ver su factura
 it('dueño puede ver su factura', function () {
     $user = User::factory()->create();
     $prop = Property::factory()->create();
@@ -29,6 +30,7 @@ it('dueño puede ver su factura', function () {
     $response->assertOk();
 });
 
+// Prueba que admin puede ver cualquier factura
 it('admin puede ver cualquier factura', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $user = User::factory()->create();
@@ -53,6 +55,7 @@ it('admin puede ver cualquier factura', function () {
     $response->assertOk();
 });
 
+// Prueba que usuario no autorizado recibe 403 al intentar ver factura ajena
 it('usuario no autorizado recibe 403 al intentar descargar factura ajena', function () {
     $userA = User::factory()->create();
     $userB = User::factory()->create();

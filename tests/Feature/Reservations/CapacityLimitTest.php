@@ -3,6 +3,7 @@
 use App\Models\{User, Property, RateCalendar};
 use function Pest\Laravel\{actingAs, post};
 
+// Prueba que rechaza reservas por encima de la capacidad
 it('rechaza reservas por encima de la capacidad', function () {
     $user = User::factory()->create(['role' => 'customer']);
     $prop = Property::factory()->create(['capacity' => 2]);

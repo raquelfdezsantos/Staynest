@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba que admin puede cancelar reserva y libera fechas
 it('admin puede cancelar reserva y libera fechas', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $user = User::factory()->create();
@@ -51,6 +52,7 @@ it('admin puede cancelar reserva y libera fechas', function () {
     }
 });
 
+// Prueba que admin puede cancelar reserva pagada y crea factura rectificativa
 it('admin puede cancelar reserva pagada y crea factura rectificativa', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $user = User::factory()->create();

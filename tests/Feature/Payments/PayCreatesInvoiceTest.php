@@ -3,6 +3,7 @@
 use App\Models\{User, Property, Reservation, RateCalendar, Invoice, Payment};
 use function Pest\Laravel\{actingAs, post, assertDatabaseHas};
 
+// Prueba que pagar genera payment, invoice y cambia status a paid
 it('pagar genera payment e invoice y pasa a paid', function () {
     $user = User::factory()->create();
     $prop = Property::factory()->create();

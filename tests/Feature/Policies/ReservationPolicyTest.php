@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba que cliente no puede ver factura de otro usuario
 it('un cliente no puede ver la factura de otro', function () {
     $a = User::factory()->create(['role' => 'customer']);
     $b = User::factory()->create(['role' => 'customer']);

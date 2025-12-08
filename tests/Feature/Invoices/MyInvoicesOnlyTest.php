@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba que listado de mis facturas solo muestra facturas del usuario actual
 it('el listado de mis facturas solo muestra facturas de mi usuario', function () {
     $a = User::factory()->create(['role' => 'customer']);
     $b = User::factory()->create(['role' => 'customer']);

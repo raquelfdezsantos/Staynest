@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\{ReservationConfirmedMail, AdminNewReservationMail};
 use function Pest\Laravel\{actingAs, post, assertDatabaseHas};
 
+// Prueba envío de emails al crear reserva
 it('al crear reserva envía email al cliente y al admin', function () {
     Mail::fake();
 
@@ -14,8 +15,7 @@ it('al crear reserva envía email al cliente y al admin', function () {
     $checkIn = now()->addDays(10)->startOfDay();
     $checkOut = now()->addDays(12)->startOfDay();
 
-    // NO crear fechas manualmente, dejar que el fallback del controlador las cree
-    // Esto simula mejor el comportamiento real de producción
+    // No crear fechas manualmente, dejar que el controlador las cree por fallback
 
     actingAs($user);
     $response = post(route('reservas.store'), [

@@ -4,6 +4,7 @@ use App\Models\{User, Property, RateCalendar};
 use Carbon\Carbon;
 use function Pest\Laravel\{actingAs, post};
 
+// Prueba que no permite reservar por debajo de min_stay
 it('no permite reservar por debajo de min_stay', function () {
     $user = User::factory()->create(['role' => 'customer']);
     $property = Property::factory()->create(['capacity' => 4]);

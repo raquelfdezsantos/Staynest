@@ -3,6 +3,7 @@
 use App\Models\{User, Property, Reservation, RateCalendar};
 use function Pest\Laravel\{actingAs, post};
 
+// Prueba que rechaza solapes de [check_in, check_out)
 it('rechaza solapes de [check_in, check_out)', function () {
     $user = User::factory()->create(['role' => 'customer']);
     $prop = Property::factory()->create(['capacity' => 4]); // Capacidad suficiente

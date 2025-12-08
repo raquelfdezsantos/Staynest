@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba que permite reserva que empieza justo el día de checkout de otra
 it('permite reserva que empieza justo el día de checkout de otra', function () {
     $user = User::factory()->create(['role' => 'customer']);
     $prop = Property::factory()->create();
@@ -24,7 +25,7 @@ it('permite reserva que empieza justo el día de checkout de otra', function () 
     // Esto evita duplicados y simula mejor el comportamiento real
 
     actingAs($user);
-    // Crear 12→14 debe ser OK (ajusta si tu store es otra ruta)
+    // Crear 12→14 debe ser OK 
     $resp = post(route('reservas.store'), [
         'property_id' => $prop->id,
         'check_in'    => now()->addDays(12)->toDateString(),

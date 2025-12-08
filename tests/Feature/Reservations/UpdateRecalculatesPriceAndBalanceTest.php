@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba que editar aumenta total y deja balance pendiente si era paid
 it('editar aumenta total y deja balance pendiente si era paid', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $prop  = Property::factory()->create(['user_id' => $admin->id]);

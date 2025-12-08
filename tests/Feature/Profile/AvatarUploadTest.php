@@ -5,6 +5,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\{actingAs, patch, assertDatabaseHas};
 
+// Prueba subida de avatar al disco public y actualización de usuario
 it('sube avatar al disco public y actualiza el usuario', function () {
     Storage::fake('public');
 
@@ -13,7 +14,6 @@ it('sube avatar al disco public y actualiza el usuario', function () {
 
     $file = UploadedFile::fake()->image('avatar.jpg', 300, 300);
 
-    // Ajusta si tu campo es 'avatar' y tu ruta es 'profile.update'
     $resp = patch(route('profile.update'), [
         'name'   => $user->name,
         'email'  => $user->email,

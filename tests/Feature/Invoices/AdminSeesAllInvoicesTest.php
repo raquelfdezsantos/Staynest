@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba que admin ve todas las facturas de todos los usuarios
 it('admin ve todas las facturas de todos los usuarios', function () {
     $admin = User::factory()->create(['role' => 'admin']);
     $userA = User::factory()->create();
@@ -47,6 +48,7 @@ it('admin ve todas las facturas de todos los usuarios', function () {
     $response->assertSee('INV-002');
 });
 
+// Prueba que cliente no puede acceder a vista admin de facturas
 it('cliente no puede acceder a la vista admin de facturas', function () {
     $user = User::factory()->create(); // cliente normal
 

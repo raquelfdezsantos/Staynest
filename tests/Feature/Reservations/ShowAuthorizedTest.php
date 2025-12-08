@@ -6,6 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
+// Prueba que dueño de reserva puede ver su factura
 it('el dueño de la reserva puede ver su factura', function () {
     $u = User::factory()->create(['role' => 'customer']);
     $prop = Property::factory()->create();

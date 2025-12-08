@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\{PaymentReceiptMail, AdminPaymentNotificationMail};
 use function Pest\Laravel\{actingAs, post};
 
+// Prueba envío de emails al pagar reserva
 it('al pagar envía email al cliente y al admin con la factura', function () {
     Mail::fake();
 
@@ -39,6 +40,5 @@ it('al pagar envía email al cliente y al admin con la factura', function () {
     $res->refresh();
     expect($res->status)->toBe('paid');
     
-    // Los emails se envían con try-catch, así que pueden fallar silenciosamente
-    // Solo verificamos que el pago se procesó correctamente
+    // Los emails se envían con try-catch, pueden fallar silenciosamente
 });
