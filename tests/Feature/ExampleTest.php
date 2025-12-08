@@ -11,6 +11,7 @@ class ExampleTest extends TestCase
     /**
      * A basic test example.
      */
+    // Prueba que la aplicación redirige al home cuando existe una propiedad
     public function test_the_application_home_redirects_when_property_exists(): void
     {
         \App\Models\Property::factory()->create();
