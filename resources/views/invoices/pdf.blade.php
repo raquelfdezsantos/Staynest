@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <title>{{ $invoice->number }}</title>
   <style>
-    /* Embedding Inter font (pesos fijos para compatibilidad Dompdf) */
+    /* Inter font (pesos fijos para compatibilidad Dompdf) */
     @font-face {
       font-family: 'Inter';
       font-style: normal;

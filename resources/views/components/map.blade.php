@@ -5,7 +5,7 @@
   <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.maps_key') }}&libraries=marker" async defer></script>
   <script>
     window.initMap = function() {
-      const pos = { lat: {{ $lat ?? 43.545 }}, lng: {{ $lng ?? -5.661 }} }; // valores por defecto Gijón si no pasas coords
+      const pos = { lat: {{ $lat ?? 43.545 }}, lng: {{ $lng ?? -5.661 }} }; // valores por defecto Gijón si se pasan coords
       const map = new google.maps.Map(document.getElementById('map'), {
         zoom: {{ $zoom ?? 14 }}, center: pos, disableDefaultUI: true
       });

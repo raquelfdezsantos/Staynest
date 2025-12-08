@@ -122,7 +122,7 @@
             justify-content: center !important;
         }
         
-        /* Hacer los días cuadrados (no círculos) */
+        /* Hacer los días cuadrados */
         .flatpickr-day {
             max-width: 38px !important;
             max-height: 38px !important;
@@ -184,7 +184,7 @@
             >
                 @csrf
 
-                {{-- este alojamiento (si solo tienes uno) --}}
+                {{-- este alojamiento (si solo hay uno) --}}
                 <input type="hidden" name="property_id" value="{{ $property->id ?? 1 }}">
                 {{-- guests se rellena en JS (adultos + niños) --}}
                 <input type="hidden" name="guests" id="guests">

@@ -18,7 +18,7 @@
             {{-- Info de la propiedad --}}
             @if($property->trashed())
                 <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-700">
-                    <p class="font-semibold">⚠️ Esta propiedad está dada de baja</p>
+                    <p class="font-semibold">Esta propiedad está dada de baja</p>
                     <p class="text-sm mt-1">Fue eliminada el {{ $property->deleted_at->format('d/m/Y H:i') }}</p>
                 </div>
             @endif
@@ -88,7 +88,7 @@
 
                 <div class="mt-6 bg-white overflow-hidden shadow-sm sm:rounded-lg border-2 border-red-200">
                     <div class="p-6">
-                        <h3 class="text-lg font-semibold text-red-600 mb-4">⚠️ Zona de peligro</h3>
+                        <h3 class="text-lg font-semibold text-red-600 mb-4">Zona de peligro</h3>
                         
                         <p class="text-sm text-gray-700 mb-4">
                             Una vez que des de baja la propiedad, se cancelarán todas las reservas futuras activas 
@@ -105,7 +105,7 @@
                         <form 
                             method="POST" 
                             action="{{ route('admin.property.destroy', $property->id) }}"
-                            onsubmit="return confirm('⚠️ ¿Estás seguro de que deseas dar de baja esta propiedad?\n\n' + 
+                            onsubmit="return confirm('¿Estás seguro de que deseas dar de baja esta propiedad?\n\n' + 
                                 ({{ $futureReservationsCount }} > 0 ? 'Se cancelarán {{ $futureReservationsCount }} reserva(s) futura(s) y se procesarán los reembolsos automáticamente.\n\n' : '') + 
                                 'Esta acción NO es irreversible, podrás restaurarla después.')"
                         >

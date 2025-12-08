@@ -43,7 +43,7 @@
                                 class="nav-link {{ request()->routeIs('properties.byOwner') ? 'active' : '' }}">Propiedades</a></li>
                     @endif
                 @else
-                    {{-- Menú para páginas institucionales (sin propiedad específica) --}}
+                    {{-- Menú para páginas sin propiedad específica --}}
                     <li><a href="{{ route('home') }}"
                             class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}">Inicio</a></li>
                 @endif
@@ -271,6 +271,7 @@
 
 <script>
     (function () {
+        // Ajusta altura del spacer del header fijo
         function setNavSpacerHeight() {
             try {
                 var header = document.querySelector('.nav-header');
@@ -299,6 +300,7 @@
             } catch (e) { }
         }
 
+        // Configura event listeners para ajustar header
         window.addEventListener('load', function () {
             setNavSpacerHeight();
             setTimeout(setNavSpacerHeight, 150);
@@ -309,12 +311,14 @@
         });
         window.addEventListener('orientationchange', setNavSpacerHeight);
 
+        // Observa cambios en el header para reajustar altura
         var headerNode = document.querySelector('.nav-header');
         if (headerNode && 'MutationObserver' in window) {
             var mo = new MutationObserver(function () { setNavSpacerHeight(); });
             mo.observe(headerNode, { attributes: true, childList: true, subtree: true });
         }
 
+        // Toggle del menú móvil
         const btn = document.getElementById('mobile-menu-toggle');
         const menu = document.querySelector('.nav-menu');
         if (btn && menu) {
@@ -324,7 +328,7 @@
             });
         }
 
-        // Dropdown de usuario (desktop y móvil)
+        // Funcionalidad del dropdown de usuario
         const userTriggers = document.querySelectorAll('.nav-user-trigger');
         
         userTriggers.forEach((trigger) => {
@@ -348,7 +352,7 @@
             });
         });
 
-        // Header sólido al hacer scroll (solo Home y páginas de propiedades comienzan transparentes)
+        // Cambia header sólido/transparente al hacer scroll
         function updateHeaderMode() {
             var header = document.querySelector('.nav-header');
             if (!header) return;
@@ -381,6 +385,7 @@
             }
         }
 
+        // Configura IntersectionObserver para detectar scroll en hero
         window.addEventListener('load', function () {
             updateHeaderMode();
             setTimeout(updateHeaderMode, 150);
@@ -422,6 +427,7 @@
             }
         });
         
+        // Ajusta header al redimensionar ventana
         window.addEventListener('resize', function () {
             const IS_TRANSPARENT_PAGE = @json(request()->routeIs('home') || request()->routeIs('properties.show'));
 

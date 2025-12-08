@@ -68,7 +68,7 @@
     </main>
 
 
-    <!-- Footer (tal cual lo tenías) -->
+    <!-- Footer -->
     <footer
         style="background-color: var(--color-bg-secondary); border-top: 1px solid var(--color-border-light); margin-top: var(--spacing-2xl);">
         <div class="container" style="padding-top: var(--spacing-xl); padding-bottom: var(--spacing-xl);">

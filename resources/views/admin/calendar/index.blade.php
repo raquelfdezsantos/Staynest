@@ -182,7 +182,7 @@
       color: var(--color-text-primary);
     }
     
-    /* Hover sólo en días disponibles (KISS) */
+    /* Hover sólo en días disponibles */
     html[data-theme="dark"] .flatpickr-day:hover:not(.flatpickr-disabled):not(.unavailable) {
       background: rgba(77, 141, 148, 0.10);
       border-color: var(--color-accent);
@@ -263,7 +263,7 @@
       justify-content: center !important;
     }
     
-    /* Hacer los días cuadrados (no círculos) */
+    /* Hacer los días cuadrados */
     .flatpickr-day {
       max-width: 38px !important;
       max-height: 38px !important;

@@ -197,7 +197,7 @@
                 @endif
             </div>
         @else
-            {{-- Timeline de reservas moderno --}}
+            {{-- Timeline de reservas --}}
             <div class="booking-timeline">
                 @foreach($reservations as $r)
                     <div class="booking-item">

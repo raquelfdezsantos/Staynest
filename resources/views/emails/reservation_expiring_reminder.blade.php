@@ -1,7 +1,7 @@
 @extends('emails.layouts.staynest')
 
 @section('content')
-  <h2 style="margin: 0 0 20px; font-family: Georgia, serif; font-size: 24px; color: #ff9800; font-weight: 500;">⚠️ Tu reserva expira pronto</h2>
+  <h2 style="margin: 0 0 20px; font-family: Georgia, serif; font-size: 24px; color: #ff9800; font-weight: 500;">Tu reserva expira pronto</h2>
   
   <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.6; color: #333333;">Hola {{ $reservation->user->name }},</p>
   <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.6; color: #333333;">Te recordamos que tu reserva está pendiente de pago y <strong>expirará en aproximadamente 1 minuto</strong>.</p>

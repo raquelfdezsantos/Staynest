@@ -103,49 +103,6 @@
         </div>
     </div>
 
-
-    <!-- Responsive Settings Options -->
-    {{-- <div class="pt-4 pb-1 border-t border-gray-200">
-        <div class="px-4">
-            @auth
-            <div class="font-medium text-base text-gray-800">{{ auth()->user()->name }}</div>
-            <div class="font-medium text-sm text-gray-500">{{ auth()->user()->email }}</div>
-            @else
-            <a href="{{ route('login') }}" class="text-sm text-indigo-600 hover:underline">
-                Iniciar sesión
-            </a>
-            @endauth
-        </div>
-
-        @auth
-        <div class="mt-3 space-y-1">
-            @if(auth()->user()->role === 'customer')
-            <x-responsive-nav-link href="{{ route('reservas.index') }}">
-                {{ __('Mis reservas') }}
-            </x-responsive-nav-link>
-            @endif
-
-            @if(auth()->user()->role === 'admin')
-            <x-responsive-nav-link href="{{ route('admin.dashboard') }}">
-                {{ __('Panel admin') }}
-            </x-responsive-nav-link>
-            @endif
-
-            <x-responsive-nav-link :href="route('profile.edit')">
-                {{ __('Perfil') }}
-            </x-responsive-nav-link>
-
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <x-responsive-nav-link :href="route('logout')"
-                    onclick="event.preventDefault(); this.closest('form').submit();">
-                    {{ __('Cerrar sesión') }}
-                </x-responsive-nav-link>
-            </form>
-        </div>
-        @endauth
-    </div> --}}
-
     </div>
     </div>
 </nav>

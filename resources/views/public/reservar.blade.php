@@ -64,9 +64,11 @@
     check_in: '', check_out: '', guests: 1,
     maxGuests: 1,
     nights: null, total: null, loading: false, warn: false,
+    // Inicializa el componente de reserva
     init() {
       this.updateMaxGuests();
     },
+    // Actualiza máximo de huéspedes según propiedad seleccionada
     updateMaxGuests() {
       const select = document.querySelector('select[x-model="property_id"]');
       const selectedOption = select?.options[select.selectedIndex];
@@ -76,7 +78,9 @@
         this.guests = this.maxGuests;
       }
     },
+    // Valida si se puede realizar la reserva
     canBook(){ return this.property_id && this.check_in && this.check_out && this.guests>0 && this.total },
+    // Calcula presupuesto vía API
     async quote(){
       if(!this.property_id || !this.check_in || !this.check_out || !this.guests) return;
       this.loading = true;
@@ -97,6 +101,7 @@
         this.loading = false;
       }
     },
+    // Maneja envío del formulario de reserva
     async go(){
       // si no hay sesión, aviso y a login con intended de vuelta aquí
       @guest

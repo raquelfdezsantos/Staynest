@@ -122,7 +122,7 @@
             justify-content: center !important;
         }
         
-        /* Hacer los días cuadrados (no círculos) */
+        /* Hacer los días cuadrados */
         .flatpickr-day {
             max-width: 38px !important;
             max-height: 38px !important;
@@ -283,9 +283,9 @@
         let checkInPicker;
         let checkOutPicker;
 
-        // Definir función updateTotal antes de usarla
+        // Calcula y actualiza el total estimado de la reserva
         function updateTotal() {
-          // Obtener fechas directamente de los inputs (KISS - Keep It Simple)
+          // Obtener fechas directamente de los inputs
           const checkInValue = document.getElementById('check_in').value;
           const checkOutValue = document.getElementById('check_out').value;
           
@@ -344,6 +344,7 @@
           }
         }
 
+        // Actualiza el resumen de huéspedes y valida capacidad
         function updateGuests() {
           const adults = parseInt(document.getElementById('adults').value) || 0;
           const children = parseInt(document.getElementById('children').value) || 0;
@@ -371,7 +372,7 @@
         document.getElementById('children').addEventListener('change', updateGuests);
         document.getElementById('pets').addEventListener('change', updateGuests);
 
-        // Inicializar checkInPicker primero
+        // Inicializar calendario de check-in con Flatpickr
         checkInPicker = flatpickr('#check_in', {
             locale: 'es',
             minDate: 'today',
@@ -427,7 +428,7 @@
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
 
-        // Inicializar checkOutPicker después
+        // Inicializar calendario de check-out con Flatpickr
         checkOutPicker = flatpickr('#check_out', {
             locale: 'es',
             minDate: tomorrow,
@@ -480,8 +481,9 @@
         updateGuests();
         updateTotal();
 
+        // Validar formulario antes del envío
         document.getElementById('editReservationForm').addEventListener('submit', function (e) {
-          // Leer fechas directamente de los inputs (KISS)
+          // Leer fechas directamente de los inputs
           const checkInValue = document.getElementById('check_in').value;
           const checkOutValue = document.getElementById('check_out').value;
           const adults = parseInt(document.getElementById('adults').value) || 0;
@@ -513,6 +515,7 @@
           document.getElementById('guests').value = totalGuests;
         });
 
+        // Muestra mensaje de error al usuario
         function showError(message) {
           const errorDiv = document.getElementById('error-message');
           const errorText = document.getElementById('error-text');
@@ -526,7 +529,7 @@
         }
       });
 
-      // Función para mover elementos según el tamaño de pantalla
+      // Reorganiza elementos del formulario en móvil/desktop
       function moveElementsIfMobile() {
         const isMobile = window.innerWidth < 768; // Tailwind md: breakpoint
         const form = document.getElementById('editReservationForm');

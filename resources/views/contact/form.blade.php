@@ -110,6 +110,7 @@
 
             @pushOnce('scripts')
                 <script>
+                    // Inicializa mapa de contacto con Google Maps
                     function initContactMap() {
                         const mapEl = document.getElementById('map-contact');
                         if (!mapEl || !window.google || !google.maps) return;
@@ -128,7 +129,7 @@
                         const baseLoc = { lat: {{ $lat }}, lng: {{ $lng }} };
 
                         @if($hasCoords)
-                            // ===== CON COORDENADAS =====
+                            // Inicialización cuando hay coordenadas exactas
                             const loc = baseLoc;
 
                             const mapOptions = {
@@ -156,7 +157,7 @@
                                 });
                             }
 
-                            // Sincronizar altura del mapa
+                            // Sincroniza altura del mapa con textarea
                             requestAnimationFrame(() => {
                                 const syncMapHeight = () => {
                                     const ta = document.getElementById('message');
@@ -171,7 +172,7 @@
                             });
 
                         @else
-                            // ===== SIN COORDENADAS → GEOCODER =====
+                            // Inicialización cuando no hay coordenadas (usa geocoder)
                             const address = @json($fullAddress);
                             const geocoder = new google.maps.Geocoder();
 
@@ -204,7 +205,7 @@
                                         });
                                     }
 
-                                    // Sincronizar altura del mapa
+                                    // Sincroniza altura del mapa con textarea
                                     requestAnimationFrame(() => {
                                         const syncMapHeight = () => {
                                             const ta = document.getElementById('message');
@@ -224,6 +225,7 @@
                         @endif
                     }
 
+                    // Carga script de Google Maps de forma asíncrona
                     (function loadGoogleMapsForContact() {
                         if (window.google && window.google.maps) {
                             initContactMap();
