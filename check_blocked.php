@@ -20,7 +20,7 @@ $blocked = \App\Models\RateCalendar::where('is_available', false)->count();
 echo "Noches bloqueadas en RateCalendar: {$blocked}\n\n";
 
 if ($blocked < $totalNights) {
-    echo "❌ ERROR: Hay menos noches bloqueadas de las esperadas!\n";
+    echo "ERROR: Hay menos noches bloqueadas de las esperadas!\n";
 } else {
-    echo "✅ OK: Bloqueo correcto\n";
+    echo "OK: Bloqueo correcto\n";
 }

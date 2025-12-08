@@ -20,7 +20,7 @@ export default {
                  * vuelvan a producir fondos y bordes oscuros en modo dark como antes.
                  *
                  * Nota:
-                 *  - Mantenemos algunos niveles (300–500) enlazados a variables de texto para conservar
+                 *  - Mantener algunos niveles (300–500) enlazados a variables de texto para conservar
                  *    la personalización accesible.
                  *  - Niveles altos (700–900) ahora son valores hex explícitos oscuros, evitando que
                  *    bg-neutral-800/900 se conviertan en texto blanco (rotura reportada).
