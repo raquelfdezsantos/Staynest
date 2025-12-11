@@ -1167,13 +1167,7 @@ html[data-theme="light"] .nav-header--transparent .nav-dropdown-arrow {
 .btn,
 .btn-action,
 .entorno-cta {
-    text-transform: lowercase;
-}
-
-.btn::first-letter,
-.btn-action::first-letter,
-.entorno-cta::first-letter {
-    text-transform: uppercase;
+    text-transform: none;
 }
 
 .btn .sn-uppercase,
@@ -2852,14 +2846,11 @@ header .nav-logo {
 /* Forzar tamaño completo en móviles horizontales */
 @media (max-height: 600px) and (orientation: landscape) {
     .pswp__img {
-        max-width: 95vw !important;
-        max-height: 95vh !important;
-        object-fit: contain;
-    }
-    
-    .pswp__zoom-wrap {
-        width: 100% !important;
-        height: 100% !important;
+        width: auto !important;
+        height: 85vh !important;
+        max-width: none !important;
+        max-height: none !important;
+        object-fit: contain !important;
     }
 }
 

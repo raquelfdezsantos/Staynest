@@ -37,14 +37,7 @@
     @endif
 </table>
 
-<div style="text-align: center; margin: 24px 0;">
-    <a href="{{ route('properties.invoices.index', $reservation->property->slug) }}" 
-       style="display: inline-block; padding: 12px 24px; background-color: #28a745; color: white; text-decoration: none; border-radius: 2px; font-weight: bold;">
-        Ver Mis Facturas
-    </a>
-</div>
-
-<p style="margin: 20px 0;">El importe devuelto debería aparecer en tu cuenta en los próximos 5-10 días hábiles, dependiendo de tu entidad bancaria. @if($invoice)Encontrarás la factura rectificativa adjunta a este correo y también @endifPuedes acceder a todas tus facturas en cualquier momento a través del botón superior.</p>
+<p style="margin: 20px 0;">El importe devuelto debería aparecer en tu cuenta en los próximos 5-10 días hábiles, dependiendo de tu entidad bancaria.@if($invoice) Encontrarás la factura rectificativa adjunta a este correo.@endif</p>
 
 <p style="margin: 20px 0 0 0;">Si tienes alguna pregunta, contacta con nosotros respondiendo a este correo.</p>
 @endsection

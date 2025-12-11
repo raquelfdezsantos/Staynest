@@ -51,5 +51,5 @@
 <p style="margin: 16px 0; color: #666; font-size: 14px;">La factura rectificativa está adjunta en este correo en formato PDF.</p>
 @endif
 
-<p style="margin: 20px 0 0 0; font-size: 14px; color: #666;">Esta devolución se ha procesado correctamente. @if($invoice)Se ha generado una factura rectificativa que se adjunta a este correo. @endifPuedes acceder a todas las facturas de tu propiedad a través del botón superior.</p>
+<p style="margin: 20px 0 0 0; font-size: 14px; color: #666;">Esta devolución se ha procesado correctamente.@if($invoice) Se ha generado una factura rectificativa que se adjunta a este correo.@endif</p>
 @endsection

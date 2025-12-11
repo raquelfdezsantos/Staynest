@@ -716,11 +716,37 @@ class AdminController extends Controller
 
                     $totalRefunded += $reservation->total_price;
 
-                    // Enviar email de reembolso al cliente
+                    // Generar factura rectificativa
+                    $invoiceNumber = Invoice::generateUniqueNumber('RECT');
+                    $refundInvoice = Invoice::create([
+                        'reservation_id' => $reservation->id,
+                        'number' => $invoiceNumber,
+                        'pdf_path' => null,
+                        'issued_at' => now(),
+                        'amount' => -$reservation->total_price, // Negativo para reembolso
+                    ]);
+
+                    // Enviar email de reembolso al cliente con factura
                     if ($reservation->user && $reservation->user->email) {
-                        Mail::to($reservation->user->email)->send(
-                            new PaymentRefundIssuedMail($reservation, $refund)
-                        );
+                        try {
+                            Mail::to($reservation->user->email)->send(
+                                new PaymentRefundIssuedMail($reservation, $reservation->total_price, $refundInvoice)
+                            );
+                        } catch (\Throwable $e) {
+                            report($e);
+                        }
+                    }
+
+                    // Enviar email de reembolso al admin con factura
+                    $admin = Auth::user();
+                    if ($admin && $admin->email) {
+                        try {
+                            Mail::to($admin->email)->send(
+                                new AdminPaymentRefundIssuedMail($reservation, $reservation->total_price, $refundInvoice)
+                            );
+                        } catch (\Throwable $e) {
+                            report($e);
+                        }
                     }
                 }
 
@@ -729,9 +755,25 @@ class AdminController extends Controller
 
                 // Enviar email de cancelación al cliente
                 if ($reservation->user && $reservation->user->email) {
-                    Mail::to($reservation->user->email)->send(
-                        new ReservationCancelledMail($reservation)
-                    );
+                    try {
+                        Mail::to($reservation->user->email)->send(
+                            new ReservationCancelledMail($reservation, false)
+                        );
+                    } catch (\Throwable $e) {
+                        report($e);
+                    }
+                }
+
+                // Enviar email de cancelación al admin
+                $admin = Auth::user();
+                if ($admin && $admin->email) {
+                    try {
+                        Mail::to($admin->email)->send(
+                            new ReservationCancelledMail($reservation, true)
+                        );
+                    } catch (\Throwable $e) {
+                        report($e);
+                    }
                 }
 
                 $cancelledCount++;
