@@ -159,6 +159,7 @@ Disponible en `http://localhost:8000`
 **Versión:** v1.0.0  
 **Estado:** Listo para defensa de TFG  
 **Entrega:** 12 de diciembre de 2025
+**Despliegue producción:** Nginx + PHP-FPM en Ubuntu Desktop
 
 ---
 
